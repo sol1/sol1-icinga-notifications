@@ -1,0 +1,9 @@
+{
+    "rt_name": "rtInstance",
+    "rt_addr": "https://rt.example.com",
+    "rt_user": "rtbot",
+    "rt_pass": "CHANGE ME",
+    "icinga_addr": "https://localhost:5665",
+    "icinga_user": "rtnotify",
+    "icinga_pass": "CHANGE ME"
+}

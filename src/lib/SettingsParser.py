@@ -53,6 +53,9 @@ class SettingsParser:
 
         Path to config file, can be left empty if you don't have a config file
             config_file: str = ''
+
+        Config as a dict
+            _config_dict: dict = ''
     """    
     # All attributes beginning with '_' are excluded as are any args added to the lists below for each part
     _exclude_from_args: list = dataclasses.field(default_factory=list)
@@ -65,6 +68,7 @@ class SettingsParser:
     _args_prefix: str = ''
     _json_dict_key: str = None
     config_file: str = ''
+    _config_dict: dict = ''
 
     # implied args format (class var, switch, value) (foo_bar, --foo-bar, value)
     def _getArgVarList(self):
@@ -109,8 +113,20 @@ class SettingsParser:
             _list.append((key, key, value))
         return _list
 
-    def loadConfigFile(self):
-        """Load configuration from a JSON file then iterates through the list of valid Class attributes json keys and updates values if the Class attribute keys exist in the json
+    def loadConfigDict(self):
+        """Load configuration from a Dictonary file then iterates through the list of valid Class attributes json keys and updates values if the Class attribute keys exist in the json
+        """
+        # if the _json_dict_key is set change the config to be the nested value if the _json_dict_key exists
+        config = self._config_dict
+        if self._json_dict_key:
+            config = config.get(self._json_dict_key, {})
+        for key in self._getConfigVarList():
+            if key[1] in config:
+                # Set class var with config key value
+                setattr(self, key[0], config[key[1]])
+
+    def loadConfigJsonFile(self):
+        """Iterates through the list of valid Class attributes json keys and updates values if the Class attribute keys exist in the config dictionary
         """
         print(os.getcwd())
         print(self.config_file)
@@ -119,14 +135,8 @@ class SettingsParser:
             sys.exit(1)
         try:
             with open(self.config_file, 'r') as file:
-                config = json.load(file)
-                # if the _json_dict_key is set change the config to be the nested value if the _json_dict_key exists
-                if self._json_dict_key:
-                    config = config.get(self._json_dict_key, {})
-                for key in self._getConfigVarList():
-                    if key[1] in config:
-                        # Set class var with config key value
-                        setattr(self, key[0], config[key[1]])
+                self._config_dict = json.load(file)
+                self.loadConfigDict()
         except IOError as e:
             print(f"Error: Failed to open '{self.config_file}': {e}")
             sys.exit(1)

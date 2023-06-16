@@ -1,3 +1,29 @@
 {
-    "debug": true
+    "mail": {
+        "from_address": "icinga@domain.local",
+        "server": "localhost",
+        "username": "",
+        "password": ""
+    },
+    "icinga": {
+        "url": "http://icinga.domain.local/icingaweb2",
+        "logo_path": "/usr/share/icingaweb2/public/img/icinga-logo.png"
+    },
+    "netbox": {
+        "url": "",
+        "token": "abcdefghijklmnopqrstuvwxyz1234567890",
+        "api_device": "/api/dcim/devices",
+        "api_vm": "/api/virtualization/virtual-machines",
+        "api_ip": "/api/ipam/ip-addresses"
+    },
+    "grafana": {
+        "url": "",
+        "api_key": "",
+        "dashboard": "icinga2-with-influxdb",
+        "icingaweb2_ini": "/etc/icingaweb2/modules/grafana/graphs.ini",
+        "var_hostname": "var-hostname",
+        "theme": "light",
+        "default_panel_id": "2"
+    },
+    "debug": false
 }

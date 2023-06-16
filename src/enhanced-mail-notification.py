@@ -16,10 +16,12 @@ import smtplib
 import socket
 
 from lib.SettingsParser import SettingsParser
+from lib.Util import initLogger
 
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
+from loguru import logger
 
 # Helper to load config from file
 @dataclasses.dataclass
@@ -43,7 +45,8 @@ class SettingsIcinga(SettingsFile):
 
 @dataclasses.dataclass
 class SettingsNetbox(SettingsFile):
-    # eg: http://netbox.domain.local
+    # INFO: leave netbox base empty if you don't use netbox and it won't be included
+    # INFO: no trailing / on the url. eg: http://netbox.domain.local
     url: str = ''
     token: str = 'abcdefghijklmnopqrstuvwxyz1234567890'
     api_device: str = '/api/dcim/devices'
@@ -127,126 +130,6 @@ class Settings(SettingsParser):
                 parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
         return parser.parse_args()
 
-config = Settings()
-config.mail = SettingsMail(_config_dict=config._config_dict)
-config.icinga = SettingsIcinga(_config_dict=config._config_dict)
-config.netbox = SettingsNetbox(_config_dict=config._config_dict)
-config.grafana = SettingsGrafana(_config_dict=config._config_dict)
-
-
-
-###############
-# Static Vars #
-###############
-# User customization here
-# Email
-EMAILFROM = 'icinga@domain.local'
-EMAILSERVER = 'localhost'
-EMAILUSERNAME = ''
-EMAILPASSWORD = ''
-
-## Icinga ##
-# INFO: no trailing / on the url, it can generate errors
-ICINGA2BASE = 'http://icinga.domain.local/icingaweb2'
-ICINGA2LOGOPATH = '/usr/share/icingaweb2/public/img/icinga-logo.png'
-
-## Netbox ##
-# INFO: leave netbox base empty if you don't use netbox and it won't be included
-# INFO: no trailing / on the url, it can generate errors
-NETBOXBASE = 'http://netbox.domain.local'
-NETBOXTOKEN = 'abcdefghijklmnopqrstuvwxyz1234567890'
-
-NETBOXPATHDEVICES = '/dcim/devices'
-NETBOXPATHVMS = '/virtualization/virtual-machines'
-NETBOXPATHIPS = '/ipam/ip-addresses'
-
-## Grafana ##
-# INFO: no trailing / on the url, it can generate errors
-GRAFANABASE = 'http://grafana.domain.local'
-GRAFANADASHBOARD = 'icinga2-with-influxdb'
-# The grafana module in icingaweb2 stores panel id for each service in a ini file
-GRAFANAICINGAWEB2INI = '/etc/icingaweb2/modules/grafana/graphs.ini'
-# This is the key that grafana users to search the host name value
-GRAFANAVARHOST = 'var-hostname'
-GRAFANATHEME = 'light'
-GRAFANAAPIKEY = 'abcdefghijklmnopqrstuvwxyz1234567890'
-GRAFANADEFAULTHOSTPANELID = '2'  # Usually ping
-
-# Misc
-WIDTH = '640'
-HEIGHT = '321'
-COLUMN = '144'
-DIFFERENCE = str(int(WIDTH) - int(COLUMN))
-
-DEBUG = os.getenv('DEBUG')
-# DEBUG = True
-
-#################
-# External Vars #
-#################
-notification_type = os.getenv('NOTIFICATIONTYPE', '')
-host_alias = os.getenv('HOSTALIAS', '')
-host_display_name = os.getenv('HOSTDISPLAYNAME', '')
-host_address = os.getenv('HOSTADDRESS', host_alias)
-host_state = os.getenv('HOSTSTATE', '')
-host_output = os.getenv('HOSTOUTPUT', '')
-service_name = os.getenv('SERVICENAME', '')
-service_display_name = os.getenv('SERVICEDISPLAYNAME', '')
-service_command = os.getenv('SERVICECOMMAND', '')
-service_state = os.getenv('SERVICESTATE', '')
-service_output = os.getenv('SERVICEOUTPUT', '')
-long_date_time = os.getenv('LONGDATETIME', '')
-notification_author = os.getenv('NOTIFICATIONAUTHORNAME', '')
-notification_comment = os.getenv('NOTIFICATIONCOMMENT', '')
-email_to = os.getenv('USEREMAIL', '')
-performance_data = os.getenv('PERFDATA', '')
-netbox_host_name = os.getenv('NETBOXHOSTNAME', host_alias)
-if netbox_host_name == '':
-    # If the env is set but empty
-    netbox_host_name = host_alias
-
-netbox_host_ip = os.getenv('NETBOXHOSTIP', host_address)
-if netbox_host_name == '':
-    # If the env is set but empty
-    netbox_host_name = host_address
-
-grafana_host_name = host_alias
-grafana_panel_id = os.getenv('GRAFANAPANELID', None)
-
-# If the host_address is set to nothing use the alias
-if not host_address:
-    host_address = host_alias
-
-# With debug on each run produces a template that can be rerun for testing
-if DEBUG:
-    with open("/tmp/enhanced-mail.sh", "w+") as f:
-        f.write("#!/bin/bash")
-        f.write("\n")
-        f.write('\nexport NOTIFICATIONTYPE="{}"'.format(notification_type))
-        f.write('\nexport HOSTALIAS="{}"'.format(host_alias))
-        f.write('\nexport HOSTDISPLAYNAME="{}"'.format(host_display_name))
-        f.write('\nexport HOSTADDRESS="{}"'.format(host_address))
-        f.write('\nexport HOSTSTATE="{}"'.format(host_state))
-        f.write('\nexport HOSTOUTPUT="{}"'.format(host_output))
-        f.write('\nexport SERVICENAME="{}"'.format(service_name))
-        f.write('\nexport SERVICEDISPLAYNAME="{}"'.format(service_display_name))
-        f.write('\nexport SERVICECOMMAND="{}"'.format(service_command))
-        f.write('\nexport SERVICESTATE="{}"'.format(service_state))
-        f.write('\nexport SERVICEOUTPUT="{}"'.format(service_output))
-        f.write('\nexport LONGDATETIME="{}"'.format(long_date_time))
-        f.write('\nexport NOTIFICATIONAUTHORNAME="{}"'.format(notification_author))
-        f.write('\nexport NOTIFICATIONCOMMENT="{}"'.format(notification_comment))
-        f.write('\nexport USEREMAIL="{}"'.format(email_to))
-        f.write('\nexport PERFDATA="{}"'.format(performance_data))
-        f.write('\nexport NETBOXHOSTNAME="{}"'.format(netbox_host_name))
-        f.write('\nexport NETBOXHOSTIP="{}"'.format(netbox_host_ip))
-        f.write('\nexport GRAFANAHOSTNAME="{}"'.format(grafana_host_name))
-        f.write('\nexport GRAFANAPANELID="{}"'.format(grafana_panel_id))
-        f.write("\n")
-        f.write("\n/etc/icinga2/scripts/enhanced-mail-notification.py")
-    f.close()
-
-
 # Classes for getting data from each external system
 class Netbox:
     """Netbox object that parses data from the Netbox api
@@ -264,7 +147,7 @@ class Netbox:
         self.ip = {}
         self.ip_url = ''
 
-        if NETBOXBASE:
+        if config.netbox.url:
             self.__parse()
 
     def __parse(self):
@@ -272,22 +155,22 @@ class Netbox:
 
         :return:
         """
-        nb_device = self.__searchData(NETBOXBASE + '/api' + NETBOXPATHDEVICES + '/?name=' + netbox_host_name)
-        nb_vm = self.__searchData(NETBOXBASE + '/api' + NETBOXPATHVMS + '/?name=' + netbox_host_name)
-        nb_host_ip = self.__searchData(NETBOXBASE + '/api' + NETBOXPATHIPS + '/?address=' + netbox_host_name)
-        nb_address_ip = self.__searchData(NETBOXBASE + '/api' + NETBOXPATHIPS + '/?address=' + netbox_host_ip)
+        nb_device = self.__searchData(config.netbox.url + '/api' + config.netbox.api_device + '/?name=' + config.netbox_host_name)
+        nb_vm = self.__searchData(config.netbox.url + '/api' + config.netbox.api_vm + '/?name=' + config.netbox_host_name)
+        nb_host_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_name)
+        nb_address_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_ip)
 
-        if DEBUG:
+        if config.debug:
             print(json.dumps(nb_device, indent=4, sort_keys=True))
             print(json.dumps(nb_vm, indent=5, sort_keys=True))
             print(json.dumps(nb_address_ip, indent=4, sort_keys=True))
 
         if nb_device and not nb_vm:
             self.host = nb_device
-            self.host_url = "{}/{}/".format(NETBOXBASE + NETBOXPATHDEVICES, nb_device['id'])
+            self.host_url = "{}/{}/".format(config.netbox.url + config.netbox.api_device, nb_device['id'])
         elif not nb_device and nb_vm:
             self.host = nb_vm
-            self.host_url = "{}/{}/".format(NETBOXBASE + NETBOXPATHVMS, nb_vm['id'])
+            self.host_url = "{}/{}/".format(config.netbox.url + config.netbox.api_vm, nb_vm['id'])
         elif nb_device and nb_vm:
             print("Found multiple device's or vm's that match")
         else:
@@ -295,25 +178,25 @@ class Netbox:
 
         if nb_host_ip:
             self.ip = nb_host_ip
-            self.ip_url = "{}/{}/".format(NETBOXBASE + NETBOXPATHIPS, nb_host_ip['id'])
+            self.ip_url = "{}/{}/".format(config.netbox.url + config.netbox.api_ip, nb_host_ip['id'])
         elif nb_address_ip:
             self.ip = nb_address_ip
-            self.ip_url = "{}/{}/".format(NETBOXBASE + NETBOXPATHIPS, nb_address_ip['id'])
+            self.ip_url = "{}/{}/".format(config.netbox.url + config.netbox.api_ip, nb_address_ip['id'])
 
     def __getServerData(self, url):
         headers = {'Accept': 'application/json'}
-        if NETBOXTOKEN:
-            headers.update({'Authorization': 'Token ' + NETBOXTOKEN})
+        if config.netbox.token:
+            headers.update({'Authorization': 'Token ' + config.netbox.token})
         try:
             response = requests.get(url, headers=headers)
             result = response.json()
-            if DEBUG:
+            if config.debug:
                 print("Netbox response: ")
                 print(response)
         except Exception as e:
             print("Error getting netbox data from {} with error {}".format(url, e))
             result = {'count': 0}
-        if DEBUG:
+        if config.debug:
             print("Netbox result: ")
             print(result)
         return result
@@ -398,47 +281,47 @@ class Grafana:
         self.__icingaweb2_ini = None
         self.panelID = None
 
-        if os.path.exists(GRAFANAICINGAWEB2INI):
+        if os.path.exists(config.grafana.icingaweb2_ini):
             self.__parseIcingaweb2INI()
 
-        if service_state:
-            if grafana_panel_id:
-                self.panelID = grafana_panel_id
-            elif os.path.exists(GRAFANAICINGAWEB2INI):
+        if config.service_state:
+            if config.grafana_panel_id:
+                self.panelID = config.grafana_panel_id
+            elif os.path.exists(config.grafana.icingaweb2_ini):
                 self.__parseIcingaweb2INI()
-                self.panelID = self.__getINIPanelID(service_display_name, service_name, service_command)
+                self.panelID = self.__getINIPanelID(config.service_display_name, config.service_name, config.service_command)
             else:
-                print("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(grafana_panel_id, GRAFANAICINGAWEB2INI))
+                print("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(config.grafana_panel_id, config.grafana.icingaweb2_ini))
 
-        elif host_state:
-            if grafana_panel_id:
-                self.panelID = grafana_panel_id
+        elif config.host_state:
+            if config.grafana_panel_id:
+                self.panelID = config.grafana_panel_id
             else:
-                self.panelID = GRAFANADEFAULTHOSTPANELID
+                self.panelID = config.grafana.default_panel_id
 
-        if self.panelID and GRAFANABASE:
-            self.png_url = GRAFANABASE + '/render/dashboard-solo/db/' + GRAFANADASHBOARD + '?panelId=' + self.panelID + '&' + GRAFANAVARHOST + '=' + grafana_host_name + '&theme=' + GRAFANATHEME + '&width=' + WIDTH + '&height=' + HEIGHT
-            self.page_url = GRAFANABASE + '/dashboard/db/' + GRAFANADASHBOARD + '?fullscreen&panelId=' + self.panelID + '&' + GRAFANAVARHOST + '=' + grafana_host_name
+        if self.panelID and config.grafana.url:
+            self.png_url = config.grafana.url + '/render/dashboard-solo/db/' + config.grafana.dashboard + '?panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name + '&theme=' + GRAFANATHEME + '&width=' + WIDTH + '&height=' + HEIGHT
+            self.page_url = config.grafana.url + '/dashboard/db/' + config.grafana.dashboard + '?fullscreen&panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name
             self.png = self.__getPNG()
 
     def __parseIcingaweb2INI(self):
-        if DEBUG:
-            print("\nGrafana ini file: {}".format(GRAFANAICINGAWEB2INI))
+        if config.debug:
+            print("\nGrafana ini file: {}".format(config.grafana.icingaweb2_ini))
         try:
             self.__icingaweb2_ini = ConfigParser.ConfigParser()
-            self.__icingaweb2_ini.read(GRAFANAICINGAWEB2INI)
+            self.__icingaweb2_ini.read(config.grafana.icingaweb2_ini)
         except Exception as e:
-            print("Unable to parse grafana ini file ({}) with error {}".format(GRAFANAICINGAWEB2INI, e))
+            print("Unable to parse grafana ini file ({}) with error {}".format(config.grafana.icingaweb2_ini, e))
             self.__icingaweb2_ini = None
 
     def __getPNG(self):
-        headers = {'Authorization': 'Bearer ' + GRAFANAAPIKEY}
-        if DEBUG:
+        headers = {'Authorization': 'Bearer ' + config.grafana.api_key}
+        if config.debug:
             print("PNG url: " + self.png_url)
             print("PNG headers: {}".format(headers))
         try:
             response = requests.get(self.png_url, headers=headers)
-            if DEBUG:
+            if config.debug:
                 print("PNG get status code: {}".format(response.status_code))
         except Exception as e:
             print("Error getting png from {} with error {}".format(self.page_url, e))
@@ -456,20 +339,20 @@ class Grafana:
 
         section = None
         try:
-            if DEBUG:
+            if config.debug:
                 print("\nGrafana ini sections: {}".format(self.__icingaweb2_ini.sections()))
                 print("\nGrafana ini pattern: {}".format(pattern))
             if pattern:
                 section = filter(pattern.match, self.__icingaweb2_ini.sections())
-                if DEBUG:
+                if config.debug:
                     print("\nGrafana section: {}".format(section))
                 if len(section) == 1:
                     section = section[0]
         except Exception as e:
-            print("Error reading grafana ini file ({}) with error {}".format(GRAFANAICINGAWEB2INI, e))
+            print("Error reading grafana ini file ({}) with error {}".format(config.grafana.icingaweb2_ini, e))
             section = None
 
-        if DEBUG:
+        if config.debug:
             print("\nGrafana section: {}".format(section))
         return section
 
@@ -480,33 +363,57 @@ class Grafana:
             panel_id = self.__icingaweb2_ini.get(section, 'panelId').replace('"', '')
         return panel_id
 
+config = Settings()
+config.mail = SettingsMail(_config_dict=config._config_dict)
+config.icinga = SettingsIcinga(_config_dict=config._config_dict)
+config.netbox = SettingsNetbox(_config_dict=config._config_dict)
+config.grafana = SettingsGrafana(_config_dict=config._config_dict)
+
+# TODO: Init logging
+if config.debug:
+    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification_enhanced_email.log")
+else:
+    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification_enhanced_email.log")
+
+# Misc
+WIDTH = '640'
+HEIGHT = '321'
+COLUMN = '144'
+DIFFERENCE = str(int(WIDTH) - int(COLUMN))
+
+# With debug on each run produces a template that can be rerun for testing
+cmd = "/etc/icinga2/scripts/enhanced-mail-notification.py"
+for env in config._getArgVarList():
+    cmd += f' {env[1]} "{env[2]}"'
+logger.info(cmd)
+
 # initalise objects for 3rd party info
 netbox = Netbox()
 grafana = Grafana()
 
 # Email subject
-if host_state:
-    email_subject = 'Host {0} - {1} is {2}'.format(notification_type, host_display_name, host_state)
-elif service_state:
-    email_subject = 'Service {0} - {1} service {2} is {3}'.format(notification_type, host_display_name, service_display_name, service_state)
+if config.host_state:
+    email_subject = 'Host {0} - {1} is {2}'.format(config.notification_type, config.host_display_name, config.host_state)
+elif config.service_state:
+    email_subject = 'Service {0} - {1} service {2} is {3}'.format(config.notification_type, config.host_display_name, config.service_display_name, config.service_state)
 else:
-    email_subject = 'Unknown {0} - {1} service {2} (no host or service state)'.format(notification_type, host_display_name, service_display_name)
+    email_subject = 'Unknown {0} - {1} service {2} (no host or service state)'.format(config.notification_type, config.host_display_name, config.service_display_name)
 
 # Prepare mail body
 email_plain_text = '***** Icinga  *****'
 email_plain_text += '\n'
-email_plain_text += '\nNotification Type: {0}'.format(notification_type)
+email_plain_text += '\nNotification Type: {0}'.format(config.notification_type)
 email_plain_text += '\n'
-email_plain_text += '\nHost: {0}'.format(host_alias)
-email_plain_text += '\nAddress: {0}'.format(host_address)
-email_plain_text += '\nService: {0}'.format(service_display_name)
-email_plain_text += '\nState: {0}{1}'.format(host_state, service_state)
+email_plain_text += '\nHost: {0}'.format(config.host_alias)
+email_plain_text += '\nAddress: {0}'.format(config.host_address)
+email_plain_text += '\nService: {0}'.format(config.service_display_name)
+email_plain_text += '\nState: {0}{1}'.format(config.host_state, config.service_state)
 email_plain_text += '\n'
-email_plain_text += '\nDate/Time: {0}'.format(long_date_time)
+email_plain_text += '\nDate/Time: {0}'.format(config.long_date_time)
 email_plain_text += '\n'
-email_plain_text += '\nAdditional Info: {0}{1}'.format(host_output, service_output)
+email_plain_text += '\nAdditional Info: {0}{1}'.format(config.host_output, config.service_output)
 email_plain_text += '\n'
-email_plain_text += '\nComment: [{0}] {1}'.format(notification_author, notification_comment)
+email_plain_text += '\nComment: [{0}] {1}'.format(config.notification_author, config.notification_comment)
 if grafana.page_url:
     email_plain_text += '\n'
     email_plain_text += '\nGrafana: {0}'.format(grafana.page_url)
@@ -536,26 +443,26 @@ email_html += '\ntd.UNREACHABLE {background-color: #aa44ff; color: #ffffff; marg
 email_html += '\n</style></head><body>'
 email_html += '\n<table width=' + WIDTH + '>'
 
-if os.path.exists(ICINGA2LOGOPATH):
+if os.path.exists(config.icinga.logo_path):
     email_html += '\n<tr><th colspan=2 class=icinga width=' + WIDTH + '><img src="cid:icinga2_logo"></th></tr>'
 
-email_html += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + ICINGA2BASE + '/monitoring/host/show?host=' + host_alias + '">' + host_alias + '</a></td></tr>'
-email_html += '\n<tr><th>IP Address:</th><td>' + host_address + '</td></tr>'
-email_html += '\n<tr><th>Status:</th><td>' + host_state + service_state + '</td></tr>'
-email_html += '\n<tr><th>Service Name:</th><td>' + service_display_name + '</td></tr>'
-if host_state:
-    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + ICINGA2BASE + '/monitoring/host/services?host=' + host_alias + '">' + host_output + '</a></td></tr>'
-if service_state:
-    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + ICINGA2BASE + '/monitoring/service/show?host=' + host_alias + '&service=' + service_name + '">' + service_output + '</a></td></tr>'
-email_html += '\n<tr><th>Event Time:</th><td>' + long_date_time + '</td></tr>'
+email_html += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/show?host=' + config.host_alias + '">' + config.host_alias + '</a></td></tr>'
+email_html += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></tr>'
+email_html += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
+email_html += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
+if config.host_state:
+    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_alias + '">' + config.host_output + '</a></td></tr>'
+if config.service_state:
+    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_alias + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
+email_html += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
 
-if notification_author and notification_comment:
-    email_html += '\n<tr><th>Comment:</th><td>{0} ({1})</td></tr>'.format(notification_comment, notification_author)
+if config.notification_author and config.notification_comment:
+    email_html += '\n<tr><th>Comment:</th><td>{0} ({1})</td></tr>'.format(config.notification_comment, config.notification_author)
 
 if netbox.host:
     email_html += '\n</table><br>'
     email_html += '\n<table width=' + WIDTH + '>'
-    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + host_alias + '</a></th></tr>'
+    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + config.host_alias + '</a></th></tr>'
     email_html += netbox.addRow('Display Name', netbox.host, 'display_name')
     email_html += netbox.addRow('Display Name', netbox.host, 'name')
     email_html += netbox.addLinkRow('Cluster', netbox.host, 'cluster', 'name')
@@ -572,19 +479,19 @@ if netbox.host:
 if netbox.ip:
     email_html += '\n</table><br>'
     email_html += '\n<table width=' + WIDTH + '>'
-    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.ip_url + '">Netbox Info for ' + host_address + '</a></th></tr>'
+    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.ip_url + '">Netbox Info for ' + config.host_address + '</a></th></tr>'
     email_html += netbox.addRow('Display Name', netbox.ip, 'address')
     email_html += netbox.addRow('Status', netbox.ip, 'status', 'label')
     email_html += netbox.addRow('Host', netbox.ip, 'virtual_machine', 'name')
     email_html += netbox.addRow('Host', netbox.ip, 'device', 'name')
 
-if (performance_data and '=' in performance_data) or grafana.png:
+if (config.performance_data and '=' in config.performance_data) or grafana.png:
     email_html += '\n</table><br>'
     email_html += '\n<table width=' + WIDTH + '>'
     email_html += '\n<tr><th colspan=6 class=perfdata>Performance Data</th></tr>'
-    if performance_data:
+    if config.performance_data:
         email_html += '\n<tr><th>Label</th><th>Last Value</th><th>Warning</th><th>Critical</th><th>Min</th><th>Max</th></tr>'
-        perf_data_list = performance_data.split(" ")
+        perf_data_list = config.performance_data.split(" ")
         for perf in perf_data_list:
             if '=' not in perf:
                 continue
@@ -615,14 +522,14 @@ email_html += '</td></tr>'
 email_html += '\n</table><br>'
 email_html += '\n</body></html>'
 
-if DEBUG:
+if config.debug:
     print(email_html)
 
 # Prepare email
 msgRoot = MIMEMultipart('related')
 msgRoot['Subject'] = email_subject
-msgRoot['From'] = EMAILFROM
-msgRoot['To'] = email_to
+msgRoot['From'] = config.mail.from_address
+msgRoot['To'] = config.email_to
 msgRoot.preamble = 'This is a multi-part message in MIME format.'
 
 msgAlternative = MIMEMultipart('alternative')
@@ -635,8 +542,8 @@ msgText = MIMEText(email_html, 'html')
 msgAlternative.attach(msgText)
 
 # Attach images
-if os.path.exists(ICINGA2LOGOPATH):
-    fp = open(ICINGA2LOGOPATH, 'rb')
+if os.path.exists(config.icinga.logo_path):
+    fp = open(config.icinga.logo_path, 'rb')
     msgImage = MIMEImage(fp.read())
     fp.close()
     msgImage.add_header('Content-ID', '<icinga2_logo>')
@@ -656,16 +563,16 @@ if grafana.png:
 smtp = smtplib.SMTP()
 
 try:
-    smtp.connect(EMAILSERVER)
+    smtp.connect(config.mail.server)
 except socket.error as e:
-    print("Unable to connect to SMTP server '" + EMAILSERVER + "': " + e.strerror)
+    print("Unable to connect to SMTP server '" + config.mail.server + "': " + e.strerror)
     os.sys.exit(e.errno)
 
-if EMAILUSERNAME and EMAILPASSWORD:
-    smtp.login(EMAILUSERNAME, EMAILPASSWORD)
+if config.mail.username and config.mail.password:
+    smtp.login(config.mail.username, config.mail.password)
 
 try:
-    smtp.sendmail(EMAILFROM, email_to, msgRoot.as_string())
+    smtp.sendmail(config.mail.from_address, config.email_to, msgRoot.as_string())
     smtp.quit()
 except Exception as e:
     print("Cannot send mail using SMTP: " + e.message)

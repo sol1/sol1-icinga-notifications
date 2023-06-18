@@ -22,6 +22,7 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
 from loguru import logger
+from jinja2 import Template
 
 # Helper to load config from file
 @dataclasses.dataclass
@@ -66,6 +67,8 @@ class SettingsGrafana(SettingsFile):
     var_hostname: str = 'var-hostname'
     theme: str = 'light'
     default_panel_id: str = '2'  # Usually ping
+    image_height: str = '321'
+    image_width: str = '640'
     _json_dict_key: str = 'grafana'
 
 @dataclasses.dataclass
@@ -99,6 +102,9 @@ class Settings(SettingsParser):
     netbox_host_ip: str = ''
     grafana_host_name: str = ''
     grafana_panel_id: str = ''
+
+    table_width: str = '640'
+    column_width: str = '144'
 
     def __post_init__(self):
         self._exclude_from_args.extend(self._exclude_all)
@@ -232,7 +238,7 @@ class Netbox:
         """
         val = self.__getVal(obj, key1, key2)
         if val:
-            val = '\n<tr><th width="' + COLUMN + '">' + title + ':</th><td>' + val + '</td></tr>'
+            val = '\n<tr><th width="' + config.column_width + '">' + title + ':</th><td>' + val + '</td></tr>'
         else:
             val = ''
         return val
@@ -253,7 +259,7 @@ class Netbox:
         """
         val = self.__getVal(obj, key1, key2)
         if val:
-            val = '\n<tr><th width="' + COLUMN + '">' + title + ':</th><td><a href="' + re.sub(r"\/api\/", "/", self.__getVal(obj, key1, "url")) + '">' + val + '</a></td></tr>'
+            val = '\n<tr><th width="' + config.column_width + '">' + title + ':</th><td><a href="' + re.sub(r"\/api\/", "/", self.__getVal(obj, key1, "url")) + '">' + val + '</a></td></tr>'
         else:
             val = ''
         return val
@@ -300,7 +306,7 @@ class Grafana:
                 self.panelID = config.grafana.default_panel_id
 
         if self.panelID and config.grafana.url:
-            self.png_url = config.grafana.url + '/render/dashboard-solo/db/' + config.grafana.dashboard + '?panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name + '&theme=' + GRAFANATHEME + '&width=' + WIDTH + '&height=' + HEIGHT
+            self.png_url = config.grafana.url + '/render/dashboard-solo/db/' + config.grafana.dashboard + '?panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name + '&theme=' + GRAFANATHEME + '&width=' + config.table_width + '&height=' + config.grafana.image_height
             self.page_url = config.grafana.url + '/dashboard/db/' + config.grafana.dashboard + '?fullscreen&panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name
             self.png = self.__getPNG()
 
@@ -367,27 +373,27 @@ config = Settings()
 config.mail = SettingsMail(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 config.netbox = SettingsNetbox(_config_dict=config._config_dict)
-config.grafana = SettingsGrafana(_config_dict=config._config_dict)
+config.grafana = SettingsGrafana(_config_dict=config._config_dict, image_width=config.table_width)
 
-# TODO: Init logging
+# Init logging
 if config.debug:
     initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification_enhanced_email.log")
 else:
     initLogger(log_level='INFO', log_file="/var/log/icinga2/notification_enhanced_email.log")
 
 # Misc
-WIDTH = '640'
-HEIGHT = '321'
-COLUMN = '144'
-DIFFERENCE = str(int(WIDTH) - int(COLUMN))
+remaining_width = str(int(config.table_width) - int(config.column_width))
 
 # With debug on each run produces a template that can be rerun for testing
 cmd = "/etc/icinga2/scripts/enhanced-mail-notification.py"
 for env in config._getArgVarList():
-    cmd += f' {env[1]} "{env[2]}"'
+    if type(env[2]) == bool:
+        cmd += f' {env[1]}'
+    else:
+        cmd += f' {env[1]} "{env[2]}"'
 logger.info(cmd)
 
-# initalise objects for 3rd party info
+# initialise objects for 3rd party info
 netbox = Netbox()
 grafana = Grafana()
 
@@ -400,97 +406,103 @@ else:
     email_subject = 'Unknown {0} - {1} service {2} (no host or service state)'.format(config.notification_type, config.host_display_name, config.service_display_name)
 
 # Prepare mail body
-email_plain_text = '***** Icinga  *****'
-email_plain_text += '\n'
-email_plain_text += '\nNotification Type: {0}'.format(config.notification_type)
-email_plain_text += '\n'
-email_plain_text += '\nHost: {0}'.format(config.host_alias)
-email_plain_text += '\nAddress: {0}'.format(config.host_address)
-email_plain_text += '\nService: {0}'.format(config.service_display_name)
-email_plain_text += '\nState: {0}{1}'.format(config.host_state, config.service_state)
-email_plain_text += '\n'
-email_plain_text += '\nDate/Time: {0}'.format(config.long_date_time)
-email_plain_text += '\n'
-email_plain_text += '\nAdditional Info: {0}{1}'.format(config.host_output, config.service_output)
-email_plain_text += '\n'
-email_plain_text += '\nComment: [{0}] {1}'.format(config.notification_author, config.notification_comment)
-if grafana.page_url:
-    email_plain_text += '\n'
-    email_plain_text += '\nGrafana: {0}'.format(grafana.page_url)
-if netbox.host_url:
-    email_plain_text += '\n'
-    email_plain_text += '\nNetbox Host: {0}'.format(netbox.host_url)
-if netbox.ip_url:
-    email_plain_text += '\n'
-    email_plain_text += '\nNetbox IP: {0}'.format(netbox.ip_url)
-email_plain_text += '\n'
+plain_text_template = Template("""
+***** Icinga  *****
 
-email_html = '<html><head><style type="text/css">'
-email_html += '\nbody {text-align: left; font-family: calibri, sans-serif, verdana; font-size: 10pt; color: #7f7f7f;}'
-email_html += '\ntable {margin-left: auto; margin-right: auto;}'
-email_html += '\na:link {color: #0095bf; text-decoration: none;}'
-email_html += '\na:visited {color: #0095bf; text-decoration: none;}'
-email_html += '\na:hover {color: #0095bf; text-decoration: underline;}'
-email_html += '\na:active {color: #0095bf; text-decoration: underline;}'
-email_html += '\nth {font-family: calibri, sans-serif, verdana; font-size: 10pt; text-align:left; white-space: nowrap; color: #535353;}'
-email_html += '\nth.icinga {background-color: #0095bf; color: #ffffff; margin-left: 7px; margin-top: 5px; margin-bottom: 5px;}'
-email_html += '\nth.perfdata, th.perfdata a:link, th.perfdata a:visited {background-color: #0095bf; color: #ffffff; margin-left: 7px; margin-top: 5px; margin-bottom: 5px; text-align:center;}'
-email_html += '\ntd {font-family: calibri, sans-serif, verdana; font-size: 10pt; text-align:left; color: #7f7f7f;}'
-email_html += '\ntd.center {text-align:center; white-space: nowrap;}'
-email_html += '\ntd.UP {background-color: #44bb77; color: #ffffff; margin-left: 2px;}'
-email_html += '\ntd.DOWN {background-color: #ff5566; color: #ffffff; margin-left: 2px;}'
-email_html += '\ntd.UNREACHABLE {background-color: #aa44ff; color: #ffffff; margin-left: 2px;}'
-email_html += '\n</style></head><body>'
-email_html += '\n<table width=' + WIDTH + '>'
+Notification Type: {config.notification_type}
+
+Host: {config.host_alias}
+Address: {config.host_address}
+Service: {config.service_display_name}
+State: {config.host_state}{config.service_state}
+
+Date/Time: {config.long_date_time}
+
+Additional Info: {config.host_output}{config.service_output}
+
+Comment: [{config.notification_author}] {config.notification_comment}
+
+{% if grafana.page_url != '' %}
+Grafana: {grafana.page_url}
+{% endif %}
+
+{% if netbox.host_url != '' %}
+Netbox Host: {netbox.host_url}
+{% endif %}
+{% if netbox.ip_url != '' %}
+Netbox IP: {netbox.ip_url}
+{% endif %}
+""")
+
+plain_text_email = plain_text_template.render(config=config, grafana=grafana, netbox=netbox)
+
+# TODO: migrating this to j2 template
+html_email = '<html><head><style type="text/css">'
+html_email += '\nbody {text-align: left; font-family: calibri, sans-serif, verdana; font-size: 10pt; color: #7f7f7f;}'
+html_email += '\ntable {margin-left: auto; margin-right: auto;}'
+html_email += '\na:link {color: #0095bf; text-decoration: none;}'
+html_email += '\na:visited {color: #0095bf; text-decoration: none;}'
+html_email += '\na:hover {color: #0095bf; text-decoration: underline;}'
+html_email += '\na:active {color: #0095bf; text-decoration: underline;}'
+html_email += '\nth {font-family: calibri, sans-serif, verdana; font-size: 10pt; text-align:left; white-space: nowrap; color: #535353;}'
+html_email += '\nth.icinga {background-color: #0095bf; color: #ffffff; margin-left: 7px; margin-top: 5px; margin-bottom: 5px;}'
+html_email += '\nth.perfdata, th.perfdata a:link, th.perfdata a:visited {background-color: #0095bf; color: #ffffff; margin-left: 7px; margin-top: 5px; margin-bottom: 5px; text-align:center;}'
+html_email += '\ntd {font-family: calibri, sans-serif, verdana; font-size: 10pt; text-align:left; color: #7f7f7f;}'
+html_email += '\ntd.center {text-align:center; white-space: nowrap;}'
+html_email += '\ntd.UP {background-color: #44bb77; color: #ffffff; margin-left: 2px;}'
+html_email += '\ntd.DOWN {background-color: #ff5566; color: #ffffff; margin-left: 2px;}'
+html_email += '\ntd.UNREACHABLE {background-color: #aa44ff; color: #ffffff; margin-left: 2px;}'
+html_email += '\n</style></head><body>'
+html_email += '\n<table width=' + config.table_width + '>'
 
 if os.path.exists(config.icinga.logo_path):
-    email_html += '\n<tr><th colspan=2 class=icinga width=' + WIDTH + '><img src="cid:icinga2_logo"></th></tr>'
+    html_email += '\n<tr><th colspan=2 class=icinga width=' + config.table_width + '><img src="cid:icinga2_logo"></th></tr>'
 
-email_html += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/show?host=' + config.host_alias + '">' + config.host_alias + '</a></td></tr>'
-email_html += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></tr>'
-email_html += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
-email_html += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
+html_email += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/show?host=' + config.host_alias + '">' + config.host_alias + '</a></td></tr>'
+html_email += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></tr>'
+html_email += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
+html_email += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
 if config.host_state:
-    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_alias + '">' + config.host_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_alias + '">' + config.host_output + '</a></td></tr>'
 if config.service_state:
-    email_html += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_alias + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
-email_html += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_alias + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
+html_email += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
 
 if config.notification_author and config.notification_comment:
-    email_html += '\n<tr><th>Comment:</th><td>{0} ({1})</td></tr>'.format(config.notification_comment, config.notification_author)
+    html_email += f'\n<tr><th>Comment:</th><td>{config.notification_comment} ({config.notification_author})</td></tr>'
 
 if netbox.host:
-    email_html += '\n</table><br>'
-    email_html += '\n<table width=' + WIDTH + '>'
-    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + config.host_alias + '</a></th></tr>'
-    email_html += netbox.addRow('Display Name', netbox.host, 'display_name')
-    email_html += netbox.addRow('Display Name', netbox.host, 'name')
-    email_html += netbox.addLinkRow('Cluster', netbox.host, 'cluster', 'name')
-    email_html += netbox.addLinkRow('Tennant', netbox.host, 'tennant', 'name')
-    email_html += netbox.addLinkRow('Site', netbox.host, 'site', 'name')  # Sites use the slug
-    email_html += netbox.addLinkRow('Rack', netbox.host, 'rack', 'name')
-    email_html += netbox.addRow('Position', netbox.host, 'position')
-    email_html += netbox.addRow('Primary IP', netbox.host, 'primary_ip')
-    email_html += netbox.addRow('Primary IPv4', netbox.host, 'primary_ip4')
-    email_html += netbox.addRow('Primary IPv6', netbox.host, 'primary_ip6')
-    email_html += netbox.addLinkRow('Device Type', netbox.host, 'device_type', 'model')
-    email_html += netbox.addRow('Status', netbox.host, 'status', 'label')
+    html_email += '\n</table><br>'
+    html_email += '\n<table width=' + config.table_width + '>'
+    html_email += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + config.host_alias + '</a></th></tr>'
+    html_email += netbox.addRow('Display Name', netbox.host, 'display_name')
+    html_email += netbox.addRow('Display Name', netbox.host, 'name')
+    html_email += netbox.addLinkRow('Cluster', netbox.host, 'cluster', 'name')
+    html_email += netbox.addLinkRow('Tennant', netbox.host, 'tennant', 'name')
+    html_email += netbox.addLinkRow('Site', netbox.host, 'site', 'name')  # Sites use the slug
+    html_email += netbox.addLinkRow('Rack', netbox.host, 'rack', 'name')
+    html_email += netbox.addRow('Position', netbox.host, 'position')
+    html_email += netbox.addRow('Primary IP', netbox.host, 'primary_ip')
+    html_email += netbox.addRow('Primary IPv4', netbox.host, 'primary_ip4')
+    html_email += netbox.addRow('Primary IPv6', netbox.host, 'primary_ip6')
+    html_email += netbox.addLinkRow('Device Type', netbox.host, 'device_type', 'model')
+    html_email += netbox.addRow('Status', netbox.host, 'status', 'label')
 
 if netbox.ip:
-    email_html += '\n</table><br>'
-    email_html += '\n<table width=' + WIDTH + '>'
-    email_html += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.ip_url + '">Netbox Info for ' + config.host_address + '</a></th></tr>'
-    email_html += netbox.addRow('Display Name', netbox.ip, 'address')
-    email_html += netbox.addRow('Status', netbox.ip, 'status', 'label')
-    email_html += netbox.addRow('Host', netbox.ip, 'virtual_machine', 'name')
-    email_html += netbox.addRow('Host', netbox.ip, 'device', 'name')
+    html_email += '\n</table><br>'
+    html_email += '\n<table width=' + config.table_width + '>'
+    html_email += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.ip_url + '">Netbox Info for ' + config.host_address + '</a></th></tr>'
+    html_email += netbox.addRow('Display Name', netbox.ip, 'address')
+    html_email += netbox.addRow('Status', netbox.ip, 'status', 'label')
+    html_email += netbox.addRow('Host', netbox.ip, 'virtual_machine', 'name')
+    html_email += netbox.addRow('Host', netbox.ip, 'device', 'name')
 
 if (config.performance_data and '=' in config.performance_data) or grafana.png:
-    email_html += '\n</table><br>'
-    email_html += '\n<table width=' + WIDTH + '>'
-    email_html += '\n<tr><th colspan=6 class=perfdata>Performance Data</th></tr>'
+    html_email += '\n</table><br>'
+    html_email += '\n<table width=' + config.table_width + '>'
+    html_email += '\n<tr><th colspan=6 class=perfdata>Performance Data</th></tr>'
     if config.performance_data:
-        email_html += '\n<tr><th>Label</th><th>Last Value</th><th>Warning</th><th>Critical</th><th>Min</th><th>Max</th></tr>'
+        html_email += '\n<tr><th>Label</th><th>Last Value</th><th>Warning</th><th>Critical</th><th>Min</th><th>Max</th></tr>'
         perf_data_list = config.performance_data.split(" ")
         for perf in perf_data_list:
             if '=' not in perf:
@@ -502,28 +514,28 @@ if (config.performance_data and '=' in config.performance_data) or grafana.png:
             else:
                 (value, warning, critical, min) = data.split(";")
                 max = ''
-            email_html += '\n<tr><td>' + label + '</td><td>' + value + '</td><td>' + warning + '</td><td>' + critical + '</td><td>' + min + '</td><td>' + max + '</td></tr>'
+            html_email += '\n<tr><td>' + label + '</td><td>' + value + '</td><td>' + warning + '</td><td>' + critical + '</td><td>' + min + '</td><td>' + max + '</td></tr>'
     else:
-        email_html += '\n<tr><th width=' + COLUMN + ' colspan=1>Last Value:</th><td width=' + DIFFERENCE + ' colspan=5>none</td></tr>'
+        html_email += '\n<tr><th width=' + config.column_width + ' colspan=1>Last Value:</th><td width=' + remaining_width + ' colspan=5>none</td></tr>'
 
     if grafana.png:
-        email_html += '\n<tr><td colspan=6><a href="' + grafana.page_url + '"><img src="cid:grafana2_perfdata" width=' + WIDTH + ' height=' + HEIGHT + '></a></td></tr>'
+        html_email += '\n<tr><td colspan=6><a href="' + grafana.page_url + '"><img src="cid:grafana2_perfdata" width=' + config.table_width + ' height=' + config.grafana.image_height + '></a></td></tr>'
 
-email_html += '\n</table><br>'
-email_html += '\n<table width=' + WIDTH + '>'
-email_html += '\n<tr><td class=center>Generated by Icinga 2 with data from Icinga 2'
+html_email += '\n</table><br>'
+html_email += '\n<table width=' + config.table_width + '>'
+html_email += '\n<tr><td class=center>Generated by Icinga 2 with data from Icinga 2'
 if grafana.panelID:
-    email_html += ', Grafana'
+    html_email += ', Grafana'
 
 if netbox.host or netbox.ip:
-    email_html += ', Netbox'
+    html_email += ', Netbox'
 
-email_html += '</td></tr>'
-email_html += '\n</table><br>'
-email_html += '\n</body></html>'
+html_email += '</td></tr>'
+html_email += '\n</table><br>'
+html_email += '\n</body></html>'
 
 if config.debug:
-    print(email_html)
+    print(html_email)
 
 # Prepare email
 msgRoot = MIMEMultipart('related')
@@ -535,10 +547,10 @@ msgRoot.preamble = 'This is a multi-part message in MIME format.'
 msgAlternative = MIMEMultipart('alternative')
 msgRoot.attach(msgAlternative)
 
-msgText = MIMEText(email_plain_text)
+msgText = MIMEText(plain_text_email)
 msgAlternative.attach(msgText)
 
-msgText = MIMEText(email_html, 'html')
+msgText = MIMEText(html_email, 'html')
 msgAlternative.attach(msgText)
 
 # Attach images

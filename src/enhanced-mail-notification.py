@@ -14,6 +14,7 @@ import re
 import requests
 import smtplib
 import socket
+import sys
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
@@ -81,6 +82,7 @@ class Settings(SettingsParser):
     
     config_file: str = 'config/enhanced-mail-notification.json'
     debug: bool = False
+    disable_log_file: bool = False
 
     notification_type: str = ''
     host_alias: str = ''
@@ -106,15 +108,18 @@ class Settings(SettingsParser):
     table_width: str = '640'
     column_width: str = '144'
 
+    print_config: bool = False
+
     def __post_init__(self):
         self._exclude_from_args.extend(self._exclude_all)
-        self._exclude_from_env.extend(self._exclude_all)
+        self._exclude_from_env.extend(self._exclude_all + ['print_config'])
+        self._env_prefix = "NOTIFY_ENHANCED_MAIL_"
         self.loadEnvironmentVars()
         args = self._init_args()
         self.loadArgs(args)
 
         # Debug set in the config file will override the args
-        self._include_from_file = ['debug']
+        self._include_from_file = ['debug', 'disable_log_file']
         self.loadConfigJsonFile()
         
         # Sensible defaults after loading everything
@@ -135,6 +140,19 @@ class Settings(SettingsParser):
             else:
                 parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
         return parser.parse_args()
+    
+    def printEnvironmentVars(self):
+        print("Environment vars list is:")
+        for var in self._getEnvironmentVarList():
+            print(f'{var[1]} = {var[2]}')
+        print('')
+
+    def printArguments(self):
+        print("Argument list is:")
+        for var in self._getArgVarList():
+            print(f'{var[1]} = {var[2]}')
+        print('')
+
 
 # Classes for getting data from each external system
 class Netbox:
@@ -377,9 +395,14 @@ config.grafana = SettingsGrafana(_config_dict=config._config_dict, image_width=c
 
 # Init logging
 if config.debug:
-    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification_enhanced_email.log")
+    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-enhanced-email.log")
 else:
-    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification_enhanced_email.log")
+    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-enhanced-email.log")
+
+if config.print_config:
+    config.printArguments
+    config.printEnvironmentVars
+    sys.exit(0)
 
 # Misc
 remaining_width = str(int(config.table_width) - int(config.column_width))

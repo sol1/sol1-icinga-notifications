@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 '''Icinga2 plugin to create and track RT tickets when services and hosts go critical'''
 
-import os
-import sys
-import re
-import json
 import argparse
+import dataclasses
+import json
+import os
+import re
+import requests
+import sys
 import traceback
 
-import dataclasses
 from lib.SettingsParser import SettingsParser
+from lib.Util import initLogger
+
 from loguru import logger
 
-import requests
+
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -22,14 +25,35 @@ TICKETID_REGEX = re.compile(r'(#)([0-9]+)(\])')
 SESSION = requests.session()
 
 @dataclasses.dataclass
+class SettingsFile(SettingsParser):
+    def __post_init__(self):
+        self.loadConfigDict()
+        
+@dataclasses.dataclass
+class SettingsRT(SettingsFile):
+    name: str = 'rtInstance'
+    url: str = 'https://rt.example.com'
+    username: str = 'rtbot'
+    password: str = ''
+    _json_dict_key: str = 'rt'
+
+@dataclasses.dataclass
+class SettingsIcinga(SettingsFile):
+    url: str = 'https://localhost:5665'
+    username: str = 'rtnotify'
+    password: str = ''
+    _json_dict_key: str = 'icinga'
+
+@dataclasses.dataclass
 class Settings(SettingsParser):
-    rt_name: str = 'rtInstance'
-    rt_addr: str = 'https://rt.example.com'
-    rt_user: str = 'rtbot'
-    rt_pass: str = ''
-    icinga_addr: str = 'https://localhost:5665'
-    icinga_user: str = 'rtnotify'
-    icinga_pass: str = ''
+    rt: object = None
+    icinga: object = None
+    _exclude_all: list = dataclasses.field(default_factory=lambda: ['rt', 'icinga'])
+
+    config_file: str = 'config/request-tracker-notification.json'
+    debug: bool = False
+    disable_log_file: bool = False
+
     host_name: str = None
     host_displayname: str = None
     host_address: str = None
@@ -42,45 +66,42 @@ class Settings(SettingsParser):
     notification_auth_name: str = None
     notification_comment: str = None
     notification_type: str = None
-    # log stuff can only be in the config file
-    log_file: str = '/var/log/icinga2/notify_rt.log'
-    log_disable: bool = False
-    log_rotate: str = '1 day'
-    log_retention: str = '1 week'
-    # can only debug from command line, easier to see if it is left on
-    debug: bool = False
+
+    rt_requestor: str = None
+    rt_queue: str = None
+
     print_config: bool = False
 
     def __post_init__(self):
         try:
-            self._env_prefix: str = "NOTIFY_RT_"
-            self.config_file = '/etc/icinga2/scripts/notify_rt.json'
-            self._exclude_from_args = [
-                'log_file', 'log_disable', 'log_rotate', 'log_retention']
-            self._exclude_from_file = ['debug', 'print_config']
-            self._exclude_from_env = [
-                'debug', 'log_file', 'log_disable', 'log_rotate', 'log_retention', 'print_config']
-
-            args = self.__initArgs()
-            self.loadArgs(args)
-            # self.loadConfigFile()
+            self._exclude_from_args.extend(self._exclude_all)
+            self._exclude_from_env.extend(self._exclude_all + ['print_config'])
+            self._env_prefix = "NOTIFY_RT_"
             self.loadEnvironmentVars()
+            args = self._init_args()
+            self.loadArgs(args)
+
+            # These set in the config file will override the args
+            self._include_from_file = ['debug', 'disable_log_file']
+
+            self.loadConfigJsonFile()
+
+            # Sensible defaults after loading everything
+            if self.host_address == '':
+                self.host_address = self.host_displayname
+
         except Exception as e:
             print("Failed to initialize {e}")
             print(traceback.format_exc())
             sys.exit()
 
-    def __initArgs(self):
-        parser = argparse.ArgumentParser(
-            description='Icinga2 plugin to create and track RT tickets when services and hosts go critical')
-        for key, value in dataclasses.asdict(self).items():
-            # if 'log_' in key:
-            #     continue
-            if type(key) == bool:
-                parser.add_argument(f'--{key}', action="store_true")
+    def _init_args(self):
+        parser = argparse.ArgumentParser(description='Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
+        for arg in self._getArgVarList():
+            if type(arg[2]) == bool:
+                parser.add_argument(arg[1], action="store_true")
             else:
-                parser.add_argument(
-                    f'--{key}', type=type(key), help='', default=f'{value}')
+                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
         return parser.parse_args()
 
     def printEnvironmentVars(self):
@@ -98,8 +119,8 @@ class Settings(SettingsParser):
 
 def authenticate_rt(username, password):
     '''Authenticates with the RT server for all subsequent requests'''
-    SESSION.post(config.rt_addr, data={
-                 "user": config.rt_user, "pass": config.rt_pass})
+    SESSION.post(config.rt.url, data={
+                 "user": config.rt.username, "pass": config.rt.password})
 
 
 def create_ticket_message():
@@ -126,14 +147,14 @@ def create_ticket_rt(subject):
 
     ticket_data = "id: ticket/new\n"
     ticket_data += "Queue: {}\n".format(config.rt_queue)
-    ticket_data += "Requestor: {}\n".format(config.requestor)
+    ticket_data += "Requestor: {}\n".format(config.rt_requestor)
     ticket_data += "Subject: {}\n".format(subject)
     ticket_data += "Text: {}".format(message)
 
     res = SESSION.post(
-        config.rt_addr + "/REST/1.0/ticket/new",
+        config.rt.url + "/REST/1.0/ticket/new",
         data={"content": ticket_data},
-        headers=dict(Referer=config.rt_addr))
+        headers=dict(Referer=config.rt.url))
 
     print("Message:")
     print(message)
@@ -152,10 +173,10 @@ def add_comment_rt(ticket_id):
     ticket_data += "Text: {text}".format(text=message)
 
     SESSION.post(
-        config.rt_addr + "/REST/1.0/ticket/{id}/comment".format(
+        config.rt.url + "/REST/1.0/ticket/{id}/comment".format(
             id=ticket_id),
         data={"content": ticket_data},
-        headers=dict(Referer=config.rt_addr))
+        headers=dict(Referer=config.rt.url))
 
     return
 
@@ -166,10 +187,10 @@ def set_status_rt(ticket_id, status="open"):
     ticket_data = "Status: {}\n".format(status)
 
     SESSION.post(
-        config.rt_addr + "/REST/1.0/ticket/{id}/edit".format(
+        config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
             id=ticket_id),
         data={"content": ticket_data},
-        headers=dict(Referer=config.rt_addr))
+        headers=dict(Referer=config.rt.url))
 
     return
 
@@ -177,15 +198,15 @@ def set_status_rt(ticket_id, status="open"):
 def set_subject_recovered_rt(ticket_id):
     '''Set rt ticket subject'''
 
-    subject = "{} {} - Recovered".format(config.host, config.service)
+    subject = "{} {} - Recovered".format(config.host_displayname, config.service_displayname)
 
     ticket_data = "Subject: {}\n".format(subject)
 
     SESSION.post(
-        config.rt_addr + "/REST/1.0/ticket/{id}/edit".format(
+        config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
             id=ticket_id),
         data={"content": ticket_data},
-        headers=dict(Referer=config.rt_addr))
+        headers=dict(Referer=config.rt.url))
 
     return
 
@@ -208,19 +229,27 @@ class Icinga:
             json=payload
             )
 
-    def _post(self, url_path, payload):
+    def _post(self, url_path, payload = None):
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
         }
 
-        return SESSION.post(
-            self.base_url + url_path,
-            auth=(self.username, self.password),
-            verify=False,
-            headers=headers,
-            json=payload
-            )
+        if payload:
+            return SESSION.post(
+                self.base_url + url_path,
+                auth=(self.username, self.password),
+                verify=False,
+                headers=headers,
+                json=payload
+                )
+        else:
+            return SESSION.post(
+                        self.base_url + url_path,
+                        auth=(self.username, self.password),
+                        verify=False,
+                        headers=headers
+                        )
 
     def get_comments_icinga(self, hostname, servicename):
         '''Get all icinga comments associated with a hostname'''
@@ -262,17 +291,9 @@ class Icinga:
         '''Delete icinga comments associated with the current user and service/host'''
         for comment in comments:
             if comment['attrs']['author'] == self.username:
-                url = "/v1/actions/remove-comment?comment={}".format(
-                    comment['attrs']['__name'])
-
-                res = SESSION.post(
-                    config.icinga_addr + url,
-                    auth=(username, password),
-                    verify=False,
-                    headers=headers)
-
+                url = f"/v1/actions/remove-comment?comment={comment['attrs']['__name']}"
+                res = self._post(url)
                 logger.debug(json.dumps(res.text))
-
         return
 
 
@@ -284,28 +305,18 @@ def parse_rt_field(field_data):
 
     return result
 
-
-def initLogger():
-    format = "<blue>{time:YYYY-MM-DD HH:mm:ss.SSS}</blue> <level>{level}</level>: {message}",
-    level = "INFO"
-    if config.debug:
-        format = "<blue>{time:YYYY-MM-DD HH:mm:ss.SSS}</blue> <cyan>{function}</cyan>:<cyan>{line}</cyan> <level>{level}</level>: {message}",
-        level = "DEBUG"
-    else:
-        logger.remove()
-    if not config.log_disable:
-        logger.add(config.log_file,
-                   colorize=True,
-                   format=format,
-                   level=level,
-                   rotation=config.log_rotate,
-                   retention=config.log_retention,
-                   compression="gz"
-                   )
-
-
 config = Settings()
-initLogger()
+config.rt = SettingsRT(_config_dict=config._config_dict)
+config.icinga = SettingsIcinga(_config_dict=config._config_dict)
+
+icinga = Icinga()
+
+# Init logging
+if config.debug:
+    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-request-tracker.log")
+else:
+    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-request-tracker.log")
+
 if config.print_config:
     config.printArguments
     config.printEnvironmentVars
@@ -315,11 +326,7 @@ logger.info(dataclasses.asdict(config))
 
 authenticate_rt()
 
-COMMENTS = get_comments_icinga(
-    config.icinga_user,
-    config.icinga_pass,
-    config.host,
-    config.service)
+COMMENTS = icinga.get_comments_icinga(config.host_name, config.service_name)
 
 if not COMMENTS:
     TICKET_ID = None
@@ -327,32 +334,27 @@ else:
     # extract id from comment
     TICKET_ID = TICKETID_REGEX.search(COMMENTS[0]['attrs']['text']).group(2)
 
-if config.type != "ACKNOWLEDGEMENT":
-    if config.state == "CRITICAL" or config.state == "DOWN":
+if config.notification_type != "ACKNOWLEDGEMENT":
+    if config.service_state == "CRITICAL" or config.service_state == "DOWN":
         print("Service/host went down")
         if TICKET_ID is None:
             print("Create RT ticket and comment ID")
 
             RT_ID = create_ticket_rt(
-                "{} {} went {}".format(config.host, config.service, config.state))
-            add_comment_icinga(
-                config.icinga_user,
-                config.icinga_pass,
-                config.host,
-                config.service,
-                '[{} #{}] - ticket created in RT'.format(config.rt_name, str(RT_ID)))
+                "{} {} went {}".format(config.host_displayname, config.service_displayname, config.service_state))
+            icinga.add_comment_icinga(
+                config.host_name,
+                config.service_name,
+                f'[{config.rt.name} #{str(RT_ID)}] - ticket created in RT')
         else:
             print("Get comment and comment on RT")
             add_comment_rt(TICKET_ID)
-    elif config.state == "OK" or config.state == "UP":
+    elif config.host_state == "OK" or config.host_state == "UP":
         print("Server/host back up")
         add_comment_rt(TICKET_ID)
         set_subject_recovered_rt(TICKET_ID)
         set_status_rt(TICKET_ID)
-        delete_comments_icinga(
-            config.icinga_user,
-            config.icinga_pass,
-            COMMENTS)
+        icinga.delete_comments_icinga(COMMENTS)
 else:
     print("Someone acknowledged the problem")
     add_comment_rt(TICKET_ID,)

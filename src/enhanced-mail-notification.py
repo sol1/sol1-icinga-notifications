@@ -19,9 +19,9 @@ import sys
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
 
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
-from email.MIMEImage import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 from loguru import logger
 from jinja2 import Template
 

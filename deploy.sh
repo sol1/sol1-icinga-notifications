@@ -5,11 +5,11 @@ ALL=false
 ENHANCED_EMAIL=false
 REQUEST_TRACKER=false
 ICINGA2_SCRIPT_DIR="/etc/icinga2/scripts"
+ICINGA2_USER="nagios"
 
 
 # Check the provided arguments
-for arg in "$@"
-do
+for arg in "$@"; do
     case $arg in
         -a|--all)
         ALL=true
@@ -23,6 +23,11 @@ do
         REQUEST_TRACKER=true
         shift # Remove --request-tracker from processing
         ;;
+        -u|--icinga2-user)
+        ICINGA2_USER=$2
+        shift # Remove --icinga-user from processing
+        shift # Remove --icinga-user from value
+        ;;
         *)
         # Unknown option
         echo "Unknown argument: $arg"
@@ -35,6 +40,7 @@ deploy_library() {
     mkdir -p "$ICINGA2_SCRIPT_DIR/lib/"
     echo "  copying ./src/lib/* to $ICINGA2_SCRIPT_DIR/lib/" 
     cp ./src/lib/* "$ICINGA2_SCRIPT_DIR/lib/" 
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/lib/*"
 }
 
 install_requirements() {
@@ -47,6 +53,7 @@ deploy_config() {
     if [[ ! -f "$$ICINGA2_SCRIPT_DIR/config/$file_name" ]]; then 
         echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/$file_name" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
+        chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/config/*"
     else
         echo "  config $file_name exists in $ICINGA2_SCRIPT_DIR/config/" 
     fi
@@ -56,11 +63,15 @@ deploy_enhanced_email() {
     deploy_library
     deploy_config ./src/config/enhanced-mail-notification.json
     cp ./src/enhanced-mail-notification.py "$ICINGA2_SCRIPT_DIR" 
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/enhanced-mail-notification.py"
+    chmod +x "$ICINGA2_SCRIPT_DIR/enhanced-mail-notification.py"
 }
 
 deploy_request_tracker() {
     deploy_config ./src/config/request-tracker-notification.json
     cp ./src/request-tracker-notification.py "$ICINGA2_SCRIPT_DIR" 
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/request-tracker-notification.py"
+    chmod +x "$ICINGA2_SCRIPT_DIR/request-tracker-notification.py"
 }
 
 if $ALL || $ENHANCED_EMAIL; then

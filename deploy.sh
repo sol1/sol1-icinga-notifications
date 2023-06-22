@@ -33,6 +33,7 @@ done
 
 deploy_library() {
     mkdir -p "$ICINGA2_SCRIPT_DIR/lib/"
+    echo "  copying ./src/lib/* to $ICINGA2_SCRIPT_DIR/lib/" 
     cp ./src/lib/* "$ICINGA2_SCRIPT_DIR/lib/" 
 }
 
@@ -40,6 +41,7 @@ deploy_config() {
     file=$1
     mkdir -p "$ICINGA2_SCRIPT_DIR/config/"
     if [[ ! -f "$file" ]]; then 
+        echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
     fi
 }

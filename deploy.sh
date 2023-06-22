@@ -38,9 +38,9 @@ deploy_library() {
 
 deploy_config() {
     file=$1
-    mkdir -p "$ICINGA2_SCRIPT_DIR/config"
+    mkdir -p "$ICINGA2_SCRIPT_DIR/config/"
     if [[ ! -f "$file" ]]; then 
-        cp "$file" "$ICINGA2_SCRIPT_DIR/config"
+        cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
     fi
 }
 

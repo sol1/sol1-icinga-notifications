@@ -39,10 +39,13 @@ deploy_library() {
 
 deploy_config() {
     file=$1
-    mkdir -p "$ICINGA2_SCRIPT_DIR/config/"
-    if [[ ! -f "$file" ]]; then 
+    file_name=$(basename "$file")
+    mkdir -p "$ICINGA2_SCRIPT_DIR/config/$file"
+    if [[ ! -f "$$ICINGA2_SCRIPT_DIR/config/" ]]; then 
         echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
+    else
+        echo "  config $file_name exists in $ICINGA2_SCRIPT_DIR/config/" 
     fi
 }
 

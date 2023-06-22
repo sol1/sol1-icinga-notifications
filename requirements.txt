@@ -1,4 +1,6 @@
 dataclasses
 loguru
 requests
+ConfigParser
+Jinja2
 

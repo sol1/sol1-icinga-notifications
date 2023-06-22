@@ -184,10 +184,9 @@ class Netbox:
         nb_host_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_name)
         nb_address_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_ip)
 
-        if config.debug:
-            print(json.dumps(nb_device, indent=4, sort_keys=True))
-            print(json.dumps(nb_vm, indent=5, sort_keys=True))
-            print(json.dumps(nb_address_ip, indent=4, sort_keys=True))
+        logger.debug(json.dumps(nb_device, indent=4, sort_keys=True))
+        logger.debug(json.dumps(nb_vm, indent=5, sort_keys=True))
+        logger.debug(json.dumps(nb_address_ip, indent=4, sort_keys=True))
 
         if nb_device and not nb_vm:
             self.host = nb_device
@@ -196,9 +195,9 @@ class Netbox:
             self.host = nb_vm
             self.host_url = "{}/{}/".format(config.netbox.url + config.netbox.api_vm, nb_vm['id'])
         elif nb_device and nb_vm:
-            print("Found multiple device's or vm's that match")
+            logger.info("Found multiple device's or vm's that match")
         else:
-            print("Found no device's or vm's that match")
+            logger.warning("Found no device's or vm's that match")
 
         if nb_host_ip:
             self.ip = nb_host_ip
@@ -214,15 +213,13 @@ class Netbox:
         try:
             response = requests.get(url, headers=headers)
             result = response.json()
-            if config.debug:
-                print("Netbox response: ")
-                print(response)
+            logger.debug("Netbox response: ")
+            logger.debug(response)
         except Exception as e:
-            print("Error getting netbox data from {} with error {}".format(url, e))
+            logger.error("Error getting netbox data from {} with error {}".format(url, e))
             result = {'count': 0}
-        if config.debug:
-            print("Netbox result: ")
-            print(result)
+        logger.debug("Netbox result: ")
+        logger.debug(result)
         return result
 
     def __searchData(self, url):
@@ -315,7 +312,7 @@ class Grafana:
                 self.__parseIcingaweb2INI()
                 self.panelID = self.__getINIPanelID(config.service_display_name, config.service_name, config.service_command)
             else:
-                print("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(config.grafana_panel_id, config.grafana.icingaweb2_ini))
+                logger.waring("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(config.grafana_panel_id, config.grafana.icingaweb2_ini))
 
         elif config.host_state:
             if config.grafana_panel_id:
@@ -329,8 +326,7 @@ class Grafana:
             self.png = self.__getPNG()
 
     def __parseIcingaweb2INI(self):
-        if config.debug:
-            print("\nGrafana ini file: {}".format(config.grafana.icingaweb2_ini))
+        logger.debug("\nGrafana ini file: {}".format(config.grafana.icingaweb2_ini))
         try:
             self.__icingaweb2_ini = ConfigParser.ConfigParser()
             self.__icingaweb2_ini.read(config.grafana.icingaweb2_ini)
@@ -340,15 +336,13 @@ class Grafana:
 
     def __getPNG(self):
         headers = {'Authorization': 'Bearer ' + config.grafana.api_key}
-        if config.debug:
-            print("PNG url: " + self.png_url)
-            print("PNG headers: {}".format(headers))
+        logger.debug("PNG url: " + self.png_url)
+        logger.debug("PNG headers: {}".format(headers))
         try:
             response = requests.get(self.png_url, headers=headers)
-            if config.debug:
-                print("PNG get status code: {}".format(response.status_code))
+            logger.debug("PNG get status code: {}".format(response.status_code))
         except Exception as e:
-            print("Error getting png from {} with error {}".format(self.page_url, e))
+            logger.error("Error getting png from {} with error {}".format(self.page_url, e))
             response = None
         return response
 
@@ -363,21 +357,18 @@ class Grafana:
 
         section = None
         try:
-            if config.debug:
-                print("\nGrafana ini sections: {}".format(self.__icingaweb2_ini.sections()))
-                print("\nGrafana ini pattern: {}".format(pattern))
+            logger.debug("\nGrafana ini sections: {}".format(self.__icingaweb2_ini.sections()))
+            logger.debug("\nGrafana ini pattern: {}".format(pattern))
             if pattern:
                 section = filter(pattern.match, self.__icingaweb2_ini.sections())
-                if config.debug:
-                    print("\nGrafana section: {}".format(section))
+                logger.debug("\nGrafana section: {}".format(section))
                 if len(section) == 1:
                     section = section[0]
         except Exception as e:
-            print("Error reading grafana ini file ({}) with error {}".format(config.grafana.icingaweb2_ini, e))
+            logger.error("Error reading grafana ini file ({}) with error {}".format(config.grafana.icingaweb2_ini, e))
             section = None
 
-        if config.debug:
-            print("\nGrafana section: {}".format(section))
+        logger.debug("\nGrafana section: {}".format(section))
         return section
 
     def __getINIPanelID(self, display_name, name, command):
@@ -557,8 +548,8 @@ html_email += '</td></tr>'
 html_email += '\n</table><br>'
 html_email += '\n</body></html>'
 
-if config.debug:
-    print(html_email)
+
+logger.debug(html_email)
 
 # Prepare email
 msgRoot = MIMEMultipart('related')
@@ -590,8 +581,8 @@ if grafana.png:
         msgImage.add_header('Content-ID', '<grafana2_perfdata>')
         msgRoot.attach(msgImage)
     except Exception as e:
-        print("Grafana PNG response exists but was unable to attach the content, failed with error {}".format(e))
-        print(grafana.png)
+        logger.error("Grafana PNG response exists but was unable to attach the content, failed with error {}".format(e))
+        logger.error(grafana.png)
 
 
 # Send mail using SMTP
@@ -600,7 +591,7 @@ smtp = smtplib.SMTP()
 try:
     smtp.connect(config.mail.server)
 except socket.error as e:
-    print("Unable to connect to SMTP server '" + config.mail.server + "': " + e.strerror)
+    logger.error("Unable to connect to SMTP server '" + config.mail.server + "': " + e.strerror)
     os.sys.exit(e.errno)
 
 if config.mail.username and config.mail.password:
@@ -610,7 +601,7 @@ try:
     smtp.sendmail(config.mail.from_address, config.email_to, msgRoot.as_string())
     smtp.quit()
 except Exception as e:
-    print("Cannot send mail using SMTP: " + e.message)
+    logger.error("Cannot send mail using SMTP: " + e.message)
     os.sys.exit(e.errno)
 
 os.sys.exit(0)

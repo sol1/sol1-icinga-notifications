@@ -37,6 +37,10 @@ deploy_library() {
     cp ./src/lib/* "$ICINGA2_SCRIPT_DIR/lib/" 
 }
 
+install_requirements() {
+    python3 -m pip install -r requirements.txt
+}
+
 deploy_config() {
     file=$1
     file_name=$(basename "$file")
@@ -55,7 +59,6 @@ deploy_enhanced_email() {
 }
 
 deploy_request_tracker() {
-    deploy_library
     deploy_config ./src/config/request-tracker-notification.json
     cp ./src/request-tracker-notification.py "$ICINGA2_SCRIPT_DIR" 
 }
@@ -68,5 +71,10 @@ fi
 if $ALL || $REQUEST_TRACKER; then
     echo "Deploying Request Tracker Notifications"
     deploy_request_tracker
+fi
+
+if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER; then
+    deploy_library
+    install_requirements
 fi
 

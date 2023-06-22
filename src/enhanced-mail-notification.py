@@ -523,7 +523,7 @@ if (config.performance_data and '=' in config.performance_data) or grafana.png:
                 continue
 
             (label, data) = perf.split("=")
-            if len(data.split(";")) is 5:
+            if len(data.split(";")) == 5:
                 (value, warning, critical, min, max) = data.split(";")
             else:
                 (value, warning, critical, min) = data.split(";")

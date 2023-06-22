@@ -6,7 +6,7 @@
 # https://github.com/mmarodin/icinga2-plugins
 #
 import argparse
-import ConfigParser
+import configparser
 import dataclasses
 import json
 import os
@@ -289,7 +289,7 @@ class Grafana:
     :ivar png: request.get object : contains the png for the GRAFANABASE, netbox_host_name and panelid
     :ivar self.panelID: int : number representing the panelid for the service
 
-    :ivar __icingaweb2_ini: ConfigParser.read object : contains the icingaweb2 grafana module ini settings for the GRAFANAICINGAWEB2INI
+    :ivar __icingaweb2_ini: configparser.read object : contains the icingaweb2 grafana module ini settings for the GRAFANAICINGAWEB2INI
     """
     def __init__(self):
         """Get best panelid depending on service or host state then attempt to build urls and get png
@@ -328,7 +328,7 @@ class Grafana:
     def __parseIcingaweb2INI(self):
         logger.debug("\nGrafana ini file: {}".format(config.grafana.icingaweb2_ini))
         try:
-            self.__icingaweb2_ini = ConfigParser.ConfigParser()
+            self.__icingaweb2_ini = configparser.ConfigParser()
             self.__icingaweb2_ini.read(config.grafana.icingaweb2_ini)
         except Exception as e:
             print("Unable to parse grafana ini file ({}) with error {}".format(config.grafana.icingaweb2_ini, e))

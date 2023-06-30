@@ -108,7 +108,7 @@ class SettingsParser:
         for key, value in dataclasses.asdict(self).items():
             if key in self._exclude_from_file or key.startswith('_'):
                 continue
-            if not self._include_from_file and key not in self._include_from_file:
+            if self._include_from_file and key not in self._include_from_file:
                 continue
             _list.append((key, key, value))
         return _list
@@ -155,7 +155,7 @@ class SettingsParser:
         for key, value in dataclasses.asdict(self).items():
             if key in self._exclude_from_env or key.startswith('_'):
                 continue
-            if not self._include_from_env and key not in self._include_from_env:
+            if self._include_from_env and key not in self._include_from_env:
                 continue
             _list.append((key, f'{self._env_prefix}{key.upper()}', value))
         return _list

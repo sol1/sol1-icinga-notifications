@@ -85,7 +85,7 @@ class Settings(SettingsParser):
     disable_log_file: bool = False
 
     notification_type: str = ''
-    host_alias: str = ''
+    host_name: str = ''
     host_display_name: str = ''
     host_address: str = ''
     host_state: str = ''
@@ -124,13 +124,13 @@ class Settings(SettingsParser):
         
         # Sensible defaults after loading everything
         if self.host_address == '':
-            self.host_address = self.host_alias
+            self.host_address = self.host_name
         if self.netbox_host_name == '':
-            self.netbox_host_name = self.host_alias
+            self.netbox_host_name = self.host_name
         if self.netbox_host_ip == '':
             self.netbox_host_ip = self.host_address
         if self.grafana_host_name == '':
-            self.grafana_host_name = self.host_alias
+            self.grafana_host_name = self.host_name
 
     def _init_args(self):
         parser = argparse.ArgumentParser(description='Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
@@ -159,19 +159,21 @@ class Netbox:
     """Netbox object that parses data from the Netbox api
     all ivars are intialized as empty and filled if valid data is found for each type
 
-    :ivar host: dict : api data to the host for the NETBOXBASE and host_alias
-    :ivar host_url: str : url to the host for the NETBOXBASE and host_alias
-    :ivar ip: dict : api data to the host ip address for the NETBOXBASE and host_alias
-    :ivar ip_url: str : url to the host ip address for the NETBOXBASE and host_alias
+    :ivar host: dict : api data to the host for the NETBOXBASE and host_name
+    :ivar host_url: str : url to the host for the NETBOXBASE and host_name
+    :ivar ip: dict : api data to the host ip address for the NETBOXBASE and host_name
+    :ivar ip_url: str : url to the host ip address for the NETBOXBASE and host_name
     """
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.host = {}
         self.host_url = ''
         self.ip = {}
         self.ip_url = ''
+        logger.debug(f"Initalizing the Netbox class with host: {self.host}, ip: {self.ip}, netbox url: {self.config.url}")
 
-        if config.netbox.url:
+        if self.config.url:
             self.__parse()
 
     def __parse(self):
@@ -179,10 +181,10 @@ class Netbox:
 
         :return:
         """
-        nb_device = self.__searchData(config.netbox.url + '/api' + config.netbox.api_device + '/?name=' + config.netbox_host_name)
-        nb_vm = self.__searchData(config.netbox.url + '/api' + config.netbox.api_vm + '/?name=' + config.netbox_host_name)
-        nb_host_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_name)
-        nb_address_ip = self.__searchData(config.netbox.url + '/api' + config.netbox.api_ip + '/?address=' + config.netbox_host_ip)
+        nb_device = self.__searchData(config.netbox.url + config.netbox.api_device + '/?name=' + config.netbox_host_name)
+        nb_vm = self.__searchData(config.netbox.url + config.netbox.api_vm + '/?name=' + config.netbox_host_name)
+        nb_host_ip = self.__searchData(config.netbox.url + config.netbox.api_ip + '/?address=' + config.netbox_host_name)
+        nb_address_ip = self.__searchData(config.netbox.url + config.netbox.api_ip + '/?address=' + config.netbox_host_ip)
 
         logger.debug(json.dumps(nb_device, indent=4, sort_keys=True))
         logger.debug(json.dumps(nb_vm, indent=5, sort_keys=True))
@@ -211,15 +213,13 @@ class Netbox:
         if config.netbox.token:
             headers.update({'Authorization': 'Token ' + config.netbox.token})
         try:
+            logger.debug(f"Netbox request to url: {url}")
             response = requests.get(url, headers=headers)
             result = response.json()
-            logger.debug("Netbox response: ")
-            logger.debug(response)
         except Exception as e:
             logger.error("Error getting netbox data from {} with error {}".format(url, e))
             result = {'count': 0}
-        logger.debug("Netbox result: ")
-        logger.debug(result)
+        logger.debug(f"Netbox result: {result}")
         return result
 
     def __searchData(self, url):
@@ -230,13 +230,13 @@ class Netbox:
             return {}
 
     def __getVal(self, obj, key1, key2=None):
-        val = ''
-        if key1 in obj:
-            if key2 and key2 in obj[key1]:
-                val = obj[key1][key2]
-            else:
-                val = obj[key1]
-        return val
+        try:
+            val = obj.get(key1, '')
+            if key2 is not None:
+                val.get(key2, '')
+        except:
+            return ''
+        return str(val)
 
     def addRow(self, title, obj, key1, key2=None):
         """Generate html row containing title and value from key(s) in object
@@ -251,7 +251,9 @@ class Netbox:
 
         :return: str : html row if keys exist else empty string
         """
+        logger.debug(f"title: {title}, obj type: {type(obj)}, key1: {key1}, key2: {key2}")
         val = self.__getVal(obj, key1, key2)
+        logger.debug(f"return val: {val}")
         if val:
             val = '\n<tr><th width="' + config.column_width + '">' + title + ':</th><td>' + val + '</td></tr>'
         else:
@@ -384,6 +386,8 @@ config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 config.netbox = SettingsNetbox(_config_dict=config._config_dict)
 config.grafana = SettingsGrafana(_config_dict=config._config_dict, image_width=config.table_width)
 
+logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
+
 # Init logging
 if config.debug:
     initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-enhanced-email.log")
@@ -408,7 +412,7 @@ for env in config._getArgVarList():
 logger.info(cmd)
 
 # initialise objects for 3rd party info
-netbox = Netbox()
+netbox = Netbox(config=config.netbox)
 grafana = Grafana()
 
 # Email subject
@@ -419,36 +423,37 @@ elif config.service_state:
 else:
     email_subject = 'Unknown {0} - {1} service {2} (no host or service state)'.format(config.notification_type, config.host_display_name, config.service_display_name)
 
-# Prepare mail body
+# Prepare mail bodylong_date
 plain_text_template = Template("""
 ***** Icinga  *****
 
-Notification Type: {config.notification_type}
+Notification Type: {{ config.notification_type }}
 
-Host: {config.host_alias}
-Address: {config.host_address}
-Service: {config.service_display_name}
-State: {config.host_state}{config.service_state}
+Host: {{ config.host_name }}
+Address: {{ config.host_address }}
+Service: {{ config.service_display_name }}
+State: {{ config.host_state }}{{ config.service_state }}
 
-Date/Time: {config.long_date_time}
+Date/Time: {{ config.long_date_time }}
 
-Additional Info: {config.host_output}{config.service_output}
+Additional Info: {{ config.host_output }}{{ config.service_output }}
 
-Comment: [{config.notification_author}] {config.notification_comment}
+Comment: [{{ config.notification_author }}] {{ config.notification_comment }}
 
 {% if grafana.page_url != '' %}
-Grafana: {grafana.page_url}
+Grafana: {{ grafana.page_url }}
 {% endif %}
 
 {% if netbox.host_url != '' %}
-Netbox Host: {netbox.host_url}
+Netbox Host: {{ netbox.host_url }}
 {% endif %}
 {% if netbox.ip_url != '' %}
-Netbox IP: {netbox.ip_url}
+Netbox IP: {{ netbox.ip_url }}
 {% endif %}
 """)
 
 plain_text_email = plain_text_template.render(config=config, grafana=grafana, netbox=netbox)
+logger.debug(f"Plain text email:\n{plain_text_email}")
 
 # TODO: migrating this to j2 template
 html_email = '<html><head><style type="text/css">'
@@ -472,14 +477,14 @@ html_email += '\n<table width=' + config.table_width + '>'
 if os.path.exists(config.icinga.logo_path):
     html_email += '\n<tr><th colspan=2 class=icinga width=' + config.table_width + '><img src="cid:icinga2_logo"></th></tr>'
 
-html_email += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/show?host=' + config.host_alias + '">' + config.host_alias + '</a></td></tr>'
+html_email += '\n<tr><th>Hostalias:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/show?host=' + config.host_name + '">' + config.host_name + '</a></td></tr>'
 html_email += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></tr>'
 html_email += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
 html_email += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
 if config.host_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_alias + '">' + config.host_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_name + '">' + config.host_output + '</a></td></tr>'
 if config.service_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_alias + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_name + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
 html_email += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
 
 if config.notification_author and config.notification_comment:
@@ -488,7 +493,7 @@ if config.notification_author and config.notification_comment:
 if netbox.host:
     html_email += '\n</table><br>'
     html_email += '\n<table width=' + config.table_width + '>'
-    html_email += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + config.host_alias + '</a></th></tr>'
+    html_email += '\n<tr><th colspan=2 class=perfdata><a href="' + netbox.host_url + '">Netbox Info for ' + config.host_name + '</a></th></tr>'
     html_email += netbox.addRow('Display Name', netbox.host, 'display_name')
     html_email += netbox.addRow('Display Name', netbox.host, 'name')
     html_email += netbox.addLinkRow('Cluster', netbox.host, 'cluster', 'name')
@@ -496,9 +501,9 @@ if netbox.host:
     html_email += netbox.addLinkRow('Site', netbox.host, 'site', 'name')  # Sites use the slug
     html_email += netbox.addLinkRow('Rack', netbox.host, 'rack', 'name')
     html_email += netbox.addRow('Position', netbox.host, 'position')
-    html_email += netbox.addRow('Primary IP', netbox.host, 'primary_ip')
-    html_email += netbox.addRow('Primary IPv4', netbox.host, 'primary_ip4')
-    html_email += netbox.addRow('Primary IPv6', netbox.host, 'primary_ip6')
+    html_email += netbox.addRow('Primary IP', netbox.host, 'primary_ip', 'address')
+    html_email += netbox.addRow('Primary IPv4', netbox.host, 'primary_ip4', 'address')
+    html_email += netbox.addRow('Primary IPv6', netbox.host, 'primary_ip6', 'address')
     html_email += netbox.addLinkRow('Device Type', netbox.host, 'device_type', 'model')
     html_email += netbox.addRow('Status', netbox.host, 'status', 'label')
 

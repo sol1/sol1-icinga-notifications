@@ -78,8 +78,8 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_RT_"
             self.loadEnvironmentVars()
-            args = self._init_args()
-            self.loadArgs(args)
+            self._args = self._init_args()
+            self.loadArgs(self._args)
 
             # These set in the config file will override the args
             self._include_from_file = ['debug', 'disable_log_file']
@@ -309,7 +309,7 @@ config = Settings()
 config.rt = SettingsRT(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 
-icinga = Icinga()
+icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
 
 # Init logging
 if config.debug:
@@ -318,8 +318,9 @@ else:
     initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-request-tracker.log")
 
 if config.print_config:
-    config.printArguments
-    config.printEnvironmentVars
+    logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
+    config.printArguments()
+    config.printEnvironmentVars()
     sys.exit(0)
 
 logger.info(dataclasses.asdict(config))

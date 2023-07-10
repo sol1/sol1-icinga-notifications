@@ -1,6 +1,6 @@
 {
     "Command": {
-        "request-tracker-notification": {
+        "cmd_notification_request-tracker": {
             "arguments": {
                 "--config-file": {
                     "description": "Path to config file (Default: config/request-tracker-notification.json)",
@@ -81,7 +81,7 @@
             "command": "/etc/icinga2/scripts/request-tracker-notification.py",
             "fields": [],
             "methods_execute": "PluginNotification",
-            "object_name": "request-tracker-notification",
+            "object_name": "cmd_notification_request-tracker",
             "object_type": "object",
             "timeout": "60"
         }

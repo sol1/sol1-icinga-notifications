@@ -55,21 +55,21 @@ class Settings(SettingsParser):
     debug: bool = False
     disable_log_file: bool = False
 
-    host_name: str = None
-    host_displayname: str = None
-    host_address: str = None
-    host_state: str = None
-    host_output: str = None
-    service_name: str = None
-    service_displayname: str = None
-    service_state: str = None
-    service_output: str = None
-    notification_auth_name: str = None
-    notification_comment: str = None
-    notification_type: str = None
+    host_name: str = ''
+    host_displayname: str = ''
+    host_address: str = ''
+    host_state: str = ''
+    host_output: str = ''
+    service_name: str = ''
+    service_displayname: str = ''
+    service_state: str = ''
+    service_output: str = ''
+    notification_author: str = ''
+    notification_comment: str = ''
+    notification_type: str = ''
 
-    rt_requestor: str = None
-    rt_queue: str = None
+    rt_requestor: str = ''
+    rt_queue: str = ''
 
     print_config: bool = False
 
@@ -118,7 +118,7 @@ class Settings(SettingsParser):
         print('')
 
 
-def authenticate_rt(username, password):
+def authenticate_rt():
     '''Authenticates with the RT server for all subsequent requests'''
     SESSION.post(config.rt.url, data={
                  "user": config.rt.username, "pass": config.rt.password})

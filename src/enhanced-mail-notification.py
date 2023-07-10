@@ -115,8 +115,8 @@ class Settings(SettingsParser):
         self._exclude_from_env.extend(self._exclude_all + ['print_config'])
         self._env_prefix = "NOTIFY_ENHANCED_MAIL_"
         self.loadEnvironmentVars()
-        args = self._init_args()
-        self.loadArgs(args)
+        self._args = self._init_args()
+        self.loadArgs(self._args)
 
         # Debug set in the config file will override the args
         self._include_from_file = ['debug', 'disable_log_file']
@@ -432,10 +432,12 @@ else:
     initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-enhanced-email.log")
 
 logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
+logger.debug(config._args)
 
 if config.print_config:
-    config.printArguments
-    config.printEnvironmentVars
+    logger.info("config following")
+    config.printArguments()
+    config.printEnvironmentVars()
     sys.exit(0)
 
 # Misc

@@ -32,6 +32,7 @@ class SettingsFile(SettingsParser):
 @dataclasses.dataclass
 class SettingsRT(SettingsFile):
     name: str = 'rtInstance'
+    queue: str = 'rtqueue'
     url: str = 'https://rt.example.com'
     username: str = 'rtbot'
     password: str = ''

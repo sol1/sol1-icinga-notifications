@@ -1,6 +1,7 @@
 {
     "rt": {
         "name": "rtInstance",
+        "queue": "rtqueue",
         "url": "https://rt.example.com",
         "username": "rtbot",
         "password": "CHANGE ME"
@@ -11,5 +12,6 @@
         "password": "CHANGE ME"
     }
 }
+
 
 

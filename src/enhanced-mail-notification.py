@@ -314,7 +314,7 @@ class Grafana:
                 self.__parseIcingaweb2INI()
                 self.panelID = self.__getINIPanelID(config.service_display_name, config.service_name, config.service_command)
             else:
-                logger.waring("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(config.grafana_panel_id, config.grafana.icingaweb2_ini))
+                logger.warning("Unable to get panel id for service from environment var GRAFANAPANELID [{0}] or from the icingaweb2 grafana module ini file {1}".format(config.grafana_panel_id, config.grafana.icingaweb2_ini))
 
         elif config.host_state:
             if config.grafana_panel_id:
@@ -380,19 +380,58 @@ class Grafana:
             panel_id = self.__icingaweb2_ini.get(section, 'panelId').replace('"', '')
         return panel_id
 
+
+class IcingaCheck:
+    @classmethod
+    def parsePerfdata(cls, perfdata):
+        results = []
+        if perfdata:
+            try:
+                for metric in perfdata.split(' '):
+                    try:
+                        label, data = metric.split('=')
+                        parts = data.split(';')
+                        value = ''
+                        uom = ''
+                        for c in parts[0]:
+                            if c.isalpha():
+                                uom += c
+                            else:
+                                value += c
+
+                        pdata = cls.Perfdata(label, value, uom, *parts[1:])
+                        results.append(pdata)
+                    except Exception as e:
+                        logger.error(f"failed to parse perfdata metrics {metric}, got error {e}")
+
+            except Exception as e:
+                logger.error(f"failed to parse perfdata {perfdata}, got error {e}")
+            logger.debug(results)
+        return results
+
+    @dataclasses.dataclass
+    class Perfdata:
+        label: str = ''
+        value: str = ''
+        uom: str = ''
+        warning: str = ''
+        critical: str = ''
+        minimum: str = ''
+        maximum: str = ''
+
 config = Settings()
 config.mail = SettingsMail(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 config.netbox = SettingsNetbox(_config_dict=config._config_dict)
 config.grafana = SettingsGrafana(_config_dict=config._config_dict, image_width=config.table_width)
 
-logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
-
 # Init logging
 if config.debug:
     initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-enhanced-email.log")
 else:
     initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-enhanced-email.log")
+
+logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 
 if config.print_config:
     config.printArguments
@@ -522,18 +561,9 @@ if (config.performance_data and '=' in config.performance_data) or grafana.png:
     html_email += '\n<tr><th colspan=6 class=perfdata>Performance Data</th></tr>'
     if config.performance_data:
         html_email += '\n<tr><th>Label</th><th>Last Value</th><th>Warning</th><th>Critical</th><th>Min</th><th>Max</th></tr>'
-        perf_data_list = config.performance_data.split(" ")
+        perf_data_list = IcingaCheck.parsePerfdata(config.performance_data)
         for perf in perf_data_list:
-            if '=' not in perf:
-                continue
-
-            (label, data) = perf.split("=")
-            if len(data.split(";")) == 5:
-                (value, warning, critical, min, max) = data.split(";")
-            else:
-                (value, warning, critical, min) = data.split(";")
-                max = ''
-            html_email += '\n<tr><td>' + label + '</td><td>' + value + '</td><td>' + warning + '</td><td>' + critical + '</td><td>' + min + '</td><td>' + max + '</td></tr>'
+            html_email += f'\n<tr><td>{perf.label}</td><td>{perf.value}{perf.uom}</td><td>{perf.warning}</td><td>{perf.critical}</td><td>{perf.minimum}</td><td>{perf.maximum}</td></tr>'
     else:
         html_email += '\n<tr><th width=' + config.column_width + ' colspan=1>Last Value:</th><td width=' + remaining_width + ' colspan=5>none</td></tr>'
 

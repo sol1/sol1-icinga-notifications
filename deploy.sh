@@ -50,7 +50,7 @@ install_requirements() {
 deploy_config() {
     file=$1
     file_name=$(basename "$file")
-    if [[ ! -f "$$ICINGA2_SCRIPT_DIR/config/$file_name" ]]; then 
+    if [[ ! -f "$ICINGA2_SCRIPT_DIR/config/$file_name" ]]; then 
         echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/$file_name" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
         chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/config/*"

@@ -377,6 +377,8 @@ if config.notification_type != "ACKNOWLEDGEMENT":
         set_subject_recovered_rt(ticket_id)
         set_status_rt(ticket_id)
         icinga.delete_comments_icinga(comments)
+    else:
+        logger.info(f"Doing nothing becuase the service state ({config.service_state}) isn't CRITICAL or DOWN and the host state ({config.host_state}) isn't OK or UP")
 else:
     logger.info(f"Author {config.notification_author} acknowledged the problem")
     add_comment_rt(ticket_id,)

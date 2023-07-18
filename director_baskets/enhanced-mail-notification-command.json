@@ -1,6 +1,6 @@
 {
     "Command": {
-        "enhanced-mail-notification": {
+        "cmd_notification_enhanced-mail": {
             "arguments": {
                 "--config-file": {
                     "description": "Path to config file (Default: config/enhanced-mail-notification.json)",
@@ -121,7 +121,7 @@
             "command": "/etc/icinga2/scripts/enhanced-mail-notification.py",
             "fields": [],
             "methods_execute": "PluginNotification",
-            "object_name": "enhanced-mail-notification",
+            "object_name": "cmd_notification_enhanced-mail",
             "object_type": "object",
             "timeout": "60"
         }

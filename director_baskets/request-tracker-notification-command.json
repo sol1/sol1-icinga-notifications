@@ -1,0 +1,89 @@
+{
+    "Command": {
+        "cmd_notification_request-tracker": {
+            "arguments": {
+                "--config-file": {
+                    "description": "Path to config file (Default: config/request-tracker-notification.json)",
+                    "value": "$rt_notification_config_file$",
+                    "order": "5"
+                },
+                "--host-name": {
+                    "description": "Icinga Host Object Name",
+                    "value": "$rt_notification_host_name$",
+                    "order": "10"
+                },
+                "--host-displayname": {
+                    "description": "Icinga Host Display Name",
+                    "value": "$rt_notification_host_display_name$",
+                    "order": "10"
+                },
+                "--host-address": {
+                    "description": "Icinga Host Address",
+                    "value": "$rt_notification_host_address$",
+                    "order": "10"
+                },
+                "--host-state": {
+                    "description": "Icinga Host State",
+                    "value": "$rt_notification_host_state$",
+                    "order": "10"
+                },
+                "--host-output": {
+                    "description": "Icinga Host Output",
+                    "value": "$rt_notification_host_output$",
+                    "order": "10"
+                },
+                "--service-name": {
+                    "description": "Icinga Service Object Name",
+                    "value": "$rt_notification_service_name$",
+                    "order": "15"
+                },
+                "--service-displayname": {
+                    "description": "Icinga Service Display Name",
+                    "value": "$rt_notification_service_display_name$",
+                    "order": "15"
+                },
+                "--service-state": {
+                    "description": "Icinga Service State",
+                    "value": "$rt_notification_service_state$",
+                    "order": "15"
+                },
+                "--service-output": {
+                    "description": "Icinga Service Output",
+                    "value": "$rt_notification_service_output$",
+                    "order": "15"
+                },
+                "--notification-type": {
+                    "description": "Icinga Notification Type",
+                    "value": "$rt_notification_notification_type$",
+                    "order": "20"
+                },
+                "--notification-author": {
+                    "description": "Icinga Notification Author",
+                    "value": "$rt_notification_notification_author$",
+                    "order": "20"
+                },
+                "--notification-comment": {
+                    "description": "Icinga Notification Comment",
+                    "value": "$rt_notification_notification_comment$",
+                    "order": "20"
+                },
+                "--rt-requestor": {
+                    "description": "RT requestor",
+                    "value": "$rt_notification_netbox_host_name$",
+                    "order": "25"
+                },
+                "--rt-queue": {
+                    "description": "RT Queue",
+                    "value": "$rt_notification_netbox_host_ip$",
+                    "order": "25"
+                }
+            },
+            "command": "/etc/icinga2/scripts/request-tracker-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_request-tracker",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    }
+}

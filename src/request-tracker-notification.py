@@ -120,6 +120,7 @@ class Settings(SettingsParser):
 
 
 def authenticate_rt():
+    logger.debug(f"Auth rt with user {config.rt.username}")
     '''Authenticates with the RT server for all subsequent requests'''
     SESSION.post(config.rt.url, data={
                  "user": config.rt.username, "pass": config.rt.password})
@@ -139,10 +140,12 @@ def create_ticket_message():
     message += " Comment: [{}] {}\n".format(
         config.notification_auth_name,
         config.notification_comment)
+    logger.debug(f"Ticket message\n{message}")
     return message
 
 
 def create_ticket_rt(subject):
+    logger.debug(f"Creating RT ticket with subject {subject}")
     '''Creates a ticket in RT and returns the ticket ID'''
 
     message = create_ticket_message()
@@ -153,20 +156,21 @@ def create_ticket_rt(subject):
     ticket_data += "Subject: {}\n".format(subject)
     ticket_data += "Text: {}".format(message)
 
-    res = SESSION.post(
+    logger.debug(ticket_data)
+
+    result = SESSION.post(
         config.rt.url + "/REST/1.0/ticket/new",
         data={"content": ticket_data},
         headers=dict(Referer=config.rt.url))
 
-    print("Message:")
-    print(message)
-    print("Response: ")
-    print(res.text)
+    logger.info(f"Message: {message}")
+    logger.info(f"Response: {result.text}")
 
-    return RT_REGEX.search(res.text).group(2)
+    return RT_REGEX.search(result.text).group(2)
 
 
 def add_comment_rt(ticket_id):
+    logger.debug(f"Adding RT comment {ticket_id}")
     '''Add a comment to an existing RT ticket'''
 
     message = create_ticket_message()
@@ -174,41 +178,51 @@ def add_comment_rt(ticket_id):
     ticket_data += "Action: comment\n"
     ticket_data += "Text: {text}".format(text=message)
 
-    SESSION.post(
+    logger.debug(ticket_data)
+
+    result = SESSION.post(
         config.rt.url + "/REST/1.0/ticket/{id}/comment".format(
             id=ticket_id),
         data={"content": ticket_data},
         headers=dict(Referer=config.rt.url))
 
+    logger.debug(f'Comment request status code: {result.status_code}, text: {result.text}')
+
     return
 
 
 def set_status_rt(ticket_id, status="open"):
+    logger.debug(f"Setting RT status for {ticket_id} to {status}")
     '''Set rt ticket status'''
 
     ticket_data = "Status: {}\n".format(status)
 
-    SESSION.post(
+    result = SESSION.post(
         config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
             id=ticket_id),
         data={"content": ticket_data},
         headers=dict(Referer=config.rt.url))
 
+    logger.debug(f'Status request status code: {result.status_code}, text: {result.text}')
+
     return
 
 
 def set_subject_recovered_rt(ticket_id):
+    logger.debug(f"Setting RT subject for {ticket_id}")
     '''Set rt ticket subject'''
 
     subject = "{} {} - Recovered".format(config.host_displayname, config.service_displayname)
 
     ticket_data = "Subject: {}\n".format(subject)
 
-    SESSION.post(
+    result = SESSION.post(
         config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
             id=ticket_id),
         data={"content": ticket_data},
         headers=dict(Referer=config.rt.url))
+
+    logger.debug(f'Subject request status code: {result.status_code}, text: {result.text}')
 
     return
 
@@ -339,9 +353,9 @@ else:
 
 if config.notification_type != "ACKNOWLEDGEMENT":
     if config.service_state == "CRITICAL" or config.service_state == "DOWN":
-        print("Service/host went down")
+        logger.info(f"Host: {config.host_name}, Service: {config.service_name} went down")
         if TICKET_ID is None:
-            print("Create RT ticket and comment ID")
+            logger.info("Creating new RT ticket and comment ID")
 
             RT_ID = create_ticket_rt(
                 "{} {} went {}".format(config.host_displayname, config.service_displayname, config.service_state))
@@ -350,14 +364,14 @@ if config.notification_type != "ACKNOWLEDGEMENT":
                 config.service_name,
                 f'[{config.rt.name} #{str(RT_ID)}] - ticket created in RT')
         else:
-            print("Get comment and comment on RT")
+            logger.info("Get comment and comment on RT")
             add_comment_rt(TICKET_ID)
     elif config.host_state == "OK" or config.host_state == "UP":
-        print("Server/host back up")
+        logger.info("Host: {config.host_name}, Service: {config.service_name} back up")
         add_comment_rt(TICKET_ID)
         set_subject_recovered_rt(TICKET_ID)
         set_status_rt(TICKET_ID)
         icinga.delete_comments_icinga(COMMENTS)
 else:
-    print("Someone acknowledged the problem")
+    logger.info(f"Author {config.notification_author} acknowledged the problem")
     add_comment_rt(TICKET_ID,)

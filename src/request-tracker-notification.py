@@ -152,8 +152,8 @@ def create_ticket_rt(subject):
     message = create_ticket_message()
 
     ticket_data = "id: ticket/new\n"
-    ticket_data += f"Queue: {config.rt.queue}\n"
-    ticket_data += f"Requestor: {config.rt.requestor}\n"
+    ticket_data += f"Queue: {config.rt_queue}\n"
+    ticket_data += f"Requestor: {config.rt_requestor}\n"
     ticket_data += f"Subject: {subject}\n"
     ticket_data += f"Text: {message}"
 
@@ -325,6 +325,9 @@ def parse_rt_field(field_data):
 config = Settings()
 config.rt = SettingsRT(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
+
+if not config.rt_queue:
+    config.rt_queue = config.rt.queue
 
 icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
 

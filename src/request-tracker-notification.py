@@ -139,7 +139,7 @@ def create_ticket_message():
     message += " Additional Info: {}\n \n".format(
         parse_rt_field(additional_output))
     message += " Comment: [{}] {}\n".format(
-        config.notification_auth_name,
+        config.notification_author,
         config.notification_comment)
     logger.debug(f"Ticket message\n{message}")
     return message

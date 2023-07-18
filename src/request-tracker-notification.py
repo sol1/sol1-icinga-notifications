@@ -152,10 +152,10 @@ def create_ticket_rt(subject):
     message = create_ticket_message()
 
     ticket_data = "id: ticket/new\n"
-    ticket_data += "Queue: {}\n".format(config.rt_queue)
-    ticket_data += "Requestor: {}\n".format(config.rt_requestor)
-    ticket_data += "Subject: {}\n".format(subject)
-    ticket_data += "Text: {}".format(message)
+    ticket_data += f"Queue: {config.rt.queue}\n"
+    ticket_data += f"Requestor: {config.rt.requestor}\n"
+    ticket_data += f"Subject: {subject}\n"
+    ticket_data += f"Text: {message}"
 
     logger.debug(ticket_data)
 

@@ -18,7 +18,8 @@ from loguru import logger
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
+# Disabled proxies for requests to localhost
+os.environ['NO_PROXY'] = 'localhost'
 
 RT_REGEX = re.compile(r'(# Ticket )(\w+)( created)')
 TICKETID_REGEX = re.compile(r'(#)([0-9]+)(\])')

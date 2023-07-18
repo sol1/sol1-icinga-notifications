@@ -122,8 +122,9 @@ class Settings(SettingsParser):
 def authenticate_rt():
     logger.debug(f"Auth rt with user {config.rt.username}")
     '''Authenticates with the RT server for all subsequent requests'''
-    SESSION.post(config.rt.url, data={
+    result = SESSION.post(config.rt.url, data={
                  "user": config.rt.username, "pass": config.rt.password})
+    logger.debug(f'Comment request status code: {result.status_code}')
 
 
 def create_ticket_message():
@@ -343,35 +344,39 @@ logger.info(dataclasses.asdict(config))
 
 authenticate_rt()
 
-COMMENTS = icinga.get_comments_icinga(config.host_name, config.service_name)
+comments = icinga.get_comments_icinga(config.host_name, config.service_name)
 
-if not COMMENTS:
-    TICKET_ID = None
+logger.debug(f"Comments: {comments}")
+
+if not comments:
+    ticket_id = None
 else:
     # extract id from comment
-    TICKET_ID = TICKETID_REGEX.search(COMMENTS[0]['attrs']['text']).group(2)
+    ticket_id = TICKETID_REGEX.search(comments[0]['attrs']['text']).group(2)
+
+logger.info(f"Ticket ID: {ticket_id}")
 
 if config.notification_type != "ACKNOWLEDGEMENT":
     if config.service_state == "CRITICAL" or config.service_state == "DOWN":
         logger.info(f"Host: {config.host_name}, Service: {config.service_name} went down")
-        if TICKET_ID is None:
+        if ticket_id is None:
             logger.info("Creating new RT ticket and comment ID")
 
-            RT_ID = create_ticket_rt(
+            rt_id = create_ticket_rt(
                 "{} {} went {}".format(config.host_displayname, config.service_displayname, config.service_state))
             icinga.add_comment_icinga(
                 config.host_name,
                 config.service_name,
-                f'[{config.rt.name} #{str(RT_ID)}] - ticket created in RT')
+                f'[{config.rt.name} #{str(rt_id)}] - ticket created in RT')
         else:
             logger.info("Get comment and comment on RT")
-            add_comment_rt(TICKET_ID)
+            add_comment_rt(ticket_id)
     elif config.host_state == "OK" or config.host_state == "UP":
         logger.info("Host: {config.host_name}, Service: {config.service_name} back up")
-        add_comment_rt(TICKET_ID)
-        set_subject_recovered_rt(TICKET_ID)
-        set_status_rt(TICKET_ID)
-        icinga.delete_comments_icinga(COMMENTS)
+        add_comment_rt(ticket_id)
+        set_subject_recovered_rt(ticket_id)
+        set_status_rt(ticket_id)
+        icinga.delete_comments_icinga(comments)
 else:
     logger.info(f"Author {config.notification_author} acknowledged the problem")
-    add_comment_rt(TICKET_ID,)
+    add_comment_rt(ticket_id,)

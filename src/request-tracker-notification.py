@@ -134,6 +134,7 @@ def _postRT(url, headers = None, data = None):
     if config.rt.proxy:
         args['proxies'] = {'http': config.rt.proxy, 'https': config.rt.proxy}
     try:
+        logger.debug(f"request args: {args}")
         response = SESSION.post(**args)
     except Exception as e:
         logger.error(f'RT POST to {url} failed with {e}')    
@@ -260,6 +261,7 @@ class Icinga:
         self.base_url = base_url
 
     def _get(self, url_path, payload):
+        logger.debug(f'Request GET for url {self.base_url + url_path}')
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
@@ -278,6 +280,7 @@ class Icinga:
             logger.error(f"Icinga GET to {self.base_url + url_path} failed with error {e}")
 
     def _post(self, url_path, payload = None):
+        logger.debug(f'Request POST for url {self.base_url + url_path}')
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
@@ -321,7 +324,7 @@ class Icinga:
 
     def add_comment_icinga(self, hostname, servicename, comment_text):
         '''Create comment on an icinga service or host'''
-
+        logger.debug(f'Assing comment for host {hostname}, service {servicename} with text {comment_text}')
         filters = 'host.name=="{}"'.format(hostname)
         object_type = 'Host'
 

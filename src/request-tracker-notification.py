@@ -37,6 +37,8 @@ class SettingsRT(SettingsFile):
     url: str = 'https://rt.example.com'
     username: str = 'rtbot'
     password: str = ''
+    proxy: str = ''
+    timeout: str = 20
     _json_dict_key: str = 'rt'
 
 @dataclasses.dataclass
@@ -44,6 +46,8 @@ class SettingsIcinga(SettingsFile):
     url: str = 'https://localhost:5665'
     username: str = 'rtnotify'
     password: str = ''
+    proxy: str = ''
+    timeout: str = 20
     _json_dict_key: str = 'icinga'
 
 @dataclasses.dataclass
@@ -118,14 +122,27 @@ class Settings(SettingsParser):
             print(f'{var[1]} = {var[2]}')
         print('')
 
+def _postRT(url, headers = None, data = None, timeout = config.rt.timeout):
+    args = {
+        'url': url,
+        'timeout': timeout
+        }
+    if headers is not None:
+        args['headers'] = headers
+    if data is not None:
+        args['data'] = data
+    if config.rt.proxy:
+        args['proxies'] = {'http': config.rt.proxy, 'https': config.rt.proxy}
+    try:
+        response = SESSION.post(**args)
+    except Exception as e:
+        logger.error(f'RT POST to {url} failed with {e}')    
+    return response
 
 def authenticate_rt():
     logger.debug(f"Auth RT with user {config.rt.username}")
     '''Authenticates with the RT server for all subsequent requests'''
-    try:
-        result = SESSION.post(config.rt.url, data={"user": config.rt.username, "pass": config.rt.password})
-    except Exception as e:
-        logger.error(f'Auth RT failed with {e}')    
+    result = _postRT(url=config.rt.url, data={"user": config.rt.username, "pass": config.rt.password})
     logger.debug(f'Auth RT request status code: {result.status_code}')
 
 
@@ -161,14 +178,12 @@ def create_ticket_rt(subject):
 
     logger.debug(ticket_data)
 
-    try:
-        result = SESSION.post(
-            config.rt.url + "/REST/1.0/ticket/new",
-            data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url))
-    except Exception as e:
-        logger.error(f'Creating RT ticket failed with {e}')    
-
+    result = _postRT(
+        url = f"{config.rt.url}/REST/1.0/ticket/new",
+        data = {"content": ticket_data},
+        headers = dict(Referer=config.rt.url)
+        )
+    
     logger.info(f"Message: {message}")
     logger.info(f"Response: {result.text}")
 
@@ -186,14 +201,11 @@ def add_comment_rt(ticket_id):
 
     logger.debug(ticket_data)
 
-    try:
-        result = SESSION.post(
-            config.rt.url + "/REST/1.0/ticket/{id}/comment".format(
-                id=ticket_id),
-            data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url))
-    except Exception as e:
-        logger.error(f'Adding RT comment failed with {e}')    
+    result = _postRT(
+        url = f"{config.rt.url}/REST/1.0/ticket/{ticket_id}/comment",
+        data={"content": ticket_data},
+        headers=dict(Referer=config.rt.url)
+        )
  
     logger.debug(f'Adding RT comment request status code: {result.status_code}, text: {result.text}')
 
@@ -207,11 +219,11 @@ def set_status_rt(ticket_id, status="open"):
     ticket_data = "Status: {}\n".format(status)
 
     try:
-        result = SESSION.post(
-            config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
-                id=ticket_id),
+        result = _postRT(
+            url = f"{config.rt.url}/REST/1.0/ticket/{ticket_id}/edit",
             data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url))
+            headers=dict(Referer=config.rt.url),
+            )
     except Exception as e:
         logger.error(f'Setting RT status failed with {e}')    
 
@@ -229,11 +241,11 @@ def set_subject_recovered_rt(ticket_id):
     ticket_data = "Subject: {}\n".format(subject)
 
     try:
-        result = SESSION.post(
-            config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
-                id=ticket_id),
+        result = _postRT(
+            url = f"{config.rt.url}/REST/1.0/ticket/{id}/edit",
             data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url))
+            headers=dict(Referer=config.rt.url)
+            )
     except Exception as e:
         logger.error(f'Creating RT ticket failed with {e}')    
 
@@ -258,7 +270,8 @@ class Icinga:
                 auth=(self.username, self.password),
                 verify=False,
                 headers=headers,
-                json=payload
+                json=payload,
+                timeout=20
                 )
             return result
         except Exception as e:
@@ -277,7 +290,8 @@ class Icinga:
                     auth=(self.username, self.password),
                     verify=False,
                     headers=headers,
-                    json=payload
+                    json=payload,
+                    timeout=15
                     )
             else:
                 result = SESSION.post(

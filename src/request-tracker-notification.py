@@ -268,7 +268,7 @@ class Icinga:
         self.base_url = base_url
 
     def _get(self, url_path, payload):
-        logger.debug(f'Request GET for url {self.base_url + url_path}')
+        logger.debug(f'Icinga GET Request for url {self.base_url + url_path}')
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
@@ -284,10 +284,10 @@ class Icinga:
                 )
             return result
         except Exception as e:
-            logger.error(f"Icinga GET to {self.base_url + url_path} failed with error {e}")
+            logger.error(f"Icinga GET Request to {self.base_url + url_path} failed with error {e}")
 
     def _post(self, url_path, payload = None):
-        logger.debug(f'Request POST for url {self.base_url + url_path}')
+        logger.debug(f'Icinga POST Request for url {self.base_url + url_path}')
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
@@ -312,7 +312,7 @@ class Icinga:
                             )
             return result
         except Exception as e:
-            logger.error(f"Icinga POST to {self.base_url + url_path} with payload {payload} failed with error {e}")
+            logger.error(f"Icinga POST Request to {self.base_url + url_path} with payload {payload} failed with error {e}")
 
     def get_comments_icinga(self, hostname, servicename):
         '''Get all icinga comments associated with a hostname'''
@@ -331,7 +331,7 @@ class Icinga:
 
     def add_comment_icinga(self, hostname, servicename, comment_text):
         '''Create comment on an icinga service or host'''
-        logger.debug(f'Assing comment for host {hostname}, service {servicename} with text {comment_text}')
+        logger.debug(f'Adding Icinga comment for host {hostname}, service {servicename} with text {comment_text}')
         filters = 'host.name=="{}"'.format(hostname)
         object_type = 'Host'
 

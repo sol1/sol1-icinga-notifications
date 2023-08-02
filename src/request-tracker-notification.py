@@ -122,10 +122,10 @@ class Settings(SettingsParser):
             print(f'{var[1]} = {var[2]}')
         print('')
 
-def _postRT(url, headers = None, data = None, timeout = config.rt.timeout):
+def _postRT(url, headers = None, data = None):
     args = {
         'url': url,
-        'timeout': timeout
+        'timeout': config.rt.timeout
         }
     if headers is not None:
         args['headers'] = headers

@@ -396,13 +396,13 @@ else:
 logger.info(f"Ticket ID: {ticket_id}")
 
 if config.notification_type != "ACKNOWLEDGEMENT":
-    if config.service_state == "CRITICAL" or config.service_state == "DOWN":
+    if config.service_state == "CRITICAL" or config.host_state == "DOWN":
         logger.info(f"Host: {config.host_name}, Service: {config.service_name} went down")
         if ticket_id is None:
             logger.info("Creating new RT ticket and comment ID")
 
             rt_id = create_ticket_rt(
-                "{} {} went {}".format(config.host_displayname, config.service_displayname, config.service_state))
+                f"{config.host_displayname} {config.service_displayname} went {bool(config.host_state or config.service_state)}")
             icinga.add_comment_icinga(
                 config.host_name,
                 config.service_name,
@@ -410,7 +410,7 @@ if config.notification_type != "ACKNOWLEDGEMENT":
         else:
             logger.info("Get comment and comment on RT")
             add_comment_rt(ticket_id)
-    elif config.host_state == "OK" or config.host_state == "UP":
+    elif config.service_state == "OK" or config.host_state == "UP":
         logger.info(f"Host: {config.host_name}, Service: {config.service_name} back up")
         add_comment_rt(ticket_id)
         set_subject_recovered_rt(ticket_id)

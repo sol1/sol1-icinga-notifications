@@ -402,7 +402,7 @@ if config.notification_type != "ACKNOWLEDGEMENT":
             logger.info("Creating new RT ticket and comment ID")
 
             rt_id = create_ticket_rt(
-                f"{config.host_displayname} {config.service_displayname} went {bool(config.host_state or config.service_state)}")
+                f"{config.host_displayname} {config.service_displayname} went {config.host_state}{config.service_state}")
             icinga.add_comment_icinga(
                 config.host_name,
                 config.service_name,

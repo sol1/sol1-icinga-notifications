@@ -209,8 +209,10 @@ def add_comment_rt(ticket_id):
         headers=dict(Referer=config.rt.url)
         )
  
-    logger.debug(f'Adding RT comment request status code: {result.status_code}, text: {result.text}')
-
+    if result is not None:
+        logger.debug(f'Adding RT comment request status code: {result.status_code}, text: {result.text}')
+    else:
+        logger.info("Failed to add comment to existing ticket, no response from request")
     return
 
 

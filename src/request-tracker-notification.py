@@ -411,7 +411,7 @@ if config.notification_type != "ACKNOWLEDGEMENT":
             logger.info("Get comment and comment on RT")
             add_comment_rt(ticket_id)
     elif config.host_state == "OK" or config.host_state == "UP":
-        logger.info("Host: {config.host_name}, Service: {config.service_name} back up")
+        logger.info(f"Host: {config.host_name}, Service: {config.service_name} back up")
         add_comment_rt(ticket_id)
         set_subject_recovered_rt(ticket_id)
         set_status_rt(ticket_id)

@@ -120,11 +120,13 @@ class Settings(SettingsParser):
 
 
 def authenticate_rt():
-    logger.debug(f"Auth rt with user {config.rt.username}")
+    logger.debug(f"Auth RT with user {config.rt.username}")
     '''Authenticates with the RT server for all subsequent requests'''
-    result = SESSION.post(config.rt.url, data={
-                 "user": config.rt.username, "pass": config.rt.password})
-    logger.debug(f'Comment request status code: {result.status_code}')
+    try:
+        result = SESSION.post(config.rt.url, data={"user": config.rt.username, "pass": config.rt.password})
+    except Exception as e:
+        logger.error(f'Auth RT failed with {e}')    
+    logger.debug(f'Auth RT request status code: {result.status_code}')
 
 
 def create_ticket_message():
@@ -159,10 +161,13 @@ def create_ticket_rt(subject):
 
     logger.debug(ticket_data)
 
-    result = SESSION.post(
-        config.rt.url + "/REST/1.0/ticket/new",
-        data={"content": ticket_data},
-        headers=dict(Referer=config.rt.url))
+    try:
+        result = SESSION.post(
+            config.rt.url + "/REST/1.0/ticket/new",
+            data={"content": ticket_data},
+            headers=dict(Referer=config.rt.url))
+    except Exception as e:
+        logger.error(f'Creating RT ticket failed with {e}')    
 
     logger.info(f"Message: {message}")
     logger.info(f"Response: {result.text}")
@@ -181,13 +186,16 @@ def add_comment_rt(ticket_id):
 
     logger.debug(ticket_data)
 
-    result = SESSION.post(
-        config.rt.url + "/REST/1.0/ticket/{id}/comment".format(
-            id=ticket_id),
-        data={"content": ticket_data},
-        headers=dict(Referer=config.rt.url))
-
-    logger.debug(f'Comment request status code: {result.status_code}, text: {result.text}')
+    try:
+        result = SESSION.post(
+            config.rt.url + "/REST/1.0/ticket/{id}/comment".format(
+                id=ticket_id),
+            data={"content": ticket_data},
+            headers=dict(Referer=config.rt.url))
+    except Exception as e:
+        logger.error(f'Adding RT comment failed with {e}')    
+ 
+    logger.debug(f'Adding RT comment request status code: {result.status_code}, text: {result.text}')
 
     return
 
@@ -198,13 +206,16 @@ def set_status_rt(ticket_id, status="open"):
 
     ticket_data = "Status: {}\n".format(status)
 
-    result = SESSION.post(
-        config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
-            id=ticket_id),
-        data={"content": ticket_data},
-        headers=dict(Referer=config.rt.url))
+    try:
+        result = SESSION.post(
+            config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
+                id=ticket_id),
+            data={"content": ticket_data},
+            headers=dict(Referer=config.rt.url))
+    except Exception as e:
+        logger.error(f'Setting RT status failed with {e}')    
 
-    logger.debug(f'Status request status code: {result.status_code}, text: {result.text}')
+    logger.debug(f'Setting RT status request status code: {result.status_code}, text: {result.text}')
 
     return
 
@@ -217,13 +228,16 @@ def set_subject_recovered_rt(ticket_id):
 
     ticket_data = "Subject: {}\n".format(subject)
 
-    result = SESSION.post(
-        config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
-            id=ticket_id),
-        data={"content": ticket_data},
-        headers=dict(Referer=config.rt.url))
+    try:
+        result = SESSION.post(
+            config.rt.url + "/REST/1.0/ticket/{id}/edit".format(
+                id=ticket_id),
+            data={"content": ticket_data},
+            headers=dict(Referer=config.rt.url))
+    except Exception as e:
+        logger.error(f'Creating RT ticket failed with {e}')    
 
-    logger.debug(f'Subject request status code: {result.status_code}, text: {result.text}')
+    logger.debug(f'Setting RT subjectrequest status code: {result.status_code}, text: {result.text}')
 
     return
 
@@ -238,13 +252,17 @@ class Icinga:
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=utf-8'
         }
-        return SESSION.get(
-            self.base_url + url_path,
-            auth=(self.username, self.password),
-            verify=False,
-            headers=headers,
-            json=payload
-            )
+        try:
+            result = SESSION.get(
+                self.base_url + url_path,
+                auth=(self.username, self.password),
+                verify=False,
+                headers=headers,
+                json=payload
+                )
+            return result
+        except Exception as e:
+            logger.error(f"Icinga GET to {self.base_url + url_path} failed with error {e}")
 
     def _post(self, url_path, payload = None):
         headers = {
@@ -252,21 +270,25 @@ class Icinga:
             'Content-Type': 'application/json; charset=utf-8'
         }
 
-        if payload:
-            return SESSION.post(
-                self.base_url + url_path,
-                auth=(self.username, self.password),
-                verify=False,
-                headers=headers,
-                json=payload
-                )
-        else:
-            return SESSION.post(
-                        self.base_url + url_path,
-                        auth=(self.username, self.password),
-                        verify=False,
-                        headers=headers
-                        )
+        try:
+            if payload:
+                result = SESSION.post(
+                    self.base_url + url_path,
+                    auth=(self.username, self.password),
+                    verify=False,
+                    headers=headers,
+                    json=payload
+                    )
+            else:
+                result = SESSION.post(
+                            self.base_url + url_path,
+                            auth=(self.username, self.password),
+                            verify=False,
+                            headers=headers
+                            )
+            return result
+        except Exception as e:
+            logger.error(f"Icinga POST to {self.base_url + url_path} with payload {payload} failed with error {e}")
 
     def get_comments_icinga(self, hostname, servicename):
         '''Get all icinga comments associated with a hostname'''

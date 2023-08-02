@@ -136,9 +136,10 @@ def _postRT(url, headers = None, data = None):
     try:
         logger.debug(f"request args: {args}")
         response = SESSION.post(**args)
+        return response
     except Exception as e:
-        logger.error(f'RT POST to {url} failed with {e}')    
-    return response
+        logger.error(f'RT POST to {url} failed with {e}')
+        return None    
 
 def authenticate_rt():
     logger.debug(f"Auth RT with user {config.rt.username}")

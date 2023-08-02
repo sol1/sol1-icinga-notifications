@@ -231,8 +231,10 @@ def set_status_rt(ticket_id, status="open"):
     except Exception as e:
         logger.error(f'Setting RT status failed with {e}')    
 
-    logger.debug(f'Setting RT status request status code: {result.status_code}, text: {result.text}')
-
+    if result is not None:
+        logger.debug(f'Setting RT status request status code: {result.status_code}, text: {result.text}')
+    else:
+        logger.info("Failed to set RT status to existing ticket, no response from request")
     return
 
 
@@ -253,8 +255,10 @@ def set_subject_recovered_rt(ticket_id):
     except Exception as e:
         logger.error(f'Creating RT ticket failed with {e}')    
 
-    logger.debug(f'Setting RT subjectrequest status code: {result.status_code}, text: {result.text}')
-
+    if result is not None:
+        logger.debug(f'Setting RT subject request status code: {result.status_code}, text: {result.text}')
+    else:
+        logger.info("Failed to set RT subject to existing ticket, no response from request")
     return
 
 class Icinga:

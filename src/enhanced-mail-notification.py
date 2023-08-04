@@ -332,7 +332,7 @@ class Grafana:
                 self.panelID = config.grafana.default_panel_id
 
         if self.panelID and config.grafana.url:
-            self.png_url = config.grafana.url + '/render/dashboard-solo/db/' + config.grafana.dashboard + '?panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name + '&theme=' + GRAFANATHEME + '&width=' + config.table_width + '&height=' + config.grafana.image_height
+            self.png_url = config.grafana.url + '/render/dashboard-solo/db/' + config.grafana.dashboard + '?panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name + '&theme=' + config.grafana.theme + '&width=' + config.table_width + '&height=' + config.grafana.image_height
             self.page_url = config.grafana.url + '/dashboard/db/' + config.grafana.dashboard + '?fullscreen&panelId=' + self.panelID + '&' + config.grafana.var_hostname + '=' + config.grafana_host_name
             self.png = self.__getPNG()
 

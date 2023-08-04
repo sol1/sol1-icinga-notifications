@@ -10,6 +10,8 @@ import requests
 import sys
 import traceback
 
+from rt.rest2 import Rt
+
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
 
@@ -122,144 +124,6 @@ class Settings(SettingsParser):
             print(f'{var[1]} = {var[2]}')
         print('')
 
-def _postRT(url, headers = None, data = None):
-    args = {
-        'url': url,
-        'timeout': config.rt.timeout
-        }
-    if headers is not None:
-        args['headers'] = headers
-    if data is not None:
-        args['data'] = data
-    if config.rt.proxy:
-        args['proxies'] = {'http': config.rt.proxy, 'https': config.rt.proxy}
-    try:
-        logger.debug(f"request args: {args}")
-        response = SESSION.post(**args)
-        return response
-    except Exception as e:
-        logger.error(f'RT POST to {url} failed with {e}')
-        return None    
-
-def authenticate_rt():
-    logger.debug(f"Auth RT with user {config.rt.username}")
-    '''Authenticates with the RT server for all subsequent requests'''
-    result = _postRT(url=config.rt.url, data={"user": config.rt.username, "pass": config.rt.password})
-    logger.debug(f'Auth RT request status code: {result.status_code}')
-
-
-def create_ticket_message():
-    additional_output = config.service_output or config.host_output
-    state = config.service_state or config.host_state
-
-    message = "Notification Type: {}\n \n".format(config.notification_type)
-    message += " Service: {}\n".format(config.service_displayname)
-    message += " Host: {}\n".format(config.host_displayname)
-    message += " Address: {}\n".format(config.host_address)
-    message += " State: {}\n \n".format(state)
-    message += " Additional Info: {}\n \n".format(
-        parse_rt_field(additional_output))
-    message += " Comment: [{}] {}\n".format(
-        config.notification_author,
-        config.notification_comment)
-    logger.debug(f"Ticket message\n{message}")
-    return message
-
-
-def create_ticket_rt(subject):
-    logger.debug(f"Creating RT ticket with subject {subject}")
-    '''Creates a ticket in RT and returns the ticket ID'''
-
-    message = create_ticket_message()
-
-    ticket_data = "id: ticket/new\n"
-    ticket_data += f"Queue: {config.rt_queue}\n"
-    ticket_data += f"Requestor: {config.rt_requestor}\n"
-    ticket_data += f"Subject: {subject}\n"
-    ticket_data += f"Text: {message}"
-
-    logger.debug(ticket_data)
-
-    result = _postRT(
-        url = f"{config.rt.url}/REST/1.0/ticket/new",
-        data = {"content": ticket_data},
-        headers = dict(Referer=config.rt.url)
-        )
-    
-    logger.info(f"Message: {message}")
-    logger.info(f"Response: {result.text}")
-
-    return RT_REGEX.search(result.text).group(2)
-
-
-def add_comment_rt(ticket_id):
-    logger.debug(f"Adding RT comment {ticket_id}")
-    '''Add a comment to an existing RT ticket'''
-
-    message = create_ticket_message()
-    ticket_data = "id: {id}\n".format(id=ticket_id)
-    ticket_data += "Action: comment\n"
-    ticket_data += "Text: {text}".format(text=message)
-
-    logger.debug(ticket_data)
-
-    result = _postRT(
-        url = f"{config.rt.url}/REST/1.0/ticket/{ticket_id}/comment",
-        data={"content": ticket_data},
-        headers=dict(Referer=config.rt.url)
-        )
- 
-    if result is not None:
-        logger.debug(f'Adding RT comment request status code: {result.status_code}, text: {result.text}')
-    else:
-        logger.info("Failed to add comment to existing ticket, no response from request")
-    return
-
-
-def set_status_rt(ticket_id, status="open"):
-    logger.debug(f"Setting RT status for {ticket_id} to {status}")
-    '''Set rt ticket status'''
-
-    ticket_data = "Status: {}\n".format(status)
-
-    try:
-        result = _postRT(
-            url = f"{config.rt.url}/REST/1.0/ticket/{ticket_id}/edit",
-            data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url),
-            )
-    except Exception as e:
-        logger.error(f'Setting RT status failed with {e}')    
-
-    if result is not None:
-        logger.debug(f'Setting RT status request status code: {result.status_code}, text: {result.text}')
-    else:
-        logger.info("Failed to set RT status to existing ticket, no response from request")
-    return
-
-
-def set_subject_recovered_rt(ticket_id):
-    logger.debug(f"Setting RT subject for {ticket_id}")
-    '''Set rt ticket subject'''
-
-    subject = "{} {} - Recovered".format(config.host_displayname, config.service_displayname)
-
-    ticket_data = "Subject: {}\n".format(subject)
-
-    try:
-        result = _postRT(
-            url = f"{config.rt.url}/REST/1.0/ticket/{id}/edit",
-            data={"content": ticket_data},
-            headers=dict(Referer=config.rt.url)
-            )
-    except Exception as e:
-        logger.error(f'Creating RT ticket failed with {e}')    
-
-    if result is not None:
-        logger.debug(f'Setting RT subject request status code: {result.status_code}, text: {result.text}')
-    else:
-        logger.info("Failed to set RT subject to existing ticket, no response from request")
-    return
 
 class Icinga:
     def __init__(self, username, password, base_url):
@@ -360,21 +224,104 @@ class Icinga:
         return
 
 
-def parse_rt_field(field_data):
-    '''Adds padding to multi-line RT Field data (Required by RT REST API)'''
-    result = ""
-    for line in field_data.splitlines(True):
-        result += ("  " + line)
+class RequestTracker:
+    def __init__(self) -> None:
+        self.rt = None
+        self.ticket_id = None
+        self._initRT()
 
-    return result
+    def _initRT(self):
+        if config.rt.proxy:
+            self.rt = Rt(url=f"{config.rt.url}/REST/2.0/", http_auth=requests.auth.HTTPBasicAuth(config.rt.username, config.rt.password), proxy=config.rt.proxy)
+        else:
+            self.rt = Rt(url=f"{config.rt.url}/REST/2.0/", http_auth=requests.auth.HTTPBasicAuth(config.rt.username, config.rt.password))
+        logger.debug(f"Initalized rt {self.rt}")
+
+    def ticketMessage(self):
+        additional_output = self.parseMultiLineField(f"{config.service_output}{config.host_output}")
+        state = f"{config.service_state}{config.host_state}"
+
+        message = f"Notification Type: {config.notification_type}\n \n"
+        message += f" Service: {config.service_displayname}\n"
+        message += f" Host: {config.host_displayname}\n"
+        message += f" Address: {config.host_address}\n"
+        message += f" State: {state}\n \n"
+        message += f" Additional Info: {additional_output}\n \n"
+        message += f" Comment: [{config.notification_author}] {config.notification_comment}\n"
+
+        logger.debug(f"Ticket message\n{message}")
+        return message
+
+    def parseMultiLineField(self, field_data):
+        '''Adds padding to multi-line RT Field data (Required by RT REST API)'''
+        result = ""
+        for line in field_data.splitlines(True):
+            result += ("  " + line)
+        return result
+
+    def setTicket(self, rt_id):
+        rt_id = str(rt_id).replace("#", "")
+        if rt_id is not None and rt_id and rt_id.isnumeric():
+            self.ticket_id = rt_id
+            logger.info(f"Ticket ID set to {self.ticket_id}")
+
+    def createTicket(self, subject):
+        logger.debug(f"Creating RT ticket with subject {subject}")
+        '''Creates a ticket in RT and returns the ticket ID'''
+        result = None
+        try:
+            result = self.rt.create_ticket(
+                queue=config.rt_queue, 
+                subject=subject, 
+                content=self.ticketMessage(),
+                requestor=[config.rt_requestor]
+                )
+            self.setTicket(result)
+        except Exception as e:
+            logger.error(f"Error creating ticket {e}")
+        logger.debug(result)
+
+    def commentTicket(self, message = None):
+        logger.debug(f"Adding RT comment to {self.ticket_id}")
+        '''Add a comment to an existing RT ticket'''
+        text = self.ticketMessage()
+        if message is not None:
+            text = f"{text}\n{self.parseMultiLineField(message)}"
+        if self.ticket_id is not None:
+            try:
+                self.rt.comment(ticket_id=self.ticket_id, text=self.ticketMessage())
+            except Exception as e:
+                logger.info(f"Error adding comment to existing ticket {self.ticket_id}: {e}")
+        else:
+            logger.warning("Can't comment on ticket without valid ticket number")
+        
+            
+    def editTicketSubject(self, subject, status="open"):
+        logger.debug(f"Editing ticket {self.ticket_id}")
+        if self.ticket_id is not None:
+            try:
+                self.rt.edit_ticket(
+                    ticket_id=self.ticket_id, 
+                    subject=subject,
+                    status=status
+                    )
+                
+            except Exception as e:
+                logger.info(f"Error editing existing ticket {self.ticket_id}: {e}")
+        else:
+            logger.warning("Can't edit on ticket without valid ticket number")
 
 config = Settings()
 config.rt = SettingsRT(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 
+# I should comment this better
 if not config.rt_queue:
     config.rt_queue = config.rt.queue
 
+rt = RequestTracker()
+
+# Init Icinga
 icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
 
 # Init logging
@@ -391,43 +338,39 @@ if config.print_config:
 
 logger.info(dataclasses.asdict(config))
 
-authenticate_rt()
-
 comments = icinga.get_comments_icinga(config.host_name, config.service_name)
 
 logger.debug(f"Comments: {comments}")
 
-if not comments:
-    ticket_id = None
-else:
+if comments:
     # extract id from comment
-    ticket_id = TICKETID_REGEX.search(comments[0]['attrs']['text']).group(2)
-
-logger.info(f"Ticket ID: {ticket_id}")
+    rt.setTicket(TICKETID_REGEX.search(comments[0]['attrs']['text']).group(2))
 
 if config.notification_type != "ACKNOWLEDGEMENT":
     if config.service_state == "CRITICAL" or config.host_state == "DOWN":
         logger.info(f"Host: {config.host_name}, Service: {config.service_name} went down")
-        if ticket_id is None:
+        # No existing comments
+        if rt.ticket_id is None:
             logger.info("Creating new RT ticket and comment ID")
 
-            rt_id = create_ticket_rt(
-                f"{config.host_displayname} {config.service_displayname} went {config.host_state}{config.service_state}")
-            icinga.add_comment_icinga(
-                config.host_name,
-                config.service_name,
-                f'[{config.rt.name} #{str(rt_id)}] - ticket created in RT')
+            rt.createTicket(f"{config.host_displayname} {config.service_displayname} went {config.host_state}{config.service_state}")
+            if rt.ticket_id is not None:
+                icinga.add_comment_icinga(
+                    config.host_name,
+                    config.service_name,
+                    f'[{config.rt.name} #{str(rt.ticket_id)}] - ticket created in RT')
+            else:
+                logger.warning(f"Didn't get valid Ticket for {config.host_displayname} {config.service_displayname} went {config.host_state}{config.service_state}, icinga comment skipped")
         else:
             logger.info("Get comment and comment on RT")
-            add_comment_rt(ticket_id)
+            rt.commentTicket()
     elif config.service_state == "OK" or config.host_state == "UP":
         logger.info(f"Host: {config.host_name}, Service: {config.service_name} back up")
-        add_comment_rt(ticket_id)
-        set_subject_recovered_rt(ticket_id)
-        set_status_rt(ticket_id)
+        rt.commentTicket()
+        rt.editTicketSubject(f"RECOVERED - {config.host_displayname} {config.service_displayname} went {config.host_state}{config.service_state}")
         icinga.delete_comments_icinga(comments)
     else:
         logger.info(f"Doing nothing becuase the service state ({config.service_state}) isn't CRITICAL or DOWN and the host state ({config.host_state}) isn't OK or UP")
 else:
     logger.info(f"Author {config.notification_author} acknowledged the problem")
-    add_comment_rt(ticket_id,)
+    rt.commentTicket(f"Author {config.notification_author} acknowledged the problem")

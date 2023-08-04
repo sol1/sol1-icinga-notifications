@@ -54,6 +54,8 @@ class SettingsNetbox(SettingsFile):
     api_device: str = '/api/dcim/devices'
     api_vm: str = '/api/virtualization/virtual-machines'
     api_ip: str = '/api/ipam/ip-addresses'
+    proxy: str = ''
+    timeout: str = 20
     _json_dict_key: str = 'netbox'
 
 @dataclasses.dataclass
@@ -209,12 +211,19 @@ class Netbox:
             self.ip_url = "{}/{}/".format(config.netbox.url + config.netbox.api_ip, nb_address_ip['id'])
 
     def __getServerData(self, url):
-        headers = {'Accept': 'application/json'}
+        args = {
+            'url': url,
+            'timeout': config.netbox.timeout,
+            'headers': {'Accept': 'application/json'}
+        }
+        if config.netbox.proxy:
+            args['proxies'] = {'http': config.netbox.proxy, 'https': config.netbox.proxy}
+
         if config.netbox.token:
-            headers.update({'Authorization': 'Token ' + config.netbox.token})
+            args['headers'].update({'Authorization': 'Token ' + config.netbox.token})
         try:
             logger.debug(f"Netbox request to url: {url}")
-            response = requests.get(url, headers=headers)
+            response = requests.get(**args)
             result = response.json()
         except Exception as e:
             logger.error("Error getting netbox data from {} with error {}".format(url, e))

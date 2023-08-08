@@ -242,7 +242,7 @@ class Netbox:
         try:
             val = obj.get(key1, '')
             if key2 is not None:
-                val.get(key2, '')
+                val = val.get(key2, '')
         except:
             return ''
         return str(val)

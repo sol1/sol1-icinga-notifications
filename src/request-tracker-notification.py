@@ -289,7 +289,7 @@ class RequestTracker:
             text = f"{text}\n{self.parseMultiLineField(message)}"
         if self.ticket_id is not None:
             try:
-                self.rt.comment(ticket_id=self.ticket_id, text=self.ticketMessage())
+                self.rt.comment(ticket_id=self.ticket_id, content=self.ticketMessage())
             except Exception as e:
                 logger.info(f"Error adding comment to existing ticket {self.ticket_id}: {e}")
         else:

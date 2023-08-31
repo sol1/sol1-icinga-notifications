@@ -302,8 +302,8 @@ class RequestTracker:
             try:
                 self.rt.edit_ticket(
                     ticket_id=self.ticket_id, 
-                    subject=subject,
-                    status=status
+                    Subject=subject,
+                    Status=status
                     )
                 
             except Exception as e:

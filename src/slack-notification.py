@@ -44,6 +44,9 @@ class Settings(SettingsParser):
     slack_max_message_length: int = 1000
     icingaweb2_url: str = ''
 
+    slack_layout_footer: bool = False
+    slack_layout_host_and_service: bool = False
+
     print_config: bool = False
 
     def __post_init__(self):
@@ -138,29 +141,31 @@ class Slack:
             "username": config.slack_botname,
             "attachments": [
                 {
-                    "footer": "Icinga Alerts",
                     "fallback": f"{config.notification_type} - {state}: {name}",
                     "color": color,
                     "text": f"```{output[:config.slack_max_message_length]}```",
                     "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
-                    "ts": datetime.timestamp(datetime.now()),
-                    "fields": [
-                        {
-                            "title": "Host",
-                            "value": f"<{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}|{config.host_displayname}>",
-                            "short": True
-                        }
-                    ]
                 }
             ]
         }
 
-        if config.service_state:
-            payload['attachments'][0]['fields'].append({
-                "title": "Service",
-                "value": f"<{link}|{config.service_displayname}>",
+        if config.slack_layout_footer:
+            payload['attachments'][0]['footer'] = "Icinga Alerts"
+            payload['attachments'][0]['ts'] = datetime.timestamp(datetime.now())
+
+        if config.slack_layout_host_and_service:
+            payload['attachments'][0]['fields'] = {
+                "title": "Host",
+                "value": f"<{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}|{config.host_displayname}>",
                 "short": True
-            })
+            }
+
+            if config.service_state:
+                payload['attachments'][0]['fields'].append({
+                    "title": "Service",
+                    "value": f"<{link}|{config.service_displayname}>",
+                    "short": True
+                })
 
         logger.debug(payload)
         return payload

@@ -1,0 +1,7 @@
+{
+    "slack": {
+        "icingaweb2_url": "",
+        "webhook_url": "",
+        "botname": "icinga2"
+    }
+}

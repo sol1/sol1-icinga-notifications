@@ -95,7 +95,7 @@ class Slack:
 
     @staticmethod
     def colors(icinga_state, notification_type):
-        icinga_state = str(icinga_state).upper
+        icinga_state = str(icinga_state).upper()
         if str(notification_type).upper() in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
             return ("#7F7F7F", "")
         elif icinga_state == "CRITICAL" or icinga_state == "DOWN":
@@ -117,8 +117,9 @@ class Slack:
         output = f"{config.host_output}"
         check_type = "Host"
         link = f"{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}"
-        color, icon = cls.colors(state, config.notification_type)
-        logger.debug(f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
+        (color, icon) = cls.colors(state, config.notification_type)
+        logger.debug(
+            f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
         if config.service_state:
             state = config.service_state
             state_last = config.service_state_last
@@ -142,16 +143,11 @@ class Slack:
                     "text": f"```{output[:config.slack_max_message_length]}```",
                     "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
                     "fields": [
-                                {
-                                    "title": "State",
-                                    "value": state,
-                                    "short": True
-                                },
                         {
-                                    "title": "Host",
-                                    "value": f"<{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}|{config.host_displayname}>",
-                                    "short": True
-                                }
+                            "title": "Host",
+                            "value": f"<{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}|{config.host_displayname}>",
+                            "short": True
+                        }
                     ]
                 }
             ]

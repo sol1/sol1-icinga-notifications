@@ -95,7 +95,7 @@ if $ALL || $REQUEST_TRACKER; then
 fi
 
 if $ALL || $SLACK; then
-    echo "Deploying Request Tracker Notifications"
+    echo "Deploying Slack Notifications"
     deploy_slack
 fi
 

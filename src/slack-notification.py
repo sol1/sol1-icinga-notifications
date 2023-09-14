@@ -149,7 +149,7 @@ class Slack:
                                 },
                         {
                                     "title": "Host",
-                                    "value": f"<{config.icingaweb2_url}/monitoring/host/services?host={config.host_name}|{config.host_displayname}>",
+                                    "value": f"<{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}|{config.host_displayname}>",
                                     "short": True
                                 }
                     ]
@@ -160,7 +160,7 @@ class Slack:
         if config.service_state:
             payload['attachments'][0]['fields'].append({
                 "title": "Service",
-                "value": f"<{config.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}|{config.service_displayname}>",
+                "value": f"<{link}|{config.service_displayname}>",
                 "short": True
             })
 

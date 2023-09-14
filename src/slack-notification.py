@@ -11,6 +11,7 @@ import urllib.parse
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
 
+from datetime import datetime
 from loguru import logger
 
 
@@ -142,6 +143,7 @@ class Slack:
                     "color": color,
                     "text": f"```{output[:config.slack_max_message_length]}```",
                     "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
+                    "ts": datetime.timestamp(datetime.now()),
                     "fields": [
                         {
                             "title": "Host",

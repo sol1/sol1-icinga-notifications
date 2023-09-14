@@ -291,7 +291,7 @@ class RequestTracker:
             try:
                 self.rt.comment(ticket_id=self.ticket_id, content=self.ticketMessage())
             except Exception as e:
-                logger.info(f"Error adding comment to existing ticket {self.ticket_id}: {e}")
+                logger.error(f"Error adding comment to existing ticket {self.ticket_id}: {e}")
         else:
             logger.warning("Can't comment on ticket without valid ticket number")
         
@@ -302,12 +302,12 @@ class RequestTracker:
             try:
                 self.rt.edit_ticket(
                     ticket_id=self.ticket_id, 
-                    subject=subject,
-                    status=status
+                    Subject=subject,
+                    Status=status
                     )
                 
             except Exception as e:
-                logger.info(f"Error editing existing ticket {self.ticket_id}: {e}")
+                logger.error(f"Error editing existing ticket {self.ticket_id}: {e}")
         else:
             logger.warning("Can't edit on ticket without valid ticket number")
 

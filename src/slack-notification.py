@@ -94,7 +94,8 @@ class Slack:
 
     @staticmethod
     def colors(icinga_state, notification_type):
-        if notification_type in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
+        icinga_state = str(icinga_state).upper
+        if str(notification_type).upper() in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
             return ("#7F7F7F", "")
         elif icinga_state == "CRITICAL" or icinga_state == "DOWN":
             return ("#FF5566", ":red_circle: ")
@@ -110,21 +111,24 @@ class Slack:
     @classmethod
     def payload(cls):
         state = config.host_state
+        state_last = config.host_state_last
         name = f"{config.host_displayname}"
         output = f"{config.host_output}"
         check_type = "Host"
         link = f"{config.icingaweb2_url}/monitoring/host/services?host={config.host_name}"
         color, icon = cls.colors(state, config.notification_type)
+        logger.debug(f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
         if config.service_state:
             state = config.service_state
+            state_last = config.service_state_last
             name = f"{config.host_displayname} - {config.service_displayname}"
             output = f"{config.service_output}"
             check_type = "Service"
             link = f"{config.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}"
 
-        update_string = "is still in"
+        update_string = f"is {state}"
         if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:
-            update_string = "transitioned from"
+            update_string = f"transitioned from {state_last} to {state}"
 
         payload = {
             "channel": config.slack_channel,
@@ -135,7 +139,7 @@ class Slack:
                     "fallback": f"{config.notification_type} - {state}: {name}",
                     "color": color,
                     "text": f"```{output[:config.slack_max_message_length]}```",
-                    "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string} {state}",
+                    "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
                     "fields": [
                                 {
                                     "title": "State",

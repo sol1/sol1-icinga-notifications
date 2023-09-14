@@ -62,6 +62,8 @@ class Settings(SettingsParser):
             print(traceback.format_exc())
             sys.exit()
 
+        self.icingaweb2_url = self.icingaweb2_url.rstrip('/')
+
     def _init_args(self):
         parser = argparse.ArgumentParser(description='Icinga2 plugin to send slack notifications')
         for arg in self._getArgVarList():

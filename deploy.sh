@@ -99,7 +99,7 @@ if $ALL || $SLACK; then
     deploy_slack
 fi
 
-if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER; then
+if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER || $SLACK; then
     deploy_library
     install_requirements
 fi

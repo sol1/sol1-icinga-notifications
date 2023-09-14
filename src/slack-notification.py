@@ -118,9 +118,6 @@ class Slack:
         output = f"{config.host_output}"
         check_type = "Host"
         link = f"{config.icingaweb2_url}/icingaweb2/icingadb/host?name={urllib.parse.quote(config.host_name)}"
-        (color, icon) = cls.colors(state, config.notification_type)
-        logger.debug(
-            f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
         if config.service_state:
             state = config.service_state
             state_last = config.service_state_last
@@ -128,6 +125,9 @@ class Slack:
             output = f"{config.service_output}"
             check_type = "Service"
             link = f"{config.icingaweb2_url}/icingaweb2/icingadb/service?host.name={urllib.parse.quote(config.host_name)}&name={urllib.parse.quote(config.service_name)}"
+        (color, icon) = cls.colors(state, config.notification_type)
+        logger.debug(
+            f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
 
         update_string = f"is {state}"
         if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:

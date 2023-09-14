@@ -19,7 +19,7 @@ class Settings(SettingsParser):
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['config_file'])
 
     # config_file: str = 'config/slack-notification.json'
-    debug: bool = True
+    debug: bool = False
     disable_log_file: bool = False
 
     host_name: str = ''

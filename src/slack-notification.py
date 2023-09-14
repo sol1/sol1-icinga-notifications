@@ -2,10 +2,11 @@
 
 import argparse
 import dataclasses
+import json
+import requests
 import sys
 import traceback
-import requests
-import json
+import urllib.parse
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
@@ -115,16 +116,16 @@ class Slack:
         name = f"{config.host_displayname}"
         output = f"{config.host_output}"
         check_type = "Host"
-        link = f"{config.icingaweb2_url}/monitoring/host/services?host={config.host_name}"
+        link = f"{config.icingaweb2_url}/monitoring/host/services?host={urllib.parse.quote(config.host_name)}"
         color, icon = cls.colors(state, config.notification_type)
         logger.debug(f"color = {color}, icon = {icon} from state = {state}, notification_type = {config.notification_type})")
         if config.service_state:
             state = config.service_state
             state_last = config.service_state_last
-            name = f"{config.host_displayname} - {config.service_displayname}"
+            name = f"{name} - {config.service_displayname}"
             output = f"{config.service_output}"
             check_type = "Service"
-            link = f"{config.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}"
+            link = f"{link}&service={urllib.parse.quote(config.service_name)}"
 
         update_string = f"is {state}"
         if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:

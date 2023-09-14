@@ -23,6 +23,10 @@ for arg in "$@"; do
         REQUEST_TRACKER=true
         shift # Remove --request-tracker from processing
         ;;
+        -s|--slack)
+        SLACK=true
+        shift # Remove --slack from processing
+        ;;
         -u|--icinga2-user)
         ICINGA2_USER=$2
         shift # Remove --icinga-user from processing
@@ -74,6 +78,12 @@ deploy_request_tracker() {
     chmod +x "$ICINGA2_SCRIPT_DIR/request-tracker-notification.py"
 }
 
+deploy_slack() {
+    cp ./src/slack-notification.py "$ICINGA2_SCRIPT_DIR" 
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/slack-notification.py"
+    chmod +x "$ICINGA2_SCRIPT_DIR/slack-notification.py"
+}
+
 if $ALL || $ENHANCED_EMAIL; then
     echo "Deploying Enhanced Email Notifications"
     deploy_enhanced_email
@@ -82,6 +92,11 @@ fi
 if $ALL || $REQUEST_TRACKER; then
     echo "Deploying Request Tracker Notifications"
     deploy_request_tracker
+fi
+
+if $ALL || $SLACK; then
+    echo "Deploying Request Tracker Notifications"
+    deploy_slack
 fi
 
 if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER; then

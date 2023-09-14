@@ -14,26 +14,10 @@ from loguru import logger
 
 
 @dataclasses.dataclass
-class SettingsFile(SettingsParser):
-    def __post_init__(self):
-        self.loadConfigDict()
-
-
-@dataclasses.dataclass
-class SettingsSlack(SettingsFile):
-    icingaweb2_url: str = ''
-    webhook_url: str = ''
-    botname: str = 'icinga2'
-    _json_dict_key: str = 'slack'
-
-
-@dataclasses.dataclass
 class Settings(SettingsParser):
-    slack: object = None
-    icinga: object = None
-    _exclude_all: list = dataclasses.field(default_factory=lambda: ['slack'])
+    _exclude_all: list = dataclasses.field(default_factory=lambda: ['config_file'])
 
-    config_file: str = 'config/slack-notification.json'
+    # config_file: str = 'config/slack-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
@@ -41,16 +25,22 @@ class Settings(SettingsParser):
     host_displayname: str = ''
     host_address: str = ''
     host_state: str = ''
+    host_state_last: str = ''
     host_output: str = ''
     service_name: str = ''
     service_displayname: str = ''
     service_state: str = ''
+    service_state_last: str = ''
     service_output: str = ''
     notification_author: str = ''
     notification_comment: str = ''
     notification_type: str = ''
 
     slack_channel: str = '#alerts'
+    slack_webhook_url: str = ''
+    slack_botname: str = 'icinga2'
+    slack_max_message_length: int = 1000
+    icingaweb2_url: str = ''
 
     print_config: bool = False
 
@@ -58,15 +48,10 @@ class Settings(SettingsParser):
         try:
             self._exclude_from_args.extend(self._exclude_all)
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
-            self._env_prefix = "NOTIFY_RT_"
+            self._env_prefix = "NOTIFY_SLACK_"
             self.loadEnvironmentVars()
             self._args = self._init_args()
             self.loadArgs(self._args)
-
-            # These set in the config file will override the args
-            self._include_from_file = ['debug', 'disable_log_file']
-
-            self.loadConfigJsonFile()
 
             # Sensible defaults after loading everything
             if self.host_address == '':
@@ -100,64 +85,66 @@ class Settings(SettingsParser):
 
 
 class Slack:
-    def __init__(self, channel) -> None:
-        self.channel = channel
+    def __init__(self) -> None:
         self.headers = {
             'Content-Type': 'application/json'
         }
 
     @staticmethod
-    def color(icinga_state, notification_type):
+    def colors(icinga_state, notification_type):
         if notification_type in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
-            return "#7F7F7F"
-        elif icinga_state == "CRITICAL":
-            return "#FF5566"
+            return ("#7F7F7F", "")
+        elif icinga_state == "CRITICAL" or icinga_state == "DOWN":
+            return ("#FF5566", ":red_circle: ")
         elif icinga_state == "WARNING":
-            return "#FFAA44"
-        elif icinga_state == "OK":
-            return "#44BB77"
+            return ("#FFAA44", ":large_yellow_circle: ")
+        elif icinga_state == "OK" or icinga_state == "UP":
+            return ("#44BB77", ":large_green_circle: ")
         elif icinga_state == "UNKNOWN":
-            return "#800080"
+            return ("#800080")
         else:
-            return ""
+            return ("", "")
 
-    def payload(self):
+    @classmethod
+    def payload(cls):
         state = config.host_state
         name = f"{config.host_displayname}"
         output = f"{config.host_output}"
+        check_type = "Host"
+        link = f"{config.icingaweb2_url}/monitoring/host/services?host={config.host_name}"
+        color, icon = cls.colors(state, config.notification_type)
         if config.service_state:
             state = config.service_state
             name = f"{config.host_displayname} - {config.service_displayname}"
             output = f"{config.service_output}"
+            check_type = "Service"
+            link = f"{config.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}"
+
+        update_string = "is still in"
+        if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:
+            update_string = "transitioned from"
 
         payload = {
-            "channel": self.channel,
-            "username": config.slack.botname,
+            "channel": config.slack_channel,
+            "username": config.slack_botname,
             "attachments": [
                 {
+                    "footer": "Icinga Alerts",
                     "fallback": f"{config.notification_type} - {state}: {name}",
-                    "color": self.color(state, config.notification_type),
+                    "color": color,
+                    "text": f"```{output[:config.slack_max_message_length]}```",
+                    "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string} {state}",
                     "fields": [
+                                {
+                                    "title": "State",
+                                    "value": state,
+                                    "short": True
+                                },
                         {
-                            "title": "Type",
-                            "value": config.notification_type,
-                            "short": True
-                        },
-                        {
-                            "title": "State",
-                            "value": state,
-                            "short": True
-                        },
-                        {
-                            "title": "Host",
-                            "value": f"<{config.slack.icingaweb2_url}/monitoring/host/services?host={config.host_name}|{config.host_displayname}>",
-                            "short": True
-                        },
-                        {
-                            "title": "Information",
-                            "value": output,
-                            "short": False
-                        },
+                                    "title": "Host",
+                                    "value": f"<{config.icingaweb2_url}/monitoring/host/services?host={config.host_name}|{config.host_displayname}>",
+                                    "short": True
+                                }
                     ]
                 }
             ]
@@ -165,34 +152,25 @@ class Slack:
 
         if config.service_state:
             payload['attachments'][0]['fields'].append({
-                            "title": "Service",
-                            "value": f"{config.slack.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}|{config.service_displayname}>",
-                            "short": True
-                        })
-            
+                "title": "Service",
+                "value": f"<{config.icingaweb2_url}/monitoring/service/show?host={config.host_name}&service={config.service_name}|{config.service_displayname}>",
+                "short": True
+            })
+
         logger.debug(payload)
         return payload
 
     def post(self):
-        response = requests.post(url=config.slack.webhook_url, headers=self.headers, json=self.payload())
-        if response.status_code not in [200,201,300,301]:
-            logger.error(f"Post to slack url {config.slack.webhook_url} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+        response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload())
+        if response.status_code not in [200, 201, 300, 301]:
+            logger.error(
+                f"Post to slack url {config.slack_webhook_url} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
         else:
             logger.success(f"Successfully posted to Slack")
 
 
-
 if __name__ == "__main__":
     config = Settings()
-    config.slack = SettingsSlack(_config_dict=config._config_dict)
-
-    logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
-
-    # Init logging
-    if config.debug:
-        initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-slack.log")
-    else:
-        initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-slack.log")
 
     if config.print_config:
         logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
@@ -200,5 +178,13 @@ if __name__ == "__main__":
         config.printEnvironmentVars()
         sys.exit(0)
 
-    slack = Slack(config.slack_channel)
+    # Init logging
+    if config.debug:
+        initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-slack.log")
+    else:
+        initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-slack.log")
+
+    logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
+
+    slack = Slack()
     slack.post()

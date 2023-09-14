@@ -1,0 +1,114 @@
+{
+    "Command": {
+        "cmd_notification_slack": {
+            "arguments": {
+                "--config-file": {
+                    "description": "Path to config file (Default: config/slack-notification.json)",
+                    "value": "$slack_notification_config_file$",
+                    "order": "5"
+                },
+                "--host-name": {
+                    "description": "Icinga Host Object Name",
+                    "value": "$slack_notification_host_name$",
+                    "order": "10"
+                },
+                "--host-displayname": {
+                    "description": "Icinga Host Display Name",
+                    "value": "$slack_notification_host_display_name$",
+                    "order": "10"
+                },
+                "--host-address": {
+                    "description": "Icinga Host Address",
+                    "value": "$slack_notification_host_address$",
+                    "order": "10"
+                },
+                "--host-state": {
+                    "description": "Icinga Host State",
+                    "value": "$slack_notification_host_state$",
+                    "order": "10"
+                },
+                "--host-state-last": {
+                    "description": "Icinga Host Previous State",
+                    "value": "$slack_notification_host_state_last$",
+                    "order": "10"
+                },
+                "--host-output": {
+                    "description": "Icinga Host Output",
+                    "value": "$slack_notification_host_output$",
+                    "order": "10"
+                },
+                "--service-name": {
+                    "description": "Icinga Service Object Name",
+                    "value": "$slack_notification_service_name$",
+                    "order": "15"
+                },
+                "--service-displayname": {
+                    "description": "Icinga Service Display Name",
+                    "value": "$slack_notification_service_display_name$",
+                    "order": "15"
+                },
+                "--service-state": {
+                    "description": "Icinga Service State",
+                    "value": "$slack_notification_service_state$",
+                    "order": "15"
+                },
+                "--service-state-last": {
+                    "description": "Icinga Service Previous State",
+                    "value": "$slack_notification_service_state_last$",
+                    "order": "15"
+                },
+                "--service-output": {
+                    "description": "Icinga Service Output",
+                    "value": "$slack_notification_service_output$",
+                    "order": "15"
+                },
+                "--notification-type": {
+                    "description": "Icinga Notification Type",
+                    "value": "$slack_notification_notification_type$",
+                    "order": "20"
+                },
+                "--notification-author": {
+                    "description": "Icinga Notification Author",
+                    "value": "$slack_notification_notification_author$",
+                    "order": "20"
+                },
+                "--notification-comment": {
+                    "description": "Icinga Notification Comment",
+                    "value": "$slack_notification_notification_comment$",
+                    "order": "20"
+                },
+                "--slack-channel": {
+                    "description": "Slack channel name, eg: #alerts",
+                    "value": "$slack_notification_slack_channel$",
+                    "order": "25"
+                },
+                "--slack-webhook-url": {
+                    "description": "Slack webhook url",
+                    "value": "$slack_notification_slack_webhook_url$",
+                    "order": "25"
+                },
+                "--slack-botname": {
+                    "description": "Slack botname",
+                    "value": "$slack_notification_slack_botname$",
+                    "order": "25"
+                },
+                "--slack-max-message-length": {
+                    "description": "Max output length to include in slack output",
+                    "value": "$slack_notification_slack_max-message-lenght$",
+                    "order": "25"
+                },
+                "--icingaweb2-url": {
+                    "description": "Icingaweb2 url used for links",
+                    "value": "$slack_notification_icingaweb2_url$",
+                    "order": "25"
+                }
+            },
+            "command": "/etc/icinga2/scripts/slack-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_slack",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    }
+}

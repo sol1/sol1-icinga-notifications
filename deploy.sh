@@ -4,12 +4,18 @@
 ALL=false
 ENHANCED_EMAIL=false
 REQUEST_TRACKER=false
-ICINGA2_SCRIPT_DIR="/etc/icinga2/scripts"
+SLACK=false
+REQUIREMENTS=false
+# default icinga2 user
 ICINGA2_USER="nagios"
+
+# hardcode the script dir, change this if you want another base directory
+ICINGA2_SCRIPT_DIR="/etc/icinga2/scripts"
 
 
 # Check the provided arguments
-for arg in "$@"; do
+while [[ "$#" -gt 0 ]]; do
+    arg="$1"
     case $arg in
         -a|--all)
         ALL=true
@@ -26,6 +32,10 @@ for arg in "$@"; do
         -s|--slack)
         SLACK=true
         shift # Remove --slack from processing
+        ;;
+        -p|--requirements)
+        REQUIREMENTS=true
+        shift # Remove --requirements from processing
         ;;
         -u|--icinga2-user)
         ICINGA2_USER=$2
@@ -47,8 +57,20 @@ deploy_library() {
     chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/lib/*"
 }
 
-install_requirements() {
+install_all_requirements() {
     python3 -m pip install -r requirements.txt
+}
+
+install_enhanced_email_requirements() {
+    python3 -m pip install -r requirements-enhanced-email.txt
+}
+
+install_request_tracker_requirements() {
+    python3 -m pip install -r requirements-request-tracker.txt
+}
+
+install_slack_requirements() {
+    python3 -m pip install -r requirements-slack.txt
 }
 
 deploy_config() {
@@ -87,20 +109,32 @@ deploy_slack() {
 if $ALL || $ENHANCED_EMAIL; then
     echo "Deploying Enhanced Email Notifications"
     deploy_enhanced_email
+    if $REQUIREMENTS; then
+        install_enhanced_email_requirements
+    fi
 fi
 
 if $ALL || $REQUEST_TRACKER; then
     echo "Deploying Request Tracker Notifications"
     deploy_request_tracker
+    if $REQUIREMENTS; then
+        install_request_tracker_requirements
+    fi
 fi
 
 if $ALL || $SLACK; then
     echo "Deploying Slack Notifications"
     deploy_slack
+    if $REQUIREMENTS; then
+        install_slack_requirements
+    fi
+
 fi
 
 if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER || $SLACK; then
     deploy_library
-    install_requirements
+    if $REQUIREMENTS; then
+        install_all_requirements
+    fi
 fi
 

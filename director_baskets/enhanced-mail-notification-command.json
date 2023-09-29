@@ -4,117 +4,117 @@
             "arguments": {
                 "--config-file": {
                     "description": "Path to config file (Default: config/enhanced-mail-notification.json)",
-                    "value": "$enhanced_notification_config_file$",
+                    "value": "$enhanced_mail_notification_config_file$",
                     "order": "5"
                 },
                 "--email-to": {
                     "description": "Email address to send the notification to",
-                    "value": "$enhanced_notification_email_to$",
+                    "value": "$enhanced_mail_notification_email_to$",
                     "order": "8"
                 },
                 "--host-name": {
                     "description": "Icinga Host Object Name",
-                    "value": "$enhanced_notification_host_name$",
+                    "value": "$enhanced_mail_notification_host_name$",
                     "order": "10"
                 },
                 "--host-display-name": {
                     "description": "Icinga Host Display Name",
-                    "value": "$enhanced_notification_host_display_name$",
+                    "value": "$enhanced_mail_notification_host_display_name$",
                     "order": "10"
                 },
                 "--host-address": {
                     "description": "Icinga Host Address",
-                    "value": "$enhanced_notification_host_address$",
+                    "value": "$enhanced_mail_notification_host_address$",
                     "order": "10"
                 },
                 "--host-state": {
                     "description": "Icinga Host State",
-                    "value": "$enhanced_notification_host_state$",
+                    "value": "$enhanced_mail_notification_host_state$",
                     "order": "10"
                 },
                 "--host-output": {
                     "description": "Icinga Host Output",
-                    "value": "$enhanced_notification_host_output$",
+                    "value": "$enhanced_mail_notification_host_output$",
                     "order": "10"
                 },
                 "--service-name": {
                     "description": "Icinga Service Object Name",
-                    "value": "$enhanced_notification_service_name$",
+                    "value": "$enhanced_mail_notification_service_name$",
                     "order": "15"
                 },
                 "--service-display-name": {
                     "description": "Icinga Service Display Name",
-                    "value": "$enhanced_notification_service_display_name$",
+                    "value": "$enhanced_mail_notification_service_display_name$",
                     "order": "15"
                 },
                 "--service-command": {
                     "description": "Icinga Service Command",
-                    "value": "$enhanced_notification_service_command$",
+                    "value": "$enhanced_mail_notification_service_command$",
                     "order": "15"
                 },
                 "--service-state": {
                     "description": "Icinga Service State",
-                    "value": "$enhanced_notification_service_state$",
+                    "value": "$enhanced_mail_notification_service_state$",
                     "order": "15"
                 },
                 "--service-output": {
                     "description": "Icinga Service Output",
-                    "value": "$enhanced_notification_service_output$",
+                    "value": "$enhanced_mail_notification_service_output$",
                     "order": "15"
                 },
                 "--performance-data": {
                     "description": "Icinga Performance Data",
-                    "value": "$enhanced_notification_performance_data$",
+                    "value": "$enhanced_mail_notification_performance_data$",
                     "order": "20"
                 },
                 "--long-date-time": {
                     "description": "Notification Long Date/Time",
-                    "value": "$enhanced_notification_long_date_time$",
+                    "value": "$enhanced_mail_notification_long_date_time$",
                     "order": "20"
                 },
                 "--notification-type": {
                     "description": "Icinga Notification Type",
-                    "value": "$enhanced_notification_notification_type$",
+                    "value": "$enhanced_mail_notification_notification_type$",
                     "order": "20"
                 },
                 "--notification-author": {
                     "description": "Icinga Notification Author",
-                    "value": "$enhanced_notification_notification_author$",
+                    "value": "$enhanced_mail_notification_notification_author$",
                     "order": "20"
                 },
                 "--notification-comment": {
                     "description": "Icinga Notification Comment",
-                    "value": "$enhanced_notification_notification_comment$",
+                    "value": "$enhanced_mail_notification_notification_comment$",
                     "order": "20"
                 },
                 "--netbox-host-name": {
                     "description": "Netbox Object Name, used to search Netbox for device or vm",
-                    "value": "$enhanced_notification_netbox_host_name$",
+                    "value": "$enhanced_mail_notification_netbox_host_name$",
                     "order": "25"
                 },
                 "--netbox-host-ip": {
                     "description": "Netbox IP, used to lookup IP address in Netbox",
-                    "value": "$enhanced_notification_netbox_host_ip$",
+                    "value": "$enhanced_mail_notification_netbox_host_ip$",
                     "order": "25"
                 },
                 "--grafana-host-name": {
                     "description": "",
-                    "value": "$enhanced_notification_grafana_host_name$",
+                    "value": "$enhanced_mail_notification_grafana_host_name$",
                     "order": "30"
                 },
                 "--grafana-panel-id": {
                     "description": "",
-                    "value": "$enhanced_notification_grafana_panel_id$",
+                    "value": "$enhanced_mail_notification_grafana_panel_id$",
                     "order": "30"
                 },
                 "--table-width": {
                     "description": "",
-                    "value": "$enhanced_notification_table_width$",
+                    "value": "$enhanced_mail_notification_table_width$",
                     "order": "40"
                 },
                 "--column-width": {
                     "description": "",
-                    "value": "$enhanced_notification_column_width$",
+                    "value": "$enhanced_mail_notification_column_width$",
                     "order": "40"
                 }
             },

@@ -69,12 +69,12 @@
                 },
                 "--rt-requestor": {
                     "description": "RT requestor",
-                    "value": "$rt_notification_netbox_host_name$",
+                    "value": "$rt_notification_rt_requestor$",
                     "order": "25"
                 },
                 "--rt-queue": {
                     "description": "RT Queue",
-                    "value": "$rt_notification_netbox_host_ip$",
+                    "value": "$rt_notification_rt_queue$",
                     "order": "25"
                 }
             },
@@ -84,6 +84,195 @@
             "object_name": "cmd_notification_request-tracker",
             "object_type": "object",
             "timeout": "60"
+        }
+    },
+    "Datefield": {
+        "1050": {
+            "varname": "rt_notification_config_file",
+            "caption": "rt_notification_config_file",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1051": {
+            "varname": "rt_notification_debug",
+            "caption": "rt_notification_debug",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1052": {
+            "varname": "rt_notification_disable_log_file",
+            "caption": "rt_notification_disable_log_file",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1053": {
+            "varname": "rt_notification_host_address",
+            "caption": "rt_notification_host_address",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1054": {
+            "varname": "rt_notification_host_displayname",
+            "caption": "rt_notification_host_displayname",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1055": {
+            "varname": "rt_notification_host_name",
+            "caption": "rt_notification_host_name",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1056": {
+            "varname": "rt_notification_host_output",
+            "caption": "rt_notification_host_output",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1057": {
+            "varname": "rt_notification_host_state",
+            "caption": "rt_notification_host_state",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1058": {
+            "varname": "rt_notification_notification_author",
+            "caption": "rt_notification_notification_author",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1059": {
+            "varname": "rt_notification_notification_comment",
+            "caption": "rt_notification_notification_comment",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1060": {
+            "varname": "rt_notification_notification_type",
+            "caption": "rt_notification_notification_type",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1061": {
+            "varname": "rt_notification_rt_queue",
+            "caption": "rt_notification_rt_queue",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1062": {
+            "varname": "rt_notification_rt_requestor",
+            "caption": "rt_notification_rt_requestor",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1063": {
+            "varname": "rt_notification_service_displayname",
+            "caption": "rt_notification_service_displayname",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1064": {
+            "varname": "rt_notification_service_name",
+            "caption": "rt_notification_service_name",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1065": {
+            "varname": "rt_notification_service_output",
+            "caption": "rt_notification_service_output",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1066": {
+            "varname": "rt_notification_service_state",
+            "caption": "rt_notification_service_state",
+            "description": null,
+            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
         }
     }
 }

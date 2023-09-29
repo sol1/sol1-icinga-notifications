@@ -1,0 +1,6 @@
+{
+    "netbox": {
+        "url": "https://netbox.example.com",
+        "token": "abcdefghijklmnopqrstuvwxyznowyoucanchangeme",
+    }
+}

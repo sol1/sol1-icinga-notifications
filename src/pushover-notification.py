@@ -17,7 +17,8 @@ from loguru import logger
 
 @dataclasses.dataclass
 class Settings(SettingsParser):
-    config_file: str = 'config/pushover-notification.json'
+    _exclude_all: list = dataclasses.field(default_factory=lambda: ['config_file'])
+
     debug: bool = False
     disable_log_file: bool = False
 
@@ -44,7 +45,8 @@ class Settings(SettingsParser):
 
     def __post_init__(self):
         try:
-            self._exclude_from_env.extend(['print_config'])
+            self._exclude_from_args.extend(self._exclude_all)
+            self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_PUSHOVER_"
             self.loadEnvironmentVars()
             self._args = self._init_args()

@@ -5,6 +5,7 @@ ALL=false
 ENHANCED_EMAIL=false
 REQUEST_TRACKER=false
 SLACK=false
+PUSHOVER=false
 REQUIREMENTS=false
 # default icinga2 user
 ICINGA2_USER="nagios"
@@ -32,6 +33,10 @@ while [[ "$#" -gt 0 ]]; do
         -s|--slack)
         SLACK=true
         shift # Remove --slack from processing
+        ;;
+        -s|--pushover)
+        PUSHOVER=true
+        shift # Remove --pushover from processing
         ;;
         -p|--requirements)
         REQUIREMENTS=true
@@ -73,6 +78,10 @@ install_slack_requirements() {
     python3 -m pip install -r requirements-slack.txt
 }
 
+install_pushover_requirements() {
+    python3 -m pip install -r requirements-pushover.txt
+}
+
 deploy_config() {
     file=$1
     file_name=$(basename "$file")
@@ -106,6 +115,12 @@ deploy_slack() {
     chmod +x "$ICINGA2_SCRIPT_DIR/slack-notification.py"
 }
 
+deploy_pushover() {
+    cp ./src/pushover-notification.py "$ICINGA2_SCRIPT_DIR" 
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/pushover-notification.py"
+    chmod +x "$ICINGA2_SCRIPT_DIR/pushover-notification.py"
+}
+
 if $ALL || $ENHANCED_EMAIL; then
     echo "Deploying Enhanced Email Notifications"
     deploy_enhanced_email
@@ -128,10 +143,17 @@ if $ALL || $SLACK; then
     if $REQUIREMENTS; then
         install_slack_requirements
     fi
-
 fi
 
-if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER || $SLACK; then
+if $ALL || $PUSHOVER; then
+    echo "Deploying Pushover Notifications"
+    deploy_pushover
+    if $REQUIREMENTS; then
+        install_pushover_requirements
+    fi
+fi
+
+if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER || $SLACK || $PUSHOVER; then
     deploy_library
     if $REQUIREMENTS; then
         install_all_requirements

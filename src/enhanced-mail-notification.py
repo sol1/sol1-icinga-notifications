@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # ------------
-# Host notification script for Icinga2
+# Originally based on the Host notification script for Icinga2
 # v.20160504 by mmarodin
 #
 # https://github.com/mmarodin/icinga2-plugins

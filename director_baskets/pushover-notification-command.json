@@ -81,7 +81,7 @@
                     "description": "Pushover user",
                     "value": "$pushover_notification_pushover_user$",
                     "order": "25"
-                },
+                }
             },
             "command": "/etc/icinga2/scripts/pushover-notification.py",
             "fields": [],

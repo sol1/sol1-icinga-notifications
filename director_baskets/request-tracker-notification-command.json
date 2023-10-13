@@ -1,6 +1,6 @@
 {
     "Command": {
-        "cmd_notification_request-tracker": {
+        "cmd_notification_request_tracker": {
             "arguments": {
                 "--config-file": {
                     "description": "Path to config file (Default: config/request-tracker-notification.json)",
@@ -81,193 +81,323 @@
             "command": "/etc/icinga2/scripts/request-tracker-notification.py",
             "fields": [],
             "methods_execute": "PluginNotification",
-            "object_name": "cmd_notification_request-tracker",
+            "object_name": "cmd_notification_request_tracker",
             "object_type": "object",
             "timeout": "60"
         }
     },
-    "Datefield": {
-        "1050": {
+    "NotificationTemplate": {
+        "nott_Request_Tracker": {
+            "command": "cmd_notification_request_tracker",
+            "fields": [
+                {
+                    "datafield_id": 1140,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1141,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1142,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1143,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1144,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1145,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1148,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1149,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1150,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1151,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1152,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "object_name": "nott_Request_Tracker",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_host_address": "$host.address$",
+                "rt_notification_host_display_name": "$host.display_name$",
+                "rt_notification_host_name": "$host.name$",
+                "rt_notification_notification_author": "$notification.author$",
+                "rt_notification_notification_comment": "$notification.comment$",
+                "rt_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_Request_Tracker_Host": {
+            "fields": [
+                {
+                    "datafield_id": 1146,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1147,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "imports": [
+                "nott_Request_Tracker"
+            ],
+            "object_name": "nott_Request_Tracker_Host",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_host_output": "$host.output$",
+                "rt_notification_host_state": "$host.state$"
+            }
+        },
+        "nott_Request_Tracker_Service": {
+            "fields": [
+                {
+                    "datafield_id": 1153,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1154,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1155,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1156,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "imports": [
+                "nott_Request_Tracker"
+            ],
+            "object_name": "nott_Request_Tracker_Service",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_service_display_name": "$service.display_name$",
+                "rt_notification_service_name": "$service.name$",
+                "rt_notification_service_output": "$service.output$",
+                "rt_notification_service_state": "$service.state$"
+            }
+        }
+    },
+    "Datafield": {
+        "1140": {
             "varname": "rt_notification_config_file",
             "caption": "rt_notification_config_file",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1051": {
+        "1141": {
             "varname": "rt_notification_debug",
             "caption": "rt_notification_debug",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1052": {
+        "1142": {
             "varname": "rt_notification_disable_log_file",
             "caption": "rt_notification_disable_log_file",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1053": {
+        "1143": {
             "varname": "rt_notification_host_address",
             "caption": "rt_notification_host_address",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1054": {
+        "1144": {
             "varname": "rt_notification_host_displayname",
             "caption": "rt_notification_host_displayname",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1055": {
+        "1145": {
             "varname": "rt_notification_host_name",
             "caption": "rt_notification_host_name",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1056": {
+        "1146": {
             "varname": "rt_notification_host_output",
             "caption": "rt_notification_host_output",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1057": {
+        "1147": {
             "varname": "rt_notification_host_state",
             "caption": "rt_notification_host_state",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1058": {
+        "1148": {
             "varname": "rt_notification_notification_author",
             "caption": "rt_notification_notification_author",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1059": {
+        "1149": {
             "varname": "rt_notification_notification_comment",
             "caption": "rt_notification_notification_comment",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1060": {
+        "1150": {
             "varname": "rt_notification_notification_type",
             "caption": "rt_notification_notification_type",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1061": {
+        "1151": {
             "varname": "rt_notification_rt_queue",
             "caption": "rt_notification_rt_queue",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1062": {
+        "1152": {
             "varname": "rt_notification_rt_requestor",
             "caption": "rt_notification_rt_requestor",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1063": {
+        "1153": {
             "varname": "rt_notification_service_displayname",
             "caption": "rt_notification_service_displayname",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1064": {
+        "1154": {
             "varname": "rt_notification_service_name",
             "caption": "rt_notification_service_name",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1065": {
+        "1155": {
             "varname": "rt_notification_service_output",
             "caption": "rt_notification_service_output",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "1066": {
+        "1156": {
             "varname": "rt_notification_service_state",
             "caption": "rt_notification_service_state",
             "description": null,
-            "datetype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
             "settings": {
                 "visibility": "visible"

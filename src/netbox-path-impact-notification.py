@@ -7,12 +7,12 @@ import requests
 import sys
 import traceback
 import urllib.parse
+import subprocess
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
 
 from loguru import logger
-import pynetbox
 
 # Helper to load config from file
 @dataclasses.dataclass
@@ -57,8 +57,8 @@ class Settings(SettingsParser):
     notification_comment: str = ''
     notification_type: str = ''
 
-    sms_provider: str = ''
-    sms_number: str = ''
+    object_type: str = ''
+    notification_script: str = ''
 
     print_config: bool = False
 
@@ -74,6 +74,7 @@ class Settings(SettingsParser):
             # Debug set in the config file will override the args
             self._include_from_file = ['debug', 'disable_log_file']
             self.loadConfigJsonFile()
+            self.object_type = self.object_type.replace('.', '/')
 
         except Exception as e:
             print("Failed to initialize {e}")
@@ -108,15 +109,11 @@ class Netbox:
 
     :ivar host: dict : api data to the host for the NETBOXBASE and host_name
     :ivar host_url: str : url to the host for the NETBOXBASE and host_name
-    :ivar ip: dict : api data to the host ip address for the NETBOXBASE and host_name
-    :ivar ip_url: str : url to the host ip address for the NETBOXBASE and host_name
     """
 
     def __init__(self, config):
         self.config = config
         self.host = {}
-        self.host_url = ''
-        self.ip_url = ''
         self.type = ''
         logger.debug(f"Initalizing the Netbox class with host: {self.config.host_name}, netbox url: {self.config.netbox.url}")
 
@@ -124,27 +121,17 @@ class Netbox:
             self.__parse()
 
     def __parse(self):
-        """ Search netbox for
-
+        """ 
+        Search netbox for host
         :return:
         """
-        nb_device = self.__searchData(self.config.netbox.url + self.config.netbox.api_device + '/?name=' + self.config.host_name)
-        nb_vm = self.__searchData(self.config.netbox.url + self.config.netbox.api_vm + '/?name=' + self.config.host_name)
-
-        logger.debug(json.dumps(nb_device, indent=4, sort_keys=True))
-        logger.debug(json.dumps(dict(nb_vm), indent=4, sort_keys=True))
-        if nb_device and not nb_vm:
-            self.host = nb_device
-            self.type = self.config.netbox.api_device.split('/api')[1].replace('/', '.')
-            self.host_url = "{}/{}/".format(self.config.netbox.url + self.config.netbox.api_device, nb_device['id'])
-        elif not nb_device and nb_vm:
-            self.host = nb_vm
-            self.type = self.config.netbox.api_vm.split('/api/')[1].replace('/', '.')
-            self.host_url = "{}/{}/".format(self.config.netbox.url + self.config.netbox.api_vm, nb_vm['id'])
-        elif nb_device and nb_vm:
-            logger.info("Found multiple device's or vm's that match")
+        nb_object = self.__searchData(f'{self.config.netbox.url}/api/{self.config.object_type}/?name={self.config.host_name}')
+        logger.debug(json.dumps(nb_object, indent=4, sort_keys=True))
+        if nb_object:
+            self.host = nb_object
+            self.type = self.config.object_type.replace('/', '.')
         else:
-            logger.warning("Found no device's or vm's that match")
+            logger.warning("Found no objects that match")
 
     def getImpactAssessment(self):
         args = {
@@ -229,17 +216,30 @@ if __name__ == "__main__":
     netbox = Netbox(config)
     impacted_paths = netbox.getImpactAssessment()
 
+    excluded_settings = [ 'config_file', 'object_type', 'notification_script', 'host_output' ]
+
+    arguments = f'{config.notification_script}'
+
+    for setting, value in config._args.__dict__.items():
+        if setting in excluded_settings:
+            continue
+        setting = setting.replace('_', '-')
+        if isinstance(value, bool):
+            if value:
+                arguments += f' --{setting}'
+        else:
+            if len(str(value)) == 0:
+                continue
+            arguments += f' --{setting} {value}'
+
+    logger.debug(f"Arguments: {arguments}")
+
     for path in impacted_paths:
-        logger.info(f"Path: {path['name']}")
-        for contact in path['contacts']:
-            logger.info(f"Contact: {contact['name']}")
-            logger.info(f"Email: {contact['email']}")
-            logger.info(f"Phone: {contact['phone']}")
+        message = f"Impacted Path: {path['name']}\n"
         for object in path['objects']:
             if len(object['direction']) == 0:
-                logger.info(f"Object: {object['name']} - {object['type']} - {object['description']}")
-        
-
-    #sms = SMS()
-    #sms.bobSMS()
-    # Do stuff kinda, make the class do the work
+                message += f"Object: {object['name']} - {object['type']} - {object['description']}"
+        for contact in path['contacts']:            
+            logger.debug(f'{arguments} --email-to {contact["email"]} --host-output  "{message}"')
+            result = subprocess.run(f'{arguments} --email-to {contact["email"]} --host-output "{message}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            print(result.returncode, result.stdout, result.stderr)

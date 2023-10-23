@@ -4,6 +4,7 @@ This repository contains Icinga Notification scripts for
 - Enhanced Email
 - Request Tracker
 - Slack
+- Pushover
 
 These notification scripts have been created to work with Icinga configuration on disk or in Director. They pull their configuration from arguments, environment variables and on disk configuration.
 
@@ -11,7 +12,7 @@ This repository contains the notification scripts, shared libraries, dependant p
 
 
 ## Installation
-`deploy.sh` can be used to install the Notifications from this repository. 
+`deploy.sh` can be used to install the scripts from this repository. 
 
 It performs the following actions
 - Installs repository shared libraries, always overrides existing, and sets permissions(destination: `/etc/icinga2/scripts/lib/`) 
@@ -29,9 +30,9 @@ deploy.sh --all
 Deploy just a single Notification type
 ```
 deploy.sh --enhanced-email
-deploy.sh --pushover
 deploy.sh --request-tracker
 deploy.sh --slack
+deploy.sh --pushover
 ```
 
 Deploy everything for a specified user (default user: `nagios`)
@@ -48,11 +49,6 @@ The configuration of settings for email, Icinga, Netbox and Grafana can be found
 
 For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
 
-### Pushover
-There is no configuration file for this script.
-
-For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
-
 ### Request Tracker
 Once installed you will find the Request Tracker Notification configuration in the `/etc/icinga2/scripts/config/` directory.
 
@@ -62,6 +58,11 @@ For configuration of the Notification command in Icinga itself refer to the `./i
 
 ### Slack
 There is no configuration files by default with slack notifications, the script will still look for configuration in `config/slack-notification.json` though.
+
+For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
+
+### Pushover
+There is no configuration file for this script.
 
 For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
 

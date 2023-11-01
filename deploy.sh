@@ -112,7 +112,7 @@ deploy_enhanced_email() {
 }
 
 deploy_netbox_path() {
-    deploy_conifg ./src/config/netbox-path-impact-notification.json
+    deploy_config ./src/config/netbox-path-impact-notification.json
     cp ./src/netbox-path-impact-notification.py "$ICINGA2_SCRIPT_DIR"
     chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/netbox-path-impact-notification.py"
     chmod +x "$ICINGA2_SCRIPT_DIR/netbox-path-impact-notification.py"

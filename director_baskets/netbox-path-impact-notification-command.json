@@ -1,0 +1,441 @@
+{
+    "Command": {
+        "cmd_notification_netbox_path_impact": {
+            "arguments": {
+                "--config-file": {
+                    "description": "Path to config file (Default: config/netbox-path-impact-notification.json)",
+                    "value": "$netbox_path_impact_notification_config_file$",
+                    "order": "5"
+                },
+                "--host-address": {
+                    "description": "Icinga Host Address",
+                    "value": "$netbox_path_impact_notification_host_address$",
+                    "order": "10"
+                },
+                "--host-displayname": {
+                    "description": "Icinga Host Display Name",
+                    "value": "$netbox_path_impact_notification_host_display_name$",
+                    "order": "10"
+                },
+                "--host-name": {
+                    "description": "Icinga Host Object Name",
+                    "value": "$netbox_path_impact_notification_host_name$",
+                    "order": "10"
+                },
+                "--host-output": {
+                    "description": "Icinga Host Output",
+                    "value": "$netbox_path_impact_notification_host_output$",
+                    "order": "10"
+                },
+                "--host-state": {
+                    "description": "Icinga Host State",
+                    "value": "$netbox_path_impact_notification_host_state$",
+                    "order": "10"
+                },
+                "--host-state-last": {
+                    "description": "Icinga Host Previous State",
+                    "value": "$netbox_path_impact_notification_host_state_last$",
+                    "order": "10"
+                },
+                "--icingaweb2-url": {
+                    "description": "Icingaweb2 url used for links",
+                    "value": "$netbox_path_impact_notification_icingaweb2_url$",
+                    "order": "25"
+                },
+                "--notification-author": {
+                    "description": "Icinga Notification Author",
+                    "value": "$netbox_path_impact_notification_notification_author$",
+                    "order": "20"
+                },
+                "--notification-comment": {
+                    "description": "Icinga Notification Comment",
+                    "value": "$netbox_path_impact_notification_notification_comment$",
+                    "order": "20"
+                },
+                "--notification-type": {
+                    "description": "Icinga Notification Type",
+                    "value": "$netbox_path_impact_notification_notification_type$",
+                    "order": "20"
+                },
+                "--service-displayname": {
+                    "description": "Icinga Service Display Name",
+                    "value": "$netbox_path_impact_notification_service_display_name$",
+                    "order": "15"
+                },
+                "--service-name": {
+                    "description": "Icinga Service Object Name",
+                    "value": "$netbox_path_impact_notification_service_name$",
+                    "order": "15"
+                },
+                "--service-output": {
+                    "description": "Icinga Service Output",
+                    "value": "$netbox_path_impact_notification_service_output$",
+                    "order": "15"
+                },
+                "--service-state": {
+                    "description": "Icinga Service State",
+                    "value": "$netbox_path_impact_notification_service_state$",
+                    "order": "15"
+                },
+                "--service-state-last": {
+                    "description": "Icinga Service Previous State",
+                    "value": "$netbox_path_impact_notification_service_state_last$",
+                    "order": "15"
+                },
+                "--object-type": {
+                    "description": "Object type",
+                    "value": "$netbox_path_impact_notification_object_type$",
+                    "order": "25"
+                },
+                "--notification-script": {
+                    "description": "Notification script to call",
+                    "value": "$netbox_path_impact_notification_notification_script$",
+                    "order": "25"
+                }
+            },
+            "command": "/etc/icinga2/scripts/netbox-path-impact-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_netbox_path_impact",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_Netbox_Path_Impact": {
+            "command": "cmd_notification_netbox_path_impact",
+            "fields": [
+                {
+                    "datafield_id": 1160,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1161,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1162,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1163,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1164,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1165,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1166,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1167,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1168,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1169,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "object_name": "nott_Netbox_Path_Impact",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_host_address": "$host.address$",
+                "netbox_path_impact_notification_host_display_name": "$host.display_name$",
+                "netbox_path_impact_notification_host_name": "$host.name$",
+                "netbox_path_impact_notification_notification_author": "$notification.author$",
+                "netbox_path_impact_notification_notification_comment": "$notification.comment$",
+                "netbox_path_impact_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_Netbox_Path_Impact_Host": {
+            "fields": [
+                {
+                    "datafield_id": 1172,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1173,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1174,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "imports": [
+                "nott_Netbox_Path_Impact"
+            ],
+            "object_name": "nott_Netbox_Path_Impact_Host",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_host_output": "$host.output$",
+                "netbox_path_impact_notification_host_state": "$host.state$",
+                "netbox_path_impact_notification_host_state_last": "$host.last_state$"
+            }
+        },
+        "nott_Netbox_Path_Impact_Service": {
+            "fields": [
+                {
+                    "datafield_id": 1175,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1176,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1177,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1178,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1179,
+                    "is_required": "n",
+                    "var_filter": null
+                }
+            ],
+            "imports": [
+                "nott_Netbox_Path_Impact"
+            ],
+            "object_name": "nott_Netbox_Path_Impact_Service",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_service_display_name": "$service.display_name$",
+                "netbox_path_impact_notification_service_name": "$service.name$",
+                "netbox_path_impact_notification_service_output": "$service.output$",
+                "netbox_path_impact_notification_service_state": "$service.state$",
+                "netbox_path_impact_notification_service_state_last": "$service.last_state$"
+            }
+        }
+    },
+    "Datafield": {
+        "1160": {
+            "varname": "netbox_path_impact_notification_config_file",
+            "caption": "netbox_path_impact_notification_config_file",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1161": {
+            "varname": "netbox_path_impact_notification_host_address",
+            "caption": "netbox_path_impact_notification_host_address",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1162": {
+            "varname": "netbox_path_impact_notification_host_display_name",
+            "caption": "netbox_path_impact_notification_host_display_name",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1163": {
+            "varname": "netbox_path_impact_notification_host_name",
+            "caption": "netbox_path_impact_notification_host_name",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1164": {
+            "varname": "netbox_path_impact_notification_icingaweb2_url",
+            "caption": "netbox_path_impact_notification_icingaweb2_url",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1165": {
+            "varname": "netbox_path_impact_notification_notification_author",
+            "caption": "netbox_path_impact_notification_notification_author",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1166": {
+            "varname": "netbox_path_impact_notification_notification_comment",
+            "caption": "netbox_path_impact_notification_notification_comment",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1167": {
+            "varname": "netbox_path_impact_notification_notification_type",
+            "caption": "netbox_path_impact_notification_notification_type",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1168": {
+            "varname": "netbox_path_impact_notification_object_type",
+            "caption": "netbox_path_impact_notification_object_type",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1169": {
+            "varname": "netbox_path_impact_notification_notification_script",
+            "caption": "netbox_path_impact_notification_notification_script",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1172": {
+            "varname": "netbox_path_impact_notification_host_output",
+            "caption": "netbox_path_impact_notification_host_output",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1173": {
+            "varname": "netbox_path_impact_notification_host_state",
+            "caption": "netbox_path_impact_notification_host_state",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1174": {
+            "varname": "netbox_path_impact_notification_host_state_last",
+            "caption": "netbox_path_impact_notification_host_state_last",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1175": {
+            "varname": "netbox_path_impact_notification_service_display_name",
+            "caption": "netbox_path_impact_notification_service_display_name",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1176": {
+            "varname": "netbox_path_impact_notification_service_name",
+            "caption": "netbox_path_impact_notification_service_name",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1177": {
+            "varname": "netbox_path_impact_notification_service_output",
+            "caption": "netbox_path_impact_notification_service_output",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1178": {
+            "varname": "netbox_path_impact_notification_service_state",
+            "caption": "netbox_path_impact_notification_service_state",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1179": {
+            "varname": "netbox_path_impact_notification_service_state_last",
+            "caption": "netbox_path_impact_notification_service_state_last",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

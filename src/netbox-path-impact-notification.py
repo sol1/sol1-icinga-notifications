@@ -38,7 +38,7 @@ class Settings(SettingsParser):
     netbox: object = None
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['netbox'])
 
-    # config_file: str = 'config/slack-notification.json'
+    config_file: str = 'config/netbox-path-impact-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
@@ -184,32 +184,22 @@ class Netbox:
         else:
             return {}
 
-class SMS:
-    def __init__(self, token, url) -> None:
-        self.token = token
-        self.url = url
-
-    # knows how to send bob sms
-    def bobSMS(self):
-        requests.post(url=config.sms.url, headers=config.sms.token, payload=config.sms_number)
-
-
 if __name__ == "__main__":
     config = Settings()
     config.netbox = SettingsNetbox(_config_dict=config._config_dict)
  
-
     if config.print_config:
         logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
         config.printArguments()
         config.printEnvironmentVars()
         sys.exit(0)
-
+ 
     # Init logging
     if config.debug:
         initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-netbox-path.log")
     else:
         initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-netbox-path.log")
+
 
     logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 

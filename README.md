@@ -4,6 +4,7 @@ This repository contains Icinga Notification scripts for
 - Enhanced Email
 - Request Tracker
 - Slack
+- Pushover
 
 These notification scripts have been created to work with Icinga configuration on disk or in Director. They pull their configuration from arguments, environment variables and on disk configuration.
 
@@ -11,7 +12,7 @@ This repository contains the notification scripts, shared libraries, dependant p
 
 
 ## Installation
-`deploy.sh` can be used to install the Notifications from this repository. 
+`deploy.sh` can be used to install the scripts from this repository. 
 
 It performs the following actions
 - Installs repository shared libraries, always overrides existing, and sets permissions(destination: `/etc/icinga2/scripts/lib/`) 
@@ -31,6 +32,7 @@ Deploy just a single Notification type
 deploy.sh --enhanced-email
 deploy.sh --request-tracker
 deploy.sh --slack
+deploy.sh --pushover
 ```
 
 Deploy everything for a specified user (default user: `nagios`)
@@ -39,7 +41,7 @@ deploy.sh --all --icinga2-user icinga2
 ```
 
 
-## Configuration
+## Notification Script Configuration
 ### Enhanced Email
 Once installed you will find the Enhanced Email Notification configuration in the `/etc/icinga2/scripts/config/` directory.
 
@@ -59,13 +61,38 @@ There is no configuration files by default with slack notifications, the script 
 
 For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
 
+### Pushover
+There is no configuration file for this script.
+
+For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
+
+### Icinga2 Configuration via config files
+Typically the Icinga2 configuration only need to be added once unless new options are added to the script. 
+
+Adding Icinga2 configuration is not automated with script installation and should not be used if you have already setup, or intend to setup, Director Configuration.
+
+
+Add the config files in `/etc/icinga2/conf.d/` or `/etc/icinga2/zones.d/global-templates/`, whatever is the most appropiate for your setup.
+
+### Director Configuration via Basket Import
+Typically the Director configuration only need to be uploaded once unless new options are added to the script. 
+
+Creation of Director configuration is not automated with script installation and should not be used if you have already setup, or intend to setup, Icinga2 Configuration via config files.
+
+- Select `Icinga Director` then `Configuration Baskets`
+- In the Configuration Baskets panel select `Upload`
+- Add the basket name and select the upload file then `Upload` to create the basket
+- At the top of the screen select Snapshots
+- Select the listed Snapshot
+- Select `Restore` to create/update the Director configuration
+
 ## Contributing
 We welcome improvements to this project.
 
-The best way to contribute is Create a ticket explaining the problem you are solving then submit a pull request. 
+The best way to contribute is Create a ticket explaining the problem you are solving then submit a pull request with your changes. 
 
 Please note that these Notification scripts are used by Sol1 in multiple production environments so any changes submitted that aren't backwards compatible are unlikely to be accepted as is.
 
 
 ## License
-yes
+MIT License

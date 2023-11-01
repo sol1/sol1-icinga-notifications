@@ -32,6 +32,11 @@
                     "value": "$pushover_notification_host_state_last$",
                     "order": "10"
                 },
+                "--notification-date-time": {
+                    "description": "Icinga Notification Time",
+                    "value": "$pushover_notification_notification_date_time$",
+                    "order": "20"
+                },
                 "--notification-author": {
                     "description": "Icinga Notification Author",
                     "value": "$pushover_notification_notification_author$",
@@ -81,7 +86,7 @@
                     "description": "Pushover user",
                     "value": "$pushover_notification_pushover_user$",
                     "order": "25"
-                },
+                }
             },
             "command": "/etc/icinga2/scripts/pushover-notification.py",
             "fields": [],
@@ -107,6 +112,11 @@
                 },
                 {
                     "datafield_id": 1183,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1184,
                     "is_required": "n",
                     "var_filter": null
                 },
@@ -142,6 +152,7 @@
                 "pushover_notification_host_address": "$host.address$",
                 "pushover_notification_host_display_name": "$host.display_name$",
                 "pushover_notification_host_name": "$host.name$",
+                "pushover_notification_notification_date_time": "$icinga.long_date_time$",
                 "pushover_notification_notification_author": "$notification.author$",
                 "pushover_notification_notification_comment": "$notification.comment$",
                 "pushover_notification_notification_type": "$notification.type$"
@@ -225,7 +236,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1181",
             "settings": {
                 "visibility": "visible"
             },
@@ -237,7 +247,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1182",
             "settings": {
                 "visibility": "visible"
             },
@@ -249,7 +258,17 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1183",
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1184": {
+            "varname": "pushover_notification_notification_date_time",
+            "caption": "pushover_notification_notification_date_time",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
             "settings": {
                 "visibility": "visible"
             },
@@ -261,7 +280,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1185",
             "settings": {
                 "visibility": "visible"
             },
@@ -273,7 +291,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1186",
             "settings": {
                 "visibility": "visible"
             },
@@ -285,7 +302,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1187",
             "settings": {
                 "visibility": "visible"
             },
@@ -297,7 +313,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1188",
             "settings": {
                 "visibility": "visible"
             },
@@ -309,7 +324,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1189",
             "settings": {
                 "visibility": "visible"
             },
@@ -321,7 +335,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1192",
             "settings": {
                 "visibility": "visible"
             },
@@ -333,7 +346,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1193",
             "settings": {
                 "visibility": "visible"
             },
@@ -345,7 +357,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1194",
             "settings": {
                 "visibility": "visible"
             },
@@ -357,7 +368,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1195",
             "settings": {
                 "visibility": "visible"
             },
@@ -369,7 +379,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1196",
             "settings": {
                 "visibility": "visible"
             },
@@ -381,7 +390,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1197",
             "settings": {
                 "visibility": "visible"
             },
@@ -393,7 +401,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1198",
             "settings": {
                 "visibility": "visible"
             },
@@ -405,7 +412,6 @@
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "1199",
             "settings": {
                 "visibility": "visible"
             },

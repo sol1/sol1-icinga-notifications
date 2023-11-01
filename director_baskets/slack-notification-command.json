@@ -116,62 +116,62 @@
             "command": "cmd_notification_slack",
             "fields": [
                 {
-                    "datafield_id": 339,
+                    "datafield_id": 1160,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 342,
+                    "datafield_id": 1161,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 341,
+                    "datafield_id": 1162,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 340,
+                    "datafield_id": 1163,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 358,
+                    "datafield_id": 1164,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 352,
+                    "datafield_id": 1165,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 353,
+                    "datafield_id": 1166,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 351,
+                    "datafield_id": 1167,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 356,
+                    "datafield_id": 1168,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 354,
+                    "datafield_id": 1169,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 357,
+                    "datafield_id": 1170,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 355,
+                    "datafield_id": 1171,
                     "is_required": "n",
                     "var_filter": null
                 }
@@ -190,17 +190,17 @@
         "nott_Slack_Host": {
             "fields": [
                 {
-                    "datafield_id": 345,
+                    "datafield_id": 1172,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 343,
+                    "datafield_id": 1173,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 344,
+                    "datafield_id": 1174,
                     "is_required": "n",
                     "var_filter": null
                 }
@@ -219,27 +219,27 @@
         "nott_Slack_Service": {
             "fields": [
                 {
-                    "datafield_id": 347,
+                    "datafield_id": 1175,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 346,
+                    "datafield_id": 1176,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 350,
+                    "datafield_id": 1177,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 348,
+                    "datafield_id": 1178,
                     "is_required": "n",
                     "var_filter": null
                 },
                 {
-                    "datafield_id": 349,
+                    "datafield_id": 1179,
                     "is_required": "n",
                     "var_filter": null
                 }
@@ -259,239 +259,219 @@
         }
     },
     "Datafield": {
-        "339": {
+        "1160": {
             "varname": "slack_notification_config_file",
             "caption": "slack_notification_config_file",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "339",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "342": {
+        "1161": {
             "varname": "slack_notification_host_address",
             "caption": "slack_notification_host_address",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "342",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "341": {
+        "1162": {
             "varname": "slack_notification_host_display_name",
             "caption": "slack_notification_host_display_name",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "341",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "340": {
+        "1163": {
             "varname": "slack_notification_host_name",
             "caption": "slack_notification_host_name",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "340",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "358": {
+        "1164": {
             "varname": "slack_notification_icingaweb2_url",
             "caption": "slack_notification_icingaweb2_url",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "358",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "352": {
+        "1165": {
             "varname": "slack_notification_notification_author",
             "caption": "slack_notification_notification_author",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "352",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "353": {
+        "1166": {
             "varname": "slack_notification_notification_comment",
             "caption": "slack_notification_notification_comment",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "353",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "351": {
+        "1167": {
             "varname": "slack_notification_notification_type",
             "caption": "slack_notification_notification_type",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "351",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "356": {
+        "1168": {
             "varname": "slack_notification_slack_botname",
             "caption": "slack_notification_slack_botname",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "356",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "354": {
+        "1169": {
             "varname": "slack_notification_slack_channel",
             "caption": "slack_notification_slack_channel",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "354",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "357": {
+        "1170": {
             "varname": "slack_notification_slack_max_message_length",
             "caption": "slack_notification_slack_max_message_length",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeNumber",
             "format": null,
-            "originalId": "357",
             "settings": {},
             "category": null
         },
-        "355": {
+        "1171": {
             "varname": "slack_notification_slack_webhook_url",
             "caption": "slack_notification_slack_webhook_url",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "355",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "345": {
+        "1172": {
             "varname": "slack_notification_host_output",
             "caption": "slack_notification_host_output",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "345",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "343": {
+        "1173": {
             "varname": "slack_notification_host_state",
             "caption": "slack_notification_host_state",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "343",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "344": {
+        "1174": {
             "varname": "slack_notification_host_state_last",
             "caption": "slack_notification_host_state_last",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "344",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "347": {
+        "1175": {
             "varname": "slack_notification_service_display_name",
             "caption": "slack_notification_service_display_name",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "347",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "346": {
+        "1176": {
             "varname": "slack_notification_service_name",
             "caption": "slack_notification_service_name",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "346",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "350": {
+        "1177": {
             "varname": "slack_notification_service_output",
             "caption": "slack_notification_service_output",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "350",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "348": {
+        "1178": {
             "varname": "slack_notification_service_state",
             "caption": "slack_notification_service_state",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "348",
             "settings": {
                 "visibility": "visible"
             },
             "category": null
         },
-        "349": {
+        "1179": {
             "varname": "slack_notification_service_state_last",
             "caption": "slack_notification_service_state_last",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,
-            "originalId": "349",
             "settings": {
                 "visibility": "visible"
             },

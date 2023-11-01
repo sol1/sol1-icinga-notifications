@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
     excluded_settings = [ 'config_file', 'object_type', 'notification_script', 'host_output' ]
 
-    arguments = f'{config.notification_script}'
+    arguments = list(config.notification_script)
 
     for setting, value in config._args.__dict__.items():
         if setting in excluded_settings:
@@ -216,11 +216,12 @@ if __name__ == "__main__":
         setting = setting.replace('_', '-')
         if isinstance(value, bool):
             if value:
-                arguments += f' --{setting}'
+                arguments.append('--{setting}')
         else:
             if len(str(value)) == 0:
                 continue
-            arguments += f' --{setting} {value}'
+            arguments.append('--{setting}')
+            arguments.append(value)
 
     logger.debug(f"Arguments: {arguments}")
 
@@ -230,6 +231,6 @@ if __name__ == "__main__":
             if len(object['direction']) == 0:
                 message += f"Object: {object['name']} - {object['type']} - {object['description']}"
         for contact in path['contacts']:            
-            logger.debug(f'{arguments} --email-to {contact["email"]} --host-output  "{message}"')
-            result = subprocess.run(f'{arguments} --email-to {contact["email"]} --host-output "{message}"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            logger.debug(arguments + ['--email-to', contact["email"], '--host-output',  message])
+            result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             print(result.returncode, result.stdout, result.stderr)

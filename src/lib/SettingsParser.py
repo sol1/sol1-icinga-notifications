@@ -129,8 +129,6 @@ class SettingsParser:
     def loadConfigJsonFile(self):
         """Iterates through the list of valid Class attributes json keys and updates values if the Class attribute keys exist in the config dictionary
         """
-        print(os.getcwd())
-        print(self.config_file)
         if not os.path.exists(self.config_file):
             print(f"Error: The file '{self.config_file}' does not exist.")
             sys.exit(1)

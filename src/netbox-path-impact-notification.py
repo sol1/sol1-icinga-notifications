@@ -183,6 +183,22 @@ class Netbox:
             return result['results'][0]
         else:
             return {}
+        
+def parse_script_args(script: str) -> list:
+    result = subprocess.run([script, '--help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    lines = result.stdout.splitlines()
+    arguments = []
+    for line in lines:
+        if line.startswith('  --'):
+            if line.startswith('--h,'):
+                continue
+
+            if line.count(' ') == 0:
+                arguments.append((line.split('  --')[1]).replace('-', '_'))
+                continue
+            else:
+                arguments.append((line.split('  --')[1].split()[0]).replace('-', '_'))
+    return arguments
 
 if __name__ == "__main__":
     config = Settings()
@@ -209,9 +225,10 @@ if __name__ == "__main__":
     excluded_settings = [ 'config_file', 'object_type', 'notification_script', 'host_output' ]
 
     arguments = list(config.notification_script)
+    script_arguments = parse_script_args(config.notification_script)
 
     for setting, value in config._args.__dict__.items():
-        if setting in excluded_settings:
+        if setting in excluded_settings or setting not in script_arguments:
             continue
         setting = setting.replace('_', '-')
         if isinstance(value, bool):

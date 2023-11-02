@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import dataclasses
 import json
 import os
@@ -68,7 +67,7 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_NETBOX_PATH_IMPACT_"
             self.loadEnvironmentVars()
-            self._args = self._init_args()
+            self._args = self._init_args('Icinga2 plugin to send Netbox Path Impact notifications')
             self.loadArgs(self._args)
 
             # Debug set in the config file will override the args
@@ -80,28 +79,6 @@ class Settings(SettingsParser):
             print("Failed to initialize {e}")
             print(traceback.format_exc())
             sys.exit()
-
-    def _init_args(self):
-        parser = argparse.ArgumentParser(description='Icinga2 plugin to send slack notifications')
-        for arg in self._getArgVarList():
-            if type(arg[2]) == bool:
-                parser.add_argument(arg[1], action="store_true")
-            else:
-                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
-        return parser.parse_args()
-
-    def printEnvironmentVars(self):
-        print("Environment vars list is:")
-        for var in self._getEnvironmentVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-    def printArguments(self):
-        print("Argument list is:")
-        for var in self._getArgVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
 
 class Netbox:
     """Netbox object that parses data from the Netbox api

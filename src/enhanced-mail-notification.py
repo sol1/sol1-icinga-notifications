@@ -5,7 +5,6 @@
 #
 # https://github.com/mmarodin/icinga2-plugins
 #
-import argparse
 import configparser
 import dataclasses
 import json
@@ -119,7 +118,7 @@ class Settings(SettingsParser):
         self._exclude_from_env.extend(self._exclude_all + ['print_config'])
         self._env_prefix = "NOTIFY_ENHANCED_MAIL_"
         self.loadEnvironmentVars()
-        self._args = self._init_args()
+        self._args = self._init_args('Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
         self.loadArgs(self._args)
 
         # Debug set in the config file will override the args
@@ -139,29 +138,7 @@ class Settings(SettingsParser):
             self.host_display_name = self.host_displayname
         if self.service_display_name == '':
             self.service_display_name = self.service_displayname
-
-    def _init_args(self):
-        parser = argparse.ArgumentParser(description='Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
-        for arg in self._getArgVarList():
-            if type(arg[2]) == bool:
-                parser.add_argument(arg[1], action="store_true")
-            else:
-                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
-        return parser.parse_args()
     
-    def printEnvironmentVars(self):
-        print("Environment vars list is:")
-        for var in self._getEnvironmentVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-    def printArguments(self):
-        print("Argument list is:")
-        for var in self._getArgVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-
 # Classes for getting data from each external system
 class Netbox:
     """Netbox object that parses data from the Netbox api
@@ -450,7 +427,6 @@ logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 logger.debug(config._args)
 
 if config.print_config:
-    logger.info("config following")
     config.printArguments()
     config.printEnvironmentVars()
     sys.exit(0)

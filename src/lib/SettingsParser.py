@@ -1,3 +1,4 @@
+import argparse
 import dataclasses
 import json
 import os
@@ -166,3 +167,26 @@ class SettingsParser:
         for var in self._getEnvironmentVarList():
             # Set class var with env value or class var default
             setattr(self, var[0], os.getenv(var[1], var[2]))
+
+    # Some helper functions to provide information about arguments and values
+    def printEnvironmentVars(self, values = True):
+        self._printList(self._getEnvironmentVarList(), values)
+
+    def printArguments(self, values = True):
+        self._printList(self._getArgVarList(), values)
+
+    def _printList(self, var_list, values = True):
+        for var in var_list:
+            if values:
+                print(f'{var[1]} = {var[2]}')
+            else:
+                print(var[1])
+
+    def _init_args(self, description):
+        parser = argparse.ArgumentParser(description=description)
+        for arg in self._getArgVarList():
+            if type(arg[2]) == bool:
+                parser.add_argument(arg[1], action="store_true")
+            else:
+                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
+        return parser.parse_args()

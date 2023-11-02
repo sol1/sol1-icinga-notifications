@@ -82,18 +82,20 @@ class Settings(SettingsParser):
     grafana: object = None
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['mail', 'icinga', 'netbox', 'grafana'])
     
-    config_file: str = 'config/enhanced-mail-notification.json'
+    config_file: str = f'{os.path.realpath(os.path.dirname(__file__))}/config/enhanced-mail-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
     notification_type: str = ''
     host_name: str = ''
     host_display_name: str = ''
+    host_displayname: str = ''
     host_address: str = ''
     host_state: str = ''
     host_output: str = ''
     service_name: str = ''
     service_display_name: str = ''
+    service_displayname: str = ''
     service_command: str = ''
     service_state: str = ''
     service_output: str = ''
@@ -133,6 +135,10 @@ class Settings(SettingsParser):
             self.netbox_host_ip = self.host_address
         if self.grafana_host_name == '':
             self.grafana_host_name = self.host_name
+        if self.host_display_name == '':
+            self.host_display_name = self.host_displayname
+        if self.service_display_name == '':
+            self.service_display_name = self.service_displayname
 
     def _init_args(self):
         parser = argparse.ArgumentParser(description='Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')

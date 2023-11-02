@@ -58,7 +58,7 @@ class Settings(SettingsParser):
     icinga: object = None
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['rt', 'icinga'])
 
-    config_file: str = 'config/request-tracker-notification.json'
+    config_file: str = f'{os.path.realpath(os.path.dirname(__file__))}/config/request-tracker-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 

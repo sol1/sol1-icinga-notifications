@@ -3,11 +3,11 @@
 import argparse
 import dataclasses
 import json
+import os
 import requests
+import subprocess
 import sys
 import traceback
-import urllib.parse
-import subprocess
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
@@ -38,7 +38,7 @@ class Settings(SettingsParser):
     netbox: object = None
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['netbox'])
 
-    config_file: str = 'config/netbox-path-impact-notification.json'
+    config_file: str = f'{os.path.realpath(os.path.dirname(__file__))}/config/netbox-path-impact-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 

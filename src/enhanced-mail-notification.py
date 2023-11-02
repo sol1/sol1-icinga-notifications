@@ -629,7 +629,7 @@ try:
     smtp.sendmail(config.mail.from_address, config.email_to, msgRoot.as_string())
     smtp.quit()
 except Exception as e:
-    logger.error("Cannot send mail using SMTP: " + e.message)
-    os.sys.exit(e.errno)
+    logger.error(f"Cannot send mail using SMTP: {e}")
+    os.sys.exit(e)
 
 os.sys.exit(0)

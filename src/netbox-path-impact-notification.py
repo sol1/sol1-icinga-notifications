@@ -185,20 +185,24 @@ class Netbox:
             return {}
         
 def parse_script_args(script: str) -> list:
-    result = subprocess.run([script, '--help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    lines = result.stdout.splitlines()
-    arguments = []
-    for line in lines:
-        if line.startswith('  --'):
-            if line.startswith('--h,'):
-                continue
+    try:
+        result = subprocess.run([script, '--help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        lines = result.stdout.splitlines()
+        arguments = []
+        for line in lines:
+            if line.startswith('  --'):
+                if line.startswith('--h,'):
+                    continue
 
-            if line.count(' ') == 0:
-                arguments.append((line.split('  --')[1]).replace('-', '_'))
-                continue
-            else:
-                arguments.append((line.split('  --')[1].split()[0]).replace('-', '_'))
-    return arguments
+                if line.count(' ') == 0:
+                    arguments.append((line.split('  --')[1]).replace('-', '_'))
+                    continue
+                else:
+                    arguments.append((line.split('  --')[1].split()[0]).replace('-', '_'))
+        return arguments
+    except Exception as e:
+        logger.error(f"Error parsing notification script arguments: {e}")
+        return []
 
 if __name__ == "__main__":
     config = Settings()
@@ -249,5 +253,8 @@ if __name__ == "__main__":
                 message += f"Object: {object['name']} - {object['type']} - {object['description']}"
         for contact in path['contacts']:            
             logger.debug(arguments + ['--email-to', contact["email"], '--host-output',  message])
-            result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
-            print(result.returncode, result.stdout, result.stderr)
+            try:
+                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+                logger.debug(f'{result.returncode}, {result.stdout}, {result.stderr}')
+            except Exception as e:
+                logger.error(f"Error running notification script: {e}")

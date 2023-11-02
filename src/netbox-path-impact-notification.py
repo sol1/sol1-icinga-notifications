@@ -77,7 +77,7 @@ class Settings(SettingsParser):
 
         except Exception as e:
             print("Failed to initialize {e}")
-            print(traceback.format_exc())
+            print(traceback.format_exc(1))
             sys.exit()
 
 class Netbox:
@@ -237,3 +237,4 @@ if __name__ == "__main__":
                 logger.debug(f'{result.returncode}, {result.stdout}, {result.stderr}')
             except Exception as e:
                 logger.error(f"Error running notification script: {e}")
+                sys.exit(1)

@@ -233,11 +233,11 @@ if __name__ == "__main__":
         setting = setting.replace('_', '-')
         if isinstance(value, bool):
             if value:
-                arguments.append('--{setting}')
+                arguments.append(f'--{setting}')
         else:
             if len(str(value)) == 0:
                 continue
-            arguments.append('--{setting}')
+            arguments.append(f'--{setting}')
             arguments.append(value)
 
     logger.debug(f"Arguments: {arguments}")

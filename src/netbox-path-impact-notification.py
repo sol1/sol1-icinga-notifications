@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
     excluded_settings = [ 'config_file', 'object_type', 'notification_script', 'host_output' ]
 
-    arguments = list(config.notification_script)
+    arguments = [ config.notification_script ]
     script_arguments = parse_script_args(config.notification_script)
 
     for setting, value in config._args.__dict__.items():

@@ -233,7 +233,7 @@ if __name__ == "__main__":
                 command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message])
                 command_string = f'"{command_string}"'
                 logger.debug(f"running notification command: {command_string}")
-                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                 logger.debug(f'{result.returncode}, {result.stdout}, {result.stderr}')
             except Exception as e:
                 logger.error(f"Error running notification script: {e}")

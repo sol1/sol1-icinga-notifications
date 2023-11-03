@@ -5,7 +5,6 @@
 #
 # https://github.com/mmarodin/icinga2-plugins
 #
-import argparse
 import configparser
 import dataclasses
 import json
@@ -82,18 +81,20 @@ class Settings(SettingsParser):
     grafana: object = None
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['mail', 'icinga', 'netbox', 'grafana'])
     
-    config_file: str = 'config/enhanced-mail-notification.json'
+    config_file: str = f'{os.path.realpath(os.path.dirname(__file__))}/config/enhanced-mail-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
     notification_type: str = ''
     host_name: str = ''
     host_display_name: str = ''
+    host_displayname: str = ''
     host_address: str = ''
     host_state: str = ''
     host_output: str = ''
     service_name: str = ''
     service_display_name: str = ''
+    service_displayname: str = ''
     service_command: str = ''
     service_state: str = ''
     service_output: str = ''
@@ -117,7 +118,7 @@ class Settings(SettingsParser):
         self._exclude_from_env.extend(self._exclude_all + ['print_config'])
         self._env_prefix = "NOTIFY_ENHANCED_MAIL_"
         self.loadEnvironmentVars()
-        self._args = self._init_args()
+        self._args = self._init_args('Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
         self.loadArgs(self._args)
 
         # Debug set in the config file will override the args
@@ -133,29 +134,11 @@ class Settings(SettingsParser):
             self.netbox_host_ip = self.host_address
         if self.grafana_host_name == '':
             self.grafana_host_name = self.host_name
-
-    def _init_args(self):
-        parser = argparse.ArgumentParser(description='Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
-        for arg in self._getArgVarList():
-            if type(arg[2]) == bool:
-                parser.add_argument(arg[1], action="store_true")
-            else:
-                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
-        return parser.parse_args()
+        if self.host_display_name == '':
+            self.host_display_name = self.host_displayname
+        if self.service_display_name == '':
+            self.service_display_name = self.service_displayname
     
-    def printEnvironmentVars(self):
-        print("Environment vars list is:")
-        for var in self._getEnvironmentVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-    def printArguments(self):
-        print("Argument list is:")
-        for var in self._getArgVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-
 # Classes for getting data from each external system
 class Netbox:
     """Netbox object that parses data from the Netbox api
@@ -444,7 +427,6 @@ logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 logger.debug(config._args)
 
 if config.print_config:
-    logger.info("config following")
     config.printArguments()
     config.printEnvironmentVars()
     sys.exit(0)
@@ -647,7 +629,7 @@ try:
     smtp.sendmail(config.mail.from_address, config.email_to, msgRoot.as_string())
     smtp.quit()
 except Exception as e:
-    logger.error("Cannot send mail using SMTP: " + e.message)
-    os.sys.exit(e.errno)
+    logger.error(f"Cannot send mail using SMTP: {e}")
+    os.sys.exit(e)
 
 os.sys.exit(0)

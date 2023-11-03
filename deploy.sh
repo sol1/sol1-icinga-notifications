@@ -3,6 +3,7 @@
 # Initialize boolean switches as false
 ALL=false
 ENHANCED_EMAIL=false
+NETBOX_PATH=false
 REQUEST_TRACKER=false
 SLACK=false
 PUSHOVER=false
@@ -21,6 +22,10 @@ while [[ "$#" -gt 0 ]]; do
         -a|--all)
         ALL=true
         shift # Remove --enhanced-email from processing
+        ;;
+        -n|--netbox-path)
+        NETBOX_PATH=true
+        shift # Remove --netbox-path from processing
         ;;
         -e|--enhanced-email)
         ENHANCED_EMAIL=true
@@ -66,6 +71,10 @@ install_all_requirements() {
     python3 -m pip install -r requirements.txt
 }
 
+install_netbox_path_requirements() {
+    python3 -m pip install -r requirements-netbox-path-impact.txt
+}
+
 install_enhanced_email_requirements() {
     python3 -m pip install -r requirements-enhanced-email.txt
 }
@@ -102,6 +111,13 @@ deploy_enhanced_email() {
     chmod +x "$ICINGA2_SCRIPT_DIR/enhanced-mail-notification.py"
 }
 
+deploy_netbox_path() {
+    deploy_config ./src/config/netbox-path-impact-notification.json
+    cp ./src/netbox-path-impact-notification.py "$ICINGA2_SCRIPT_DIR"
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/netbox-path-impact-notification.py"
+    chmod +x "$ICINGA2_SCRIPT_DIR/netbox-path-impact-notification.py"
+}
+
 deploy_request_tracker() {
     deploy_config ./src/config/request-tracker-notification.json
     cp ./src/request-tracker-notification.py "$ICINGA2_SCRIPT_DIR" 
@@ -129,6 +145,14 @@ if $ALL || $ENHANCED_EMAIL; then
     fi
 fi
 
+if $ALL || $NETBOX_PATH; then
+    echo "Deploying Netbox Path Impact Notifications"
+    deploy_netbox_path
+    if $REQUIREMENTS; then
+        install_netbox_path_requirements
+    fi
+fi
+
 if $ALL || $REQUEST_TRACKER; then
     echo "Deploying Request Tracker Notifications"
     deploy_request_tracker
@@ -153,7 +177,7 @@ if $ALL || $PUSHOVER; then
     fi
 fi
 
-if $ALL || $ENHANCED_EMAIL || $REQUEST_TRACKER || $SLACK || $PUSHOVER; then
+if $ALL || $ENHANCED_EMAIL || $NETBOX_PATH || $REQUEST_TRACKER || $SLACK || $PUSHOVER; then
     deploy_library
     if $REQUIREMENTS; then
         install_all_requirements

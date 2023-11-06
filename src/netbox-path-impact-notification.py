@@ -253,7 +253,7 @@ if __name__ == "__main__":
                 message += f"Object: {object['name']} - {object['type']} - {object['description']}"
         for contact in path['contacts']:            
             try:
-                command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message])
+                command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message, '--path-image', path_image])
                 command_string = f'"{command_string}"'
                 logger.debug(f"running notification command: {command_string}")
                 result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message, '--path-image', path_image], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)

@@ -133,6 +133,28 @@ class Netbox:
         logger.debug(f"Netbox result: {result}")
         return result
 
+    def getPathImage(self, path_id):
+        args = {
+            'url': f'{self.config.netbox.url}/api/plugins/netbox-path/paths/{path_id}/image/',
+            'timeout': self.config.netbox.timeout,
+            'headers': {'Accept': 'application/json'}
+        }
+        if self.config.netbox.proxy:
+            args['proxies'] = {'http': self.config.netbox.proxy, 'https': self.config.netbox.proxy}
+
+        if self.config.netbox.token:
+            args['headers'].update({'Authorization': 'Token ' + self.config.netbox.token})
+
+        try:
+            logger.debug(f"Netbox request to url: {args['url']}")
+            response = requests.get(**args)
+            result = response.json()
+        except Exception as e:
+            logger.error("Error getting netbox data from {} with error {}".format(args['url'], e))
+            result = {'count': 0}
+        logger.debug(f"Netbox result: {result}")
+        return result
+
     def __getServerData(self, url):
         args = {
             'url': url,
@@ -225,6 +247,7 @@ if __name__ == "__main__":
 
     for path in impacted_paths:
         message = f"Impacted Path: {path['name']}\n"
+        path_image = netbox.getPathImage(path['id'])
         for object in path['objects']:
             if len(object['direction']) == 0:
                 message += f"Object: {object['name']} - {object['type']} - {object['description']}"
@@ -233,7 +256,7 @@ if __name__ == "__main__":
                 command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message])
                 command_string = f'"{command_string}"'
                 logger.debug(f"running notification command: {command_string}")
-                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message, '--path-image', path_image], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                 logger.debug(f'{result.returncode}, {result.stdout}, {result.stderr}')
             except Exception as e:
                 logger.error(f"Error running notification script: {e}")

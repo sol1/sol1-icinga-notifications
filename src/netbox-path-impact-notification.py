@@ -230,10 +230,10 @@ if __name__ == "__main__":
                 message += f"Object: {object['name']} - {object['type']} - {object['description']}"
         for contact in path['contacts']:            
             try:
-                command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message, '--path-id', path['id']])
+                command_string = '" "'.join(arguments + ['--email-to', contact['email'], '--host-output',  message, '--path-id', str(path['id'])])
                 command_string = f'"{command_string}"'
                 logger.debug(f"running notification command: {command_string}")
-                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message, '--path-id', path['id']], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                result = subprocess.run(arguments + ['--email-to', contact["email"], '--host-output',  message, '--path-id', str(path['id'])], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                 logger.debug(f'{result.returncode}, {result.stdout}, {result.stderr}')
             except Exception as e:
                 logger.error(f"Error running notification script: {e}")

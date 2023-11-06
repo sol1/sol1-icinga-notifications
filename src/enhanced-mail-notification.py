@@ -111,6 +111,7 @@ class Settings(SettingsParser):
     table_width: str = '640'
     column_width: str = '144'
 
+    path_id: str = ''
     path_image: str = ''
     print_config: bool = False
 
@@ -211,6 +212,28 @@ class Netbox:
             result = response.json()
         except Exception as e:
             logger.error("Error getting netbox data from {} with error {}".format(url, e))
+            result = {'count': 0}
+        logger.debug(f"Netbox result: {result}")
+        return result
+
+    def getPathImage(self, path_id):
+        args = {
+            'url': f'{config.netbox.url}/api/plugins/netbox-path/paths/{path_id}/image/',
+            'timeout': config.netbox.timeout,
+            'headers': {'Accept': 'application/json'}
+        }
+        if config.netbox.proxy:
+            args['proxies'] = {'http': config.netbox.proxy, 'https': config.netbox.proxy}
+
+        if config.netbox.token:
+            args['headers'].update({'Authorization': 'Token ' + config.netbox.token})
+
+        try:
+            logger.debug(f"Netbox request to url: {args['url']}")
+            response = requests.get(**args)
+            result = response.json()
+        except Exception as e:
+            logger.error("Error getting netbox data from {} with error {}".format(args['url'], e))
             result = {'count': 0}
         logger.debug(f"Netbox result: {result}")
         return result
@@ -549,7 +572,7 @@ if netbox.ip:
     html_email += netbox.addRow('Host', netbox.ip, 'virtual_machine', 'name')
     html_email += netbox.addRow('Host', netbox.ip, 'device', 'name')
 
-if (config.performance_data and '=' in config.performance_data) or config.path_image:
+if (config.performance_data and '=' in config.performance_data) or config.path_id:
     html_email += '\n</table><br>'
     html_email += '\n<table width=' + config.table_width + '>'
     html_email += '\n<tr><th colspan=6 class=perfdata>Performance Data</th></tr>'
@@ -561,7 +584,7 @@ if (config.performance_data and '=' in config.performance_data) or config.path_i
     else:
         html_email += '\n<tr><th width=' + config.column_width + ' colspan=1>Last Value:</th><td width=' + remaining_width + ' colspan=5>none</td></tr>'
 
-    if config.path_image:
+    if config.path_id:
         html_email += '\n<tr><td colspan=6><a href="' + grafana.page_url + '"><img src="cid:path_image"></a></td></tr>'
 
 html_email += '\n</table><br>'
@@ -592,8 +615,9 @@ msgAlternative.attach(msgText)
 msgText = MIMEText(html_email, 'html')
 msgAlternative.attach(msgText)
 
-if config.path_image:
+if config.path_id:
     try:
+        config.path_image = netbox.getPathImage(config.path_id)['image']
         msgImage = MIMEImage(config.path_image)
         msgImage.add_header('Content-ID', '<path_image>')
         msgRoot.attach(msgImage)

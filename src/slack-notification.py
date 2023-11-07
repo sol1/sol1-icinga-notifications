@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import dataclasses
 import json
 import requests
@@ -55,7 +54,7 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_SLACK_"
             self.loadEnvironmentVars()
-            self._args = self._init_args()
+            self._args = self._init_args('Icinga2 plugin to send slack notifications')
             self.loadArgs(self._args)
 
             # Sensible defaults after loading everything
@@ -68,27 +67,6 @@ class Settings(SettingsParser):
             sys.exit()
 
         self.icingaweb2_url = self.icingaweb2_url.rstrip('/')
-
-    def _init_args(self):
-        parser = argparse.ArgumentParser(description='Icinga2 plugin to send slack notifications')
-        for arg in self._getArgVarList():
-            if type(arg[2]) == bool:
-                parser.add_argument(arg[1], action="store_true")
-            else:
-                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
-        return parser.parse_args()
-
-    def printEnvironmentVars(self):
-        print("Environment vars list is:")
-        for var in self._getEnvironmentVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
-
-    def printArguments(self):
-        print("Argument list is:")
-        for var in self._getArgVarList():
-            print(f'{var[1]} = {var[2]}')
-        print('')
 
 
 class Slack:

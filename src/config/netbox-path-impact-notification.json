@@ -2,5 +2,8 @@
     "netbox": {
         "url": "https://netbox.example.com",
         "token": "abcdefghijklmnopqrstuvwxyznowyoucanchangeme",
+        "api_device": "/api/dcim/devices",
+        "api_vm": "/api/virtualization/virtual-machines",
+        "api_impact": "/api/plugins/netbox-path/impact"
     }
 }

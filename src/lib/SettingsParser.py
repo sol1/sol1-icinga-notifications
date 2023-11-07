@@ -185,6 +185,8 @@ class SettingsParser:
         for arg in self._getArgVarList():
             if type(arg[2]) == bool:
                 parser.add_argument(arg[1], action="store_true")
+            elif type(arg[2]) == list:
+                parser.add_argument(arg[1], type=str, default=arg[2], action='append')
             else:
                 parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
         return parser.parse_args()

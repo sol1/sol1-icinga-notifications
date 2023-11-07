@@ -2,9 +2,10 @@
 
 This repository contains Icinga Notification scripts for 
 - Enhanced Email
+- Netbox Path
+- Pushover
 - Request Tracker
 - Slack
-- Pushover
 
 These notification scripts have been created to work with Icinga configuration on disk or in Director. They pull their configuration from arguments, environment variables and on disk configuration.
 

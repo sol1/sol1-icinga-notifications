@@ -13,6 +13,8 @@ from lib.Util import initLogger
 from datetime import datetime
 from loguru import logger
 
+from lib.IcingaUtil import getSettingsParserDict, DirectorBasketNotificationCommand
+
 
 @dataclasses.dataclass
 class Settings(SettingsParser):
@@ -47,6 +49,7 @@ class Settings(SettingsParser):
     slack_layout_host_and_service: bool = False
 
     print_config: bool = False
+    build_config: bool = False
 
     def __post_init__(self):
         try:
@@ -159,6 +162,14 @@ class Slack:
 
 if __name__ == "__main__":
     config = Settings()
+
+    if config.build_config:
+        args = getSettingsParserDict(config)
+        basket = DirectorBasketNotificationCommand("Slack", icinga_var_prefix="slack_notification", args = args, id=1160)
+        with open('slack-notification-basket.json', 'w') as _file:
+            json.dump(basket.director_basket, _file, indent=4)
+        logger.debug(basket.director_basket)
+        sys.exit(0)
 
     if config.print_config:
         logger.debug(json.dumps(dataclasses.asdict(config), indent=2))

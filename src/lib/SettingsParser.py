@@ -72,6 +72,9 @@ class SettingsParser:
     _config_dict: dict = ''
 
     # implied args format (class var, switch, value) (foo_bar, --foo-bar, value)
+    def makeArg(self, arg):
+        return f'--{self._args_prefix}{arg.replace("_", "-")}'
+    
     def _getArgVarList(self):
         """Generates a list of tuples in the format (class attribute, switch, value) for valid arguments
 
@@ -84,7 +87,7 @@ class SettingsParser:
                 continue
             if self._include_from_args and key not in self._include_from_args:
                 continue
-            _list.append((key, f'--{self._args_prefix}{key.replace("_", "-")}', value))
+            _list.append((key, self.makeArg(key), value))
         return _list
 
     def loadArgs(self, args):

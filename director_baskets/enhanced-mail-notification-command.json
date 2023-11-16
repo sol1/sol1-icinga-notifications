@@ -333,8 +333,8 @@
             "category": null
         },
         "1114": {
-            "varname": "enhanced_mail_notification_host_displayname",
-            "caption": "enhanced_mail_notification_host_displayname",
+            "varname": "enhanced_mail_notification_host_display_name",
+            "caption": "enhanced_mail_notification_host_display_name",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,

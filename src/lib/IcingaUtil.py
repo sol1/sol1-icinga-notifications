@@ -90,7 +90,7 @@ DEFAULT_ARGS = {
         "order": 10,
         "type": DataFieldType.str.value},
     "host_output": {
-        "icinga_value": "$host.ouptut$",
+        "icinga_value": "$host.output$",
         "description": "Host output",
         "order": 10,
         "type": DataFieldType.str.value},

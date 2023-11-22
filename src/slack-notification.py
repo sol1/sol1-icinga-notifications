@@ -13,7 +13,7 @@ from lib.Util import initLogger
 from datetime import datetime
 from loguru import logger
 
-from lib.IcingaUtil import getSettingsParserDict, DirectorBasketNotificationCommand
+from lib.IcingaUtil import getSettingsParserDict, DirectorBasketNotificationCommand, DEFAULT_ARGS
 
 
 @dataclasses.dataclass
@@ -57,7 +57,7 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_SLACK_"
             self.loadEnvironmentVars()
-            self._args = self._init_args('Icinga2 plugin to send slack notifications')
+            self._args = self._init_args('Icinga2 plugin to send slack notifications', DEFAULT_ARGS)
             self.loadArgs(self._args)
 
             # Sensible defaults after loading everything
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     if config.build_config:
         args = getSettingsParserDict(config)
-        basket = DirectorBasketNotificationCommand("Slack", icinga_var_prefix="slack_notification", args = args, id=1160)
+        basket = DirectorBasketNotificationCommand("Slack", icinga_var_prefix="slack_notification", args=args, id=1160)
         with open('slack-notification-basket.json', 'w') as _file:
             json.dump(basket.director_basket, _file, indent=4)
         logger.debug(basket.director_basket)

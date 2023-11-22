@@ -183,11 +183,23 @@ class SettingsParser:
             else:
                 print(var[1])
 
-    def _init_args(self, description):
+    def _init_args(self, description: str = '', args_properties = {}):
+        """ Creates arguments based on _getArgVarList
+
+        Args:
+            description (str, optional): Parser description. Defaults to ''.
+            arg_properties (dict, optional): Dictionary with keys that match arguments and a dict value with keys tha match add_argument properties. Defaults to {}.
+
+        Returns:
+            _type_: parsed arguments
+        """        
         parser = argparse.ArgumentParser(description=description)
         for arg in self._getArgVarList():
+            arg_properties = args_properties.get(arg[0], {})
+            arg_help = arg_properties.get('help', arg_properties.get('description', ''))
+            print(arg_properties)
             if type(arg[2]) == bool:
-                parser.add_argument(arg[1], action="store_true")
+                parser.add_argument(arg[1], action="store_true", help=arg_help)
             else:
-                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2])
+                parser.add_argument(arg[1], type=type(arg[2]), default=arg[2], help=arg_help)
         return parser.parse_args()

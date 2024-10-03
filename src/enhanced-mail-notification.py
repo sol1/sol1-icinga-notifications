@@ -514,9 +514,9 @@ html_email += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></t
 html_email += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
 html_email += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
 if config.host_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_name + '">' + config.host_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_name + '">' + config.host_output.replace('\n', '<br>') + '</a></td></tr>'
 if config.service_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_name + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_name + '&service=' + config.service_name + '">' + config.service_output.replace('\n', '<br>') + '</a></td></tr>'
 html_email += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
 
 if config.notification_author and config.notification_comment:

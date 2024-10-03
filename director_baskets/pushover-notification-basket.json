@@ -1,0 +1,465 @@
+{
+    "Command": {
+        "cmd_notification_pushover": {
+            "arguments": {
+                "--debug": {
+                    "description": "Sets logging to debug",
+                    "value": "$pushover_notification_debug$",
+                    "order": 5
+                },
+                "--disable-log-file": {
+                    "description": "",
+                    "value": "$pushover_notification_disable_log_file$",
+                    "order": 5
+                },
+                "--host-name": {
+                    "description": "Host object name",
+                    "value": "$pushover_notification_host_name$",
+                    "order": 10
+                },
+                "--host-displayname": {
+                    "description": "Host display name",
+                    "value": "$pushover_notification_host_displayname$",
+                    "order": 10
+                },
+                "--host-address": {
+                    "description": "Host fqdn/address",
+                    "value": "$pushover_notification_host_address$",
+                    "order": 10
+                },
+                "--host-state": {
+                    "description": "Host state",
+                    "value": "$pushover_notification_host_state$",
+                    "order": 10
+                },
+                "--host-state-last": {
+                    "description": "Host state before current check run",
+                    "value": "$pushover_notification_host_state_last$",
+                    "order": 10
+                },
+                "--host-output": {
+                    "description": "Host output",
+                    "value": "$pushover_notification_host_output$",
+                    "order": 10
+                },
+                "--service-name": {
+                    "description": "Service object name",
+                    "value": "$pushover_notification_service_name$",
+                    "order": 15
+                },
+                "--service-displayname": {
+                    "description": "Service display name",
+                    "value": "$pushover_notification_service_displayname$",
+                    "order": 15
+                },
+                "--service-state": {
+                    "description": "Service state",
+                    "value": "$pushover_notification_service_state$",
+                    "order": 15
+                },
+                "--service-state-last": {
+                    "description": "Service state before current check run",
+                    "value": "$pushover_notification_service_state_last$",
+                    "order": 15
+                },
+                "--service-output": {
+                    "description": "Service output",
+                    "value": "$pushover_notification_service_output$",
+                    "order": 15
+                },
+                "--notification-author": {
+                    "description": "Notification Author",
+                    "value": "$pushover_notification_notification_author$",
+                    "order": 20
+                },
+                "--notification-comment": {
+                    "description": "Notification comment",
+                    "value": "$pushover_notification_notification_comment$",
+                    "order": 20
+                },
+                "--notification-type": {
+                    "description": "Notification type",
+                    "value": "$pushover_notification_notification_type$",
+                    "order": 20
+                },
+                "--notification-date-time": {
+                    "description": "",
+                    "value": "$pushover_notification_notification_date_time$",
+                    "order": 25
+                },
+                "--pushover-token": {
+                    "description": "",
+                    "value": "$pushover_notification_pushover_token$",
+                    "order": 25
+                },
+                "--pushover-user": {
+                    "description": "",
+                    "value": "$pushover_notification_pushover_user$",
+                    "order": 25
+                }
+            },
+            "command": "/etc/icinga2/scripts/pushover-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_pushover",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_pushover": {
+            "command": "cmd_notification_pushover",
+            "fields": [
+                {
+                    "datafield_id": 1180,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1181,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1182,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1183,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1184,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1193,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1194,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1195,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1196,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1197,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1198,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_pushover",
+            "object_type": "template",
+            "vars": {
+                "pushover_notification_disable_log_file": "Disables the log file",
+                "pushover_notification_host_name": "$host.name$",
+                "pushover_notification_host_displayname": "$host.display_name$",
+                "pushover_notification_host_address": "$host.address$",
+                "pushover_notification_notification_author": "$notification.author$",
+                "pushover_notification_notification_comment": "$notification.comment$",
+                "pushover_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_pushover_host": {
+            "command": "cmd_notification_pushover",
+            "fields": [
+                {
+                    "datafield_id": 1185,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1186,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1187,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_pushover_host",
+            "object_type": "template",
+            "vars": {
+                "pushover_notification_host_state": "$host.state$",
+                "pushover_notification_host_state_last": "$host.last_state$",
+                "pushover_notification_host_output": "$host.output$"
+            },
+            "imports": [
+                "nott_Pushover"
+            ]
+        },
+        "nott_pushover_service": {
+            "command": "cmd_notification_pushover",
+            "fields": [
+                {
+                    "datafield_id": 1188,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1189,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1190,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1191,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1192,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_pushover_service",
+            "object_type": "template",
+            "vars": {
+                "pushover_notification_service_name": "$service.name$",
+                "pushover_notification_service_displayname": "$service.display_name$",
+                "pushover_notification_service_state": "$service.state$",
+                "pushover_notification_service_state_last": "$service.last_state$",
+                "pushover_notification_service_output": "$service.output$"
+            },
+            "imports": [
+                "nott_Pushover"
+            ]
+        }
+    },
+    "Datafield": {
+        "1180": {
+            "varname": "pushover_notification_debug",
+            "caption": "Debug",
+            "description": "Sets logging to debug",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1181": {
+            "varname": "pushover_notification_disable_log_file",
+            "caption": "Disable log file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1182": {
+            "varname": "pushover_notification_host_name",
+            "caption": "Host name",
+            "description": "Host object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1183": {
+            "varname": "pushover_notification_host_displayname",
+            "caption": "Host displayname",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1184": {
+            "varname": "pushover_notification_host_address",
+            "caption": "Host address",
+            "description": "Host fqdn/address",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1185": {
+            "varname": "pushover_notification_host_state",
+            "caption": "Host state",
+            "description": "Host state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1186": {
+            "varname": "pushover_notification_host_state_last",
+            "caption": "Host state last",
+            "description": "Host state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1187": {
+            "varname": "pushover_notification_host_output",
+            "caption": "Host output",
+            "description": "Host output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1188": {
+            "varname": "pushover_notification_service_name",
+            "caption": "Service name",
+            "description": "Service object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1189": {
+            "varname": "pushover_notification_service_displayname",
+            "caption": "Service displayname",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1190": {
+            "varname": "pushover_notification_service_state",
+            "caption": "Service state",
+            "description": "Service state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1191": {
+            "varname": "pushover_notification_service_state_last",
+            "caption": "Service state last",
+            "description": "Service state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1192": {
+            "varname": "pushover_notification_service_output",
+            "caption": "Service output",
+            "description": "Service output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1193": {
+            "varname": "pushover_notification_notification_author",
+            "caption": "Notification author",
+            "description": "Notification Author",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1194": {
+            "varname": "pushover_notification_notification_comment",
+            "caption": "Notification comment",
+            "description": "Notification comment",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1195": {
+            "varname": "pushover_notification_notification_type",
+            "caption": "Notification type",
+            "description": "Notification type",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1196": {
+            "varname": "pushover_notification_notification_date_time",
+            "caption": "Notification date time",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1197": {
+            "varname": "pushover_notification_pushover_token",
+            "caption": "Pushover token",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1198": {
+            "varname": "pushover_notification_pushover_user",
+            "caption": "Pushover user",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

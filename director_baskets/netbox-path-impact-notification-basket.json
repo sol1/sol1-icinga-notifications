@@ -1,0 +1,465 @@
+{
+    "Command": {
+        "cmd_notification_netbox_path_impact": {
+            "arguments": {
+                "--config-file": {
+                    "description": "",
+                    "value": "$netbox_path_impact_notification_config_file$",
+                    "order": 25
+                },
+                "--debug": {
+                    "description": "Sets logging to debug",
+                    "value": "$netbox_path_impact_notification_debug$",
+                    "order": 5
+                },
+                "--disable-log-file": {
+                    "description": "",
+                    "value": "$netbox_path_impact_notification_disable_log_file$",
+                    "order": 5
+                },
+                "--host-name": {
+                    "description": "Host object name",
+                    "value": "$netbox_path_impact_notification_host_name$",
+                    "order": 10
+                },
+                "--host-displayname": {
+                    "description": "Host display name",
+                    "value": "$netbox_path_impact_notification_host_displayname$",
+                    "order": 10
+                },
+                "--host-address": {
+                    "description": "Host fqdn/address",
+                    "value": "$netbox_path_impact_notification_host_address$",
+                    "order": 10
+                },
+                "--host-state": {
+                    "description": "Host state",
+                    "value": "$netbox_path_impact_notification_host_state$",
+                    "order": 10
+                },
+                "--host-state-last": {
+                    "description": "Host state before current check run",
+                    "value": "$netbox_path_impact_notification_host_state_last$",
+                    "order": 10
+                },
+                "--host-output": {
+                    "description": "Host output",
+                    "value": "$netbox_path_impact_notification_host_output$",
+                    "order": 10
+                },
+                "--service-name": {
+                    "description": "Service object name",
+                    "value": "$netbox_path_impact_notification_service_name$",
+                    "order": 15
+                },
+                "--service-displayname": {
+                    "description": "Service display name",
+                    "value": "$netbox_path_impact_notification_service_displayname$",
+                    "order": 15
+                },
+                "--service-state": {
+                    "description": "Service state",
+                    "value": "$netbox_path_impact_notification_service_state$",
+                    "order": 15
+                },
+                "--service-state-last": {
+                    "description": "Service state before current check run",
+                    "value": "$netbox_path_impact_notification_service_state_last$",
+                    "order": 15
+                },
+                "--service-output": {
+                    "description": "Service output",
+                    "value": "$netbox_path_impact_notification_service_output$",
+                    "order": 15
+                },
+                "--notification-author": {
+                    "description": "Notification Author",
+                    "value": "$netbox_path_impact_notification_notification_author$",
+                    "order": 20
+                },
+                "--notification-comment": {
+                    "description": "Notification comment",
+                    "value": "$netbox_path_impact_notification_notification_comment$",
+                    "order": 20
+                },
+                "--notification-type": {
+                    "description": "Notification type",
+                    "value": "$netbox_path_impact_notification_notification_type$",
+                    "order": 20
+                },
+                "--object-type": {
+                    "description": "",
+                    "value": "$netbox_path_impact_notification_object_type$",
+                    "order": 25
+                },
+                "--notification-script": {
+                    "description": "",
+                    "value": "$netbox_path_impact_notification_notification_script$",
+                    "order": 25
+                }
+            },
+            "command": "/etc/icinga2/scripts/netbox-path-impact-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_netbox_path_impact",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_netbox_path_impact": {
+            "command": "cmd_notification_netbox_path_impact",
+            "fields": [
+                {
+                    "datafield_id": 1120,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1121,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1122,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1123,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1124,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1125,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1134,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1135,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1136,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1137,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1138,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_netbox_path_impact",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_disable_log_file": "Disables the log file",
+                "netbox_path_impact_notification_host_name": "$host.name$",
+                "netbox_path_impact_notification_host_displayname": "$host.display_name$",
+                "netbox_path_impact_notification_host_address": "$host.address$",
+                "netbox_path_impact_notification_notification_author": "$notification.author$",
+                "netbox_path_impact_notification_notification_comment": "$notification.comment$",
+                "netbox_path_impact_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_netbox_path_impact_host": {
+            "command": "cmd_notification_netbox_path_impact",
+            "fields": [
+                {
+                    "datafield_id": 1126,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1127,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1128,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_netbox_path_impact_host",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_host_state": "$host.state$",
+                "netbox_path_impact_notification_host_state_last": "$host.last_state$",
+                "netbox_path_impact_notification_host_output": "$host.output$"
+            },
+            "imports": [
+                "nott_Netbox Path Impact"
+            ]
+        },
+        "nott_netbox_path_impact_service": {
+            "command": "cmd_notification_netbox_path_impact",
+            "fields": [
+                {
+                    "datafield_id": 1129,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1130,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1131,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1132,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1133,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_netbox_path_impact_service",
+            "object_type": "template",
+            "vars": {
+                "netbox_path_impact_notification_service_name": "$service.name$",
+                "netbox_path_impact_notification_service_displayname": "$service.display_name$",
+                "netbox_path_impact_notification_service_state": "$service.state$",
+                "netbox_path_impact_notification_service_state_last": "$service.last_state$",
+                "netbox_path_impact_notification_service_output": "$service.output$"
+            },
+            "imports": [
+                "nott_Netbox Path Impact"
+            ]
+        }
+    },
+    "Datafield": {
+        "1120": {
+            "varname": "netbox_path_impact_notification_config_file",
+            "caption": "Config file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1121": {
+            "varname": "netbox_path_impact_notification_debug",
+            "caption": "Debug",
+            "description": "Sets logging to debug",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1122": {
+            "varname": "netbox_path_impact_notification_disable_log_file",
+            "caption": "Disable log file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1123": {
+            "varname": "netbox_path_impact_notification_host_name",
+            "caption": "Host name",
+            "description": "Host object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1124": {
+            "varname": "netbox_path_impact_notification_host_displayname",
+            "caption": "Host displayname",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1125": {
+            "varname": "netbox_path_impact_notification_host_address",
+            "caption": "Host address",
+            "description": "Host fqdn/address",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1126": {
+            "varname": "netbox_path_impact_notification_host_state",
+            "caption": "Host state",
+            "description": "Host state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1127": {
+            "varname": "netbox_path_impact_notification_host_state_last",
+            "caption": "Host state last",
+            "description": "Host state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1128": {
+            "varname": "netbox_path_impact_notification_host_output",
+            "caption": "Host output",
+            "description": "Host output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1129": {
+            "varname": "netbox_path_impact_notification_service_name",
+            "caption": "Service name",
+            "description": "Service object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1130": {
+            "varname": "netbox_path_impact_notification_service_displayname",
+            "caption": "Service displayname",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1131": {
+            "varname": "netbox_path_impact_notification_service_state",
+            "caption": "Service state",
+            "description": "Service state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1132": {
+            "varname": "netbox_path_impact_notification_service_state_last",
+            "caption": "Service state last",
+            "description": "Service state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1133": {
+            "varname": "netbox_path_impact_notification_service_output",
+            "caption": "Service output",
+            "description": "Service output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1134": {
+            "varname": "netbox_path_impact_notification_notification_author",
+            "caption": "Notification author",
+            "description": "Notification Author",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1135": {
+            "varname": "netbox_path_impact_notification_notification_comment",
+            "caption": "Notification comment",
+            "description": "Notification comment",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1136": {
+            "varname": "netbox_path_impact_notification_notification_type",
+            "caption": "Notification type",
+            "description": "Notification type",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1137": {
+            "varname": "netbox_path_impact_notification_object_type",
+            "caption": "Object type",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1138": {
+            "varname": "netbox_path_impact_notification_notification_script",
+            "caption": "Notification script",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

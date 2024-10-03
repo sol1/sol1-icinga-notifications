@@ -1,0 +1,421 @@
+{
+    "Command": {
+        "cmd_notification_request_tracker": {
+            "arguments": {
+                "--config-file": {
+                    "description": "",
+                    "value": "$rt_notification_config_file$",
+                    "order": 25
+                },
+                "--debug": {
+                    "description": "Sets logging to debug",
+                    "value": "$rt_notification_debug$",
+                    "order": 5
+                },
+                "--disable-log-file": {
+                    "description": "",
+                    "value": "$rt_notification_disable_log_file$",
+                    "order": 5
+                },
+                "--host-name": {
+                    "description": "Host object name",
+                    "value": "$rt_notification_host_name$",
+                    "order": 10
+                },
+                "--host-displayname": {
+                    "description": "Host display name",
+                    "value": "$rt_notification_host_displayname$",
+                    "order": 10
+                },
+                "--host-address": {
+                    "description": "Host fqdn/address",
+                    "value": "$rt_notification_host_address$",
+                    "order": 10
+                },
+                "--host-state": {
+                    "description": "Host state",
+                    "value": "$rt_notification_host_state$",
+                    "order": 10
+                },
+                "--host-output": {
+                    "description": "Host output",
+                    "value": "$rt_notification_host_output$",
+                    "order": 10
+                },
+                "--service-name": {
+                    "description": "Service object name",
+                    "value": "$rt_notification_service_name$",
+                    "order": 15
+                },
+                "--service-displayname": {
+                    "description": "Service display name",
+                    "value": "$rt_notification_service_displayname$",
+                    "order": 15
+                },
+                "--service-state": {
+                    "description": "Service state",
+                    "value": "$rt_notification_service_state$",
+                    "order": 15
+                },
+                "--service-output": {
+                    "description": "Service output",
+                    "value": "$rt_notification_service_output$",
+                    "order": 15
+                },
+                "--notification-author": {
+                    "description": "Notification Author",
+                    "value": "$rt_notification_notification_author$",
+                    "order": 20
+                },
+                "--notification-comment": {
+                    "description": "Notification comment",
+                    "value": "$rt_notification_notification_comment$",
+                    "order": 20
+                },
+                "--notification-type": {
+                    "description": "Notification type",
+                    "value": "$rt_notification_notification_type$",
+                    "order": 20
+                },
+                "--rt-requestor": {
+                    "description": "",
+                    "value": "$rt_notification_rt_requestor$",
+                    "order": 25
+                },
+                "--rt-queue": {
+                    "description": "",
+                    "value": "$rt_notification_rt_queue$",
+                    "order": 25
+                }
+            },
+            "command": "/etc/icinga2/scripts/request-tracker-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_request_tracker",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_request_tracker": {
+            "command": "cmd_notification_request_tracker",
+            "fields": [
+                {
+                    "datafield_id": 1140,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1141,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1142,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1143,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1144,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1145,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1152,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1153,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1154,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1155,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1156,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_request_tracker",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_disable_log_file": "Disables the log file",
+                "rt_notification_host_name": "$host.name$",
+                "rt_notification_host_displayname": "$host.display_name$",
+                "rt_notification_host_address": "$host.address$",
+                "rt_notification_notification_author": "$notification.author$",
+                "rt_notification_notification_comment": "$notification.comment$",
+                "rt_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_request_tracker_host": {
+            "command": "cmd_notification_request_tracker",
+            "fields": [
+                {
+                    "datafield_id": 1146,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1147,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_request_tracker_host",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_host_state": "$host.state$",
+                "rt_notification_host_output": "$host.output$"
+            },
+            "imports": [
+                "nott_Request Tracker"
+            ]
+        },
+        "nott_request_tracker_service": {
+            "command": "cmd_notification_request_tracker",
+            "fields": [
+                {
+                    "datafield_id": 1148,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1149,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1150,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1151,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_request_tracker_service",
+            "object_type": "template",
+            "vars": {
+                "rt_notification_service_name": "$service.name$",
+                "rt_notification_service_displayname": "$service.display_name$",
+                "rt_notification_service_state": "$service.state$",
+                "rt_notification_service_output": "$service.output$"
+            },
+            "imports": [
+                "nott_Request Tracker"
+            ]
+        }
+    },
+    "Datafield": {
+        "1140": {
+            "varname": "rt_notification_config_file",
+            "caption": "Config file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1141": {
+            "varname": "rt_notification_debug",
+            "caption": "Debug",
+            "description": "Sets logging to debug",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1142": {
+            "varname": "rt_notification_disable_log_file",
+            "caption": "Disable log file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1143": {
+            "varname": "rt_notification_host_name",
+            "caption": "Host name",
+            "description": "Host object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1144": {
+            "varname": "rt_notification_host_displayname",
+            "caption": "Host displayname",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1145": {
+            "varname": "rt_notification_host_address",
+            "caption": "Host address",
+            "description": "Host fqdn/address",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1146": {
+            "varname": "rt_notification_host_state",
+            "caption": "Host state",
+            "description": "Host state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1147": {
+            "varname": "rt_notification_host_output",
+            "caption": "Host output",
+            "description": "Host output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1148": {
+            "varname": "rt_notification_service_name",
+            "caption": "Service name",
+            "description": "Service object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1149": {
+            "varname": "rt_notification_service_displayname",
+            "caption": "Service displayname",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1150": {
+            "varname": "rt_notification_service_state",
+            "caption": "Service state",
+            "description": "Service state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1151": {
+            "varname": "rt_notification_service_output",
+            "caption": "Service output",
+            "description": "Service output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1152": {
+            "varname": "rt_notification_notification_author",
+            "caption": "Notification author",
+            "description": "Notification Author",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1153": {
+            "varname": "rt_notification_notification_comment",
+            "caption": "Notification comment",
+            "description": "Notification comment",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1154": {
+            "varname": "rt_notification_notification_type",
+            "caption": "Notification type",
+            "description": "Notification type",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1155": {
+            "varname": "rt_notification_rt_requestor",
+            "caption": "Rt requestor",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1156": {
+            "varname": "rt_notification_rt_queue",
+            "caption": "Rt queue",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

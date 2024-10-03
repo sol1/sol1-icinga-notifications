@@ -1,0 +1,549 @@
+{
+    "Command": {
+        "cmd_notification_slack": {
+            "arguments": {
+                "--debug": {
+                    "description": "Sets logging to debug",
+                    "value": "$slack_notification_debug$",
+                    "order": 5
+                },
+                "--disable-log-file": {
+                    "description": "",
+                    "value": "$slack_notification_disable_log_file$",
+                    "order": 5
+                },
+                "--host-name": {
+                    "description": "Host object name",
+                    "value": "$slack_notification_host_name$",
+                    "order": 10
+                },
+                "--host-displayname": {
+                    "description": "Host display name",
+                    "value": "$slack_notification_host_displayname$",
+                    "order": 10
+                },
+                "--host-address": {
+                    "description": "Host fqdn/address",
+                    "value": "$slack_notification_host_address$",
+                    "order": 10
+                },
+                "--host-state": {
+                    "description": "Host state",
+                    "value": "$slack_notification_host_state$",
+                    "order": 10
+                },
+                "--host-state-last": {
+                    "description": "Host state before current check run",
+                    "value": "$slack_notification_host_state_last$",
+                    "order": 10
+                },
+                "--host-output": {
+                    "description": "Host output",
+                    "value": "$slack_notification_host_output$",
+                    "order": 10
+                },
+                "--service-name": {
+                    "description": "Service object name",
+                    "value": "$slack_notification_service_name$",
+                    "order": 15
+                },
+                "--service-displayname": {
+                    "description": "Service display name",
+                    "value": "$slack_notification_service_displayname$",
+                    "order": 15
+                },
+                "--service-state": {
+                    "description": "Service state",
+                    "value": "$slack_notification_service_state$",
+                    "order": 15
+                },
+                "--service-state-last": {
+                    "description": "Service state before current check run",
+                    "value": "$slack_notification_service_state_last$",
+                    "order": 15
+                },
+                "--service-output": {
+                    "description": "Service output",
+                    "value": "$slack_notification_service_output$",
+                    "order": 15
+                },
+                "--notification-author": {
+                    "description": "Notification Author",
+                    "value": "$slack_notification_notification_author$",
+                    "order": 20
+                },
+                "--notification-comment": {
+                    "description": "Notification comment",
+                    "value": "$slack_notification_notification_comment$",
+                    "order": 20
+                },
+                "--notification-type": {
+                    "description": "Notification type",
+                    "value": "$slack_notification_notification_type$",
+                    "order": 20
+                },
+                "--slack-channel": {
+                    "description": "",
+                    "value": "$slack_notification_slack_channel$",
+                    "order": 25
+                },
+                "--slack-webhook-url": {
+                    "description": "",
+                    "value": "$slack_notification_slack_webhook_url$",
+                    "order": 25
+                },
+                "--slack-botname": {
+                    "description": "",
+                    "value": "$slack_notification_slack_botname$",
+                    "order": 25
+                },
+                "--slack-max-message-length": {
+                    "description": "",
+                    "value": "$slack_notification_slack_max_message_length$",
+                    "order": 25
+                },
+                "--icingaweb2-url": {
+                    "description": "",
+                    "value": "$slack_notification_icingaweb2_url$",
+                    "order": 25
+                },
+                "--slack-layout-footer": {
+                    "description": "",
+                    "value": "$slack_notification_slack_layout_footer$",
+                    "order": 25
+                },
+                "--slack-layout-host-and-service": {
+                    "description": "",
+                    "value": "$slack_notification_slack_layout_host_and_service$",
+                    "order": 25
+                }
+            },
+            "command": "/etc/icinga2/scripts/slack-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_slack",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_slack": {
+            "command": "cmd_notification_slack",
+            "fields": [
+                {
+                    "datafield_id": 1160,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1161,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1162,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1163,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1164,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1173,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1174,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1175,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1176,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1177,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1178,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1179,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1180,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1181,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1182,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_slack",
+            "object_type": "template",
+            "vars": {
+                "slack_notification_disable_log_file": "Disables the log file",
+                "slack_notification_host_name": "$host.name$",
+                "slack_notification_host_displayname": "$host.display_name$",
+                "slack_notification_host_address": "$host.address$",
+                "slack_notification_notification_author": "$notification.author$",
+                "slack_notification_notification_comment": "$notification.comment$",
+                "slack_notification_notification_type": "$notification.type$"
+            }
+        },
+        "nott_slack_host": {
+            "command": "cmd_notification_slack",
+            "fields": [
+                {
+                    "datafield_id": 1165,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1166,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1167,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_slack_host",
+            "object_type": "template",
+            "vars": {
+                "slack_notification_host_state": "$host.state$",
+                "slack_notification_host_state_last": "$host.last_state$",
+                "slack_notification_host_output": "$host.output$"
+            },
+            "imports": [
+                "nott_Slack"
+            ]
+        },
+        "nott_slack_service": {
+            "command": "cmd_notification_slack",
+            "fields": [
+                {
+                    "datafield_id": 1168,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1169,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1170,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1171,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1172,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_slack_service",
+            "object_type": "template",
+            "vars": {
+                "slack_notification_service_name": "$service.name$",
+                "slack_notification_service_displayname": "$service.display_name$",
+                "slack_notification_service_state": "$service.state$",
+                "slack_notification_service_state_last": "$service.last_state$",
+                "slack_notification_service_output": "$service.output$"
+            },
+            "imports": [
+                "nott_Slack"
+            ]
+        }
+    },
+    "Datafield": {
+        "1160": {
+            "varname": "slack_notification_debug",
+            "caption": "Debug",
+            "description": "Sets logging to debug",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1161": {
+            "varname": "slack_notification_disable_log_file",
+            "caption": "Disable log file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1162": {
+            "varname": "slack_notification_host_name",
+            "caption": "Host name",
+            "description": "Host object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1163": {
+            "varname": "slack_notification_host_displayname",
+            "caption": "Host displayname",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1164": {
+            "varname": "slack_notification_host_address",
+            "caption": "Host address",
+            "description": "Host fqdn/address",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1165": {
+            "varname": "slack_notification_host_state",
+            "caption": "Host state",
+            "description": "Host state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1166": {
+            "varname": "slack_notification_host_state_last",
+            "caption": "Host state last",
+            "description": "Host state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1167": {
+            "varname": "slack_notification_host_output",
+            "caption": "Host output",
+            "description": "Host output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1168": {
+            "varname": "slack_notification_service_name",
+            "caption": "Service name",
+            "description": "Service object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1169": {
+            "varname": "slack_notification_service_displayname",
+            "caption": "Service displayname",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1170": {
+            "varname": "slack_notification_service_state",
+            "caption": "Service state",
+            "description": "Service state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1171": {
+            "varname": "slack_notification_service_state_last",
+            "caption": "Service state last",
+            "description": "Service state before current check run",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1172": {
+            "varname": "slack_notification_service_output",
+            "caption": "Service output",
+            "description": "Service output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1173": {
+            "varname": "slack_notification_notification_author",
+            "caption": "Notification author",
+            "description": "Notification Author",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1174": {
+            "varname": "slack_notification_notification_comment",
+            "caption": "Notification comment",
+            "description": "Notification comment",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1175": {
+            "varname": "slack_notification_notification_type",
+            "caption": "Notification type",
+            "description": "Notification type",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1176": {
+            "varname": "slack_notification_slack_channel",
+            "caption": "Slack channel",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1177": {
+            "varname": "slack_notification_slack_webhook_url",
+            "caption": "Slack webhook url",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1178": {
+            "varname": "slack_notification_slack_botname",
+            "caption": "Slack botname",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1179": {
+            "varname": "slack_notification_slack_max_message_length",
+            "caption": "Slack max message length",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeNumber",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1180": {
+            "varname": "slack_notification_icingaweb2_url",
+            "caption": "Icingaweb2 url",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1181": {
+            "varname": "slack_notification_slack_layout_footer",
+            "caption": "Slack layout footer",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1182": {
+            "varname": "slack_notification_slack_layout_host_and_service",
+            "caption": "Slack layout host and service",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

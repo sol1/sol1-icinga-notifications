@@ -17,6 +17,7 @@ import sys
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
+from lib.IcingaUtil import getSettingsParserArgumentsDict, DirectorBasketNotificationCommand, DEFAULT_ARGS
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -112,13 +113,14 @@ class Settings(SettingsParser):
     column_width: str = '144'
 
     print_config: bool = False
+    build_config: bool = False
 
     def __post_init__(self):
         self._exclude_from_args.extend(self._exclude_all)
         self._exclude_from_env.extend(self._exclude_all + ['print_config'])
         self._env_prefix = "NOTIFY_ENHANCED_MAIL_"
         self.loadEnvironmentVars()
-        self._args = self._init_args('Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox')
+        self._args = self._init_args('Icinga2 plugin to send enhanced email notifications with links to Grafana and Netbox', DEFAULT_ARGS)
         self.loadArgs(self._args)
 
         # Debug set in the config file will override the args
@@ -426,6 +428,16 @@ else:
 logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 logger.debug(config._args)
 
+
+if config.build_config:
+    args = getSettingsParserArgumentsDict(config)
+    basket = DirectorBasketNotificationCommand("Enhanced Mail", command="/etc/icinga2/scripts/enhanced-mail-notification.py", icinga_var_prefix="enhanced_mail_notification", args=args, id=1140)
+    with open('director_baskets/enhanced-mail-notification-basket.json', 'w') as _file:
+        json.dump(basket.director_basket, _file, indent=4)
+    logger.debug(basket.director_basket)
+    sys.exit(0)
+
+
 if config.print_config:
     config.printArguments()
     config.printEnvironmentVars()
@@ -514,9 +526,9 @@ html_email += '\n<tr><th>IP Address:</th><td>' + config.host_address + '</td></t
 html_email += '\n<tr><th>Status:</th><td>' + config.host_state + config.service_state + '</td></tr>'
 html_email += '\n<tr><th>Service Name:</th><td>' + config.service_display_name + '</td></tr>'
 if config.host_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_name + '">' + config.host_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/host/services?host=' + config.host_name + '">' + config.host_output.replace('\n', '<br>') + '</a></td></tr>'
 if config.service_state:
-    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_name + '&service=' + config.service_name + '">' + config.service_output + '</a></td></tr>'
+    html_email += '\n<tr><th>Service Data:</th><td><a style="color: #0095bf; text-decoration: none;" href="' + config.icinga.url + '/monitoring/service/show?host=' + config.host_name + '&service=' + config.service_name + '">' + config.service_output.replace('\n', '<br>') + '</a></td></tr>'
 html_email += '\n<tr><th>Event Time:</th><td>' + config.long_date_time + '</td></tr>'
 
 if config.notification_author and config.notification_comment:

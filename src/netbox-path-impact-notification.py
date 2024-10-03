@@ -10,6 +10,8 @@ import traceback
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
+from lib.IcingaUtil import getSettingsParserArgumentsDict, DirectorBasketNotificationCommand, DEFAULT_ARGS
+
 
 from loguru import logger
 
@@ -60,6 +62,7 @@ class Settings(SettingsParser):
     notification_script: str = ''
 
     print_config: bool = False
+    build_config: bool = False
 
     def __post_init__(self):
         try:
@@ -67,7 +70,7 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_NETBOX_PATH_IMPACT_"
             self.loadEnvironmentVars()
-            self._args = self._init_args('Icinga2 plugin to send Netbox Path Impact notifications')
+            self._args = self._init_args('Icinga2 plugin to send Netbox Path Impact notifications', DEFAULT_ARGS)
             self.loadArgs(self._args)
 
             # Debug set in the config file will override the args
@@ -199,6 +202,15 @@ if __name__ == "__main__":
 
 
     logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
+
+    if config.build_config:
+        args = getSettingsParserArgumentsDict(config)
+        basket = DirectorBasketNotificationCommand("Netbox Path Impact", command="/etc/icinga2/scripts/netbox-path-impact-notification.py", icinga_var_prefix="netbox_path_impact_notification", args=args, id=1120)
+        with open('director_baskets/netbox-path-impact-notification-basket.json', 'w') as _file:
+            json.dump(basket.director_basket, _file, indent=4)
+        logger.debug(basket.director_basket)
+        sys.exit(0)
+
 
     netbox = Netbox(config)
     impacted_paths = netbox.getImpactAssessment()

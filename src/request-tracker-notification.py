@@ -13,6 +13,8 @@ from rt.rest2 import Rt
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
+from lib.IcingaUtil import getSettingsParserArgumentsDict, DirectorBasketNotificationCommand, DEFAULT_ARGS
+
 
 from loguru import logger
 
@@ -78,6 +80,7 @@ class Settings(SettingsParser):
     rt_queue: str = ''
 
     print_config: bool = False
+    build_config: bool = False
 
     def __post_init__(self):
         try:
@@ -85,7 +88,7 @@ class Settings(SettingsParser):
             self._exclude_from_env.extend(self._exclude_all + ['print_config'])
             self._env_prefix = "NOTIFY_RT_"
             self.loadEnvironmentVars()
-            self._args = self._init_args('Icinga2 plugin to create and update Request Tracker tickets')
+            self._args = self._init_args('Icinga2 plugin to create and update Request Tracker tickets', DEFAULT_ARGS)
             self.loadArgs(self._args)
 
             # These set in the config file will override the args
@@ -293,14 +296,9 @@ config = Settings()
 config.rt = SettingsRT(_config_dict=config._config_dict)
 config.icinga = SettingsIcinga(_config_dict=config._config_dict)
 
-# I should comment this better
+# I should have commented this 
 if not config.rt_queue:
     config.rt_queue = config.rt.queue
-
-rt = RequestTracker()
-
-# Init Icinga
-icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
 
 # Init logging
 if config.debug:
@@ -308,11 +306,26 @@ if config.debug:
 else:
     initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-request-tracker.log")
 
+if config.build_config:
+    args = getSettingsParserArgumentsDict(config)
+    basket = DirectorBasketNotificationCommand("Request Tracker", command="/etc/icinga2/scripts/request-tracker-notification.py", icinga_var_prefix="rt_notification", args=args, id=1140)
+    with open('director_baskets/request-tracker-notification-basket.json', 'w') as _file:
+        json.dump(basket.director_basket, _file, indent=4)
+    logger.debug(basket.director_basket)
+    sys.exit(0)
+
+
 if config.print_config:
     logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
     config.printArguments()
     config.printEnvironmentVars()
     sys.exit(0)
+
+rt = RequestTracker()
+
+# Init Icinga
+icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
+
 
 logger.info(dataclasses.asdict(config))
 

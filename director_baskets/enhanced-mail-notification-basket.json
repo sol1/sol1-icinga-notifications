@@ -1,0 +1,633 @@
+{
+    "Command": {
+        "cmd_notification_enhanced_mail": {
+            "arguments": {
+                "--config-file": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_config_file$",
+                    "order": 25
+                },
+                "--debug": {
+                    "description": "Sets logging to debug",
+                    "value": "$enhanced_mail_notification_debug$",
+                    "order": 5
+                },
+                "--disable-log-file": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_disable_log_file$",
+                    "order": 5
+                },
+                "--notification-type": {
+                    "description": "Notification type",
+                    "value": "$enhanced_mail_notification_notification_type$",
+                    "order": 20
+                },
+                "--host-name": {
+                    "description": "Host object name",
+                    "value": "$enhanced_mail_notification_host_name$",
+                    "order": 10
+                },
+                "--host-display-name": {
+                    "description": "Host display name",
+                    "value": "$enhanced_mail_notification_host_display_name$",
+                    "order": 10
+                },
+                "--host-displayname": {
+                    "description": "Host display name",
+                    "value": "$enhanced_mail_notification_host_displayname$",
+                    "order": 10
+                },
+                "--host-address": {
+                    "description": "Host fqdn/address",
+                    "value": "$enhanced_mail_notification_host_address$",
+                    "order": 10
+                },
+                "--host-state": {
+                    "description": "Host state",
+                    "value": "$enhanced_mail_notification_host_state$",
+                    "order": 10
+                },
+                "--host-output": {
+                    "description": "Host output",
+                    "value": "$enhanced_mail_notification_host_output$",
+                    "order": 10
+                },
+                "--service-name": {
+                    "description": "Service object name",
+                    "value": "$enhanced_mail_notification_service_name$",
+                    "order": 15
+                },
+                "--service-display-name": {
+                    "description": "Service display name",
+                    "value": "$enhanced_mail_notification_service_display_name$",
+                    "order": 15
+                },
+                "--service-displayname": {
+                    "description": "Service display name",
+                    "value": "$enhanced_mail_notification_service_displayname$",
+                    "order": 15
+                },
+                "--service-command": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_service_command$",
+                    "order": 25
+                },
+                "--service-state": {
+                    "description": "Service state",
+                    "value": "$enhanced_mail_notification_service_state$",
+                    "order": 15
+                },
+                "--service-output": {
+                    "description": "Service output",
+                    "value": "$enhanced_mail_notification_service_output$",
+                    "order": 15
+                },
+                "--long-date-time": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_long_date_time$",
+                    "order": 25
+                },
+                "--notification-author": {
+                    "description": "Notification Author",
+                    "value": "$enhanced_mail_notification_notification_author$",
+                    "order": 20
+                },
+                "--notification-comment": {
+                    "description": "Notification comment",
+                    "value": "$enhanced_mail_notification_notification_comment$",
+                    "order": 20
+                },
+                "--email-to": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_email_to$",
+                    "order": 25
+                },
+                "--performance-data": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_performance_data$",
+                    "order": 25
+                },
+                "--netbox-host-name": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_netbox_host_name$",
+                    "order": 25
+                },
+                "--netbox-host-ip": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_netbox_host_ip$",
+                    "order": 25
+                },
+                "--grafana-host-name": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_grafana_host_name$",
+                    "order": 25
+                },
+                "--grafana-panel-id": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_grafana_panel_id$",
+                    "order": 25
+                },
+                "--table-width": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_table_width$",
+                    "order": 25
+                },
+                "--column-width": {
+                    "description": "",
+                    "value": "$enhanced_mail_notification_column_width$",
+                    "order": 25
+                }
+            },
+            "command": "/etc/icinga2/scripts/enhanced-mail-notification.py",
+            "fields": [],
+            "methods_execute": "PluginNotification",
+            "object_name": "cmd_notification_enhanced_mail",
+            "object_type": "object",
+            "timeout": "60"
+        }
+    },
+    "NotificationTemplate": {
+        "nott_enhanced_mail": {
+            "command": "cmd_notification_enhanced_mail",
+            "fields": [
+                {
+                    "datafield_id": 1140,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1141,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1142,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1143,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1144,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1145,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1146,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1147,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1156,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1157,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1158,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1159,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1160,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1161,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1162,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1163,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1164,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1165,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1166,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_enhanced_mail",
+            "object_type": "template",
+            "vars": {
+                "enhanced_mail_notification_disable_log_file": "Disables the log file",
+                "enhanced_mail_notification_notification_type": "$notification.type$",
+                "enhanced_mail_notification_host_name": "$host.name$",
+                "enhanced_mail_notification_host_display_name": "$host.display_name$",
+                "enhanced_mail_notification_host_displayname": "$host.display_name$",
+                "enhanced_mail_notification_host_address": "$host.address$",
+                "enhanced_mail_notification_notification_author": "$notification.author$",
+                "enhanced_mail_notification_notification_comment": "$notification.comment$"
+            }
+        },
+        "nott_enhanced_mail_host": {
+            "command": "cmd_notification_enhanced_mail",
+            "fields": [
+                {
+                    "datafield_id": 1148,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1149,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_enhanced_mail_host",
+            "object_type": "template",
+            "vars": {
+                "enhanced_mail_notification_host_state": "$host.state$",
+                "enhanced_mail_notification_host_output": "$host.output$"
+            },
+            "imports": [
+                "nott_Enhanced Mail"
+            ]
+        },
+        "nott_enhanced_mail_service": {
+            "command": "cmd_notification_enhanced_mail",
+            "fields": [
+                {
+                    "datafield_id": 1150,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1151,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1152,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1153,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1154,
+                    "is_required": "n",
+                    "var_filter": "null"
+                },
+                {
+                    "datafield_id": 1155,
+                    "is_required": "n",
+                    "var_filter": "null"
+                }
+            ],
+            "object_name": "nott_enhanced_mail_service",
+            "object_type": "template",
+            "vars": {
+                "enhanced_mail_notification_service_name": "$service.name$",
+                "enhanced_mail_notification_service_display_name": "$service.display_name$",
+                "enhanced_mail_notification_service_displayname": "$service.display_name$",
+                "enhanced_mail_notification_service_state": "$service.state$",
+                "enhanced_mail_notification_service_output": "$service.output$"
+            },
+            "imports": [
+                "nott_Enhanced Mail"
+            ]
+        }
+    },
+    "Datafield": {
+        "1140": {
+            "varname": "enhanced_mail_notification_config_file",
+            "caption": "Config file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1141": {
+            "varname": "enhanced_mail_notification_debug",
+            "caption": "Debug",
+            "description": "Sets logging to debug",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1142": {
+            "varname": "enhanced_mail_notification_disable_log_file",
+            "caption": "Disable log file",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeBoolean",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1143": {
+            "varname": "enhanced_mail_notification_notification_type",
+            "caption": "Notification type",
+            "description": "Notification type",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1144": {
+            "varname": "enhanced_mail_notification_host_name",
+            "caption": "Host name",
+            "description": "Host object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1145": {
+            "varname": "enhanced_mail_notification_host_display_name",
+            "caption": "Host display name",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1146": {
+            "varname": "enhanced_mail_notification_host_displayname",
+            "caption": "Host displayname",
+            "description": "Host display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1147": {
+            "varname": "enhanced_mail_notification_host_address",
+            "caption": "Host address",
+            "description": "Host fqdn/address",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1148": {
+            "varname": "enhanced_mail_notification_host_state",
+            "caption": "Host state",
+            "description": "Host state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1149": {
+            "varname": "enhanced_mail_notification_host_output",
+            "caption": "Host output",
+            "description": "Host output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1150": {
+            "varname": "enhanced_mail_notification_service_name",
+            "caption": "Service name",
+            "description": "Service object name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1151": {
+            "varname": "enhanced_mail_notification_service_display_name",
+            "caption": "Service display name",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1152": {
+            "varname": "enhanced_mail_notification_service_displayname",
+            "caption": "Service displayname",
+            "description": "Service display name",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1153": {
+            "varname": "enhanced_mail_notification_service_command",
+            "caption": "Service command",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1154": {
+            "varname": "enhanced_mail_notification_service_state",
+            "caption": "Service state",
+            "description": "Service state",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1155": {
+            "varname": "enhanced_mail_notification_service_output",
+            "caption": "Service output",
+            "description": "Service output",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1156": {
+            "varname": "enhanced_mail_notification_long_date_time",
+            "caption": "Long date time",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1157": {
+            "varname": "enhanced_mail_notification_notification_author",
+            "caption": "Notification author",
+            "description": "Notification Author",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1158": {
+            "varname": "enhanced_mail_notification_notification_comment",
+            "caption": "Notification comment",
+            "description": "Notification comment",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1159": {
+            "varname": "enhanced_mail_notification_email_to",
+            "caption": "Email to",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1160": {
+            "varname": "enhanced_mail_notification_performance_data",
+            "caption": "Performance data",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1161": {
+            "varname": "enhanced_mail_notification_netbox_host_name",
+            "caption": "Netbox host name",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1162": {
+            "varname": "enhanced_mail_notification_netbox_host_ip",
+            "caption": "Netbox host ip",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1163": {
+            "varname": "enhanced_mail_notification_grafana_host_name",
+            "caption": "Grafana host name",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1164": {
+            "varname": "enhanced_mail_notification_grafana_panel_id",
+            "caption": "Grafana panel id",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1165": {
+            "varname": "enhanced_mail_notification_table_width",
+            "caption": "Table width",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1166": {
+            "varname": "enhanced_mail_notification_column_width",
+            "caption": "Column width",
+            "description": "",
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        }
+    }
+}

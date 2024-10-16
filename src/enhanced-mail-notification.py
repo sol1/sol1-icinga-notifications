@@ -34,6 +34,8 @@ class SettingsFile(SettingsParser):
 class SettingsMail(SettingsFile):
     from_address: str = 'icinga@domain.local'
     server: str = 'localhost'
+    port: str = '25'
+    starttls: bool = False
     username: str = ''
     password: str = ''
     _json_dict_key: str = 'mail'
@@ -614,13 +616,15 @@ if grafana.png:
 
 
 # Send mail using SMTP
-smtp = smtplib.SMTP()
-
 try:
-    smtp.connect(config.mail.server)
+    smtp = smtplib.SMTP(config.mail.server, config.mail.port)
+    smtp.connect()
 except socket.error as e:
     logger.error("Unable to connect to SMTP server '" + config.mail.server + "': " + e.strerror)
     os.sys.exit(e.errno)
+
+if config.mail.starttls:
+    smtp.starttls()
 
 if config.mail.username and config.mail.password:
     smtp.login(config.mail.username, config.mail.password)

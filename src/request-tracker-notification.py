@@ -10,6 +10,7 @@ import sys
 import traceback
 
 from rt.rest2 import Rt
+from datetime import datetime
 
 from lib.SettingsParser import SettingsParser
 from lib.Util import initLogger
@@ -70,6 +71,7 @@ class Settings(SettingsParser):
     service_displayname: str = ''
     service_state: str = ''
     service_output: str = ''
+    notification_datetime: str = ''
     notification_author: str = ''
     notification_comment: str = ''
     notification_type: str = ''
@@ -219,13 +221,15 @@ class RequestTracker:
         additional_output = self.parseMultiLineField(f"{config.service_output}{config.host_output}")
         state = f"{config.service_state}{config.host_state}"
 
-        message = f"Notification Type: {config.notification_type}\n \n"
+        message = f"Notification Type: {config.notification_type} \n"
+        message += f"Notification Time: {config.notification_datetime}\n \n"
         message += f" Service: {config.service_displayname}\n"
         message += f" Host: {config.host_displayname}\n"
         message += f" Address: {config.host_address}\n"
         message += f" State: {state}\n \n"
         message += f" Additional Info: {additional_output}\n \n"
-        message += f" Comment: [{config.notification_author}] {config.notification_comment}\n"
+        message += f" Comment: [{config.notification_author}] {config.notification_comment}\n \n"
+        message += f" Generated: by {os.uname().nodename} @ {datetime.now().isoformat()}\n"
 
         logger.debug(f"Ticket message\n{message}")
         return message

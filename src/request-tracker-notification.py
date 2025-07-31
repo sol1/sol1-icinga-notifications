@@ -7,6 +7,7 @@ import os
 import re
 import requests
 import sys
+import socket
 import traceback
 
 from rt.rest2 import Rt
@@ -229,7 +230,7 @@ class RequestTracker:
         message += f" State: {state}\n \n"
         message += f" Additional Info: {additional_output}\n \n"
         message += f" Comment: [{config.notification_author}] {config.notification_comment}\n \n"
-        message += f" Generated: by {os.uname().nodename} @ {datetime.now().isoformat()}\n"
+        message += f" Generated: by {os.uname().nodename} ({get_host_ip()}) @ {datetime.now().isoformat()}\n"
 
         logger.debug(f"Ticket message\n{message}")
         return message
@@ -292,6 +293,18 @@ class RequestTracker:
                 logger.error(f"Error editing existing ticket {self.ticket_id}: {e}")
         else:
             logger.warning("Can't edit on ticket without valid ticket number")
+
+def get_host_ip():
+    try:
+        # Connect to an external address (doesn't need to succeed)
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+    except Exception:
+        return "failed to get ip"  # fallback
+
+
+
 
 config = Settings()
 config.rt = SettingsRT(_config_dict=config._config_dict)

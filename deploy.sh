@@ -64,7 +64,7 @@ deploy_library() {
     mkdir -p "$ICINGA2_SCRIPT_DIR/lib/"
     echo "  copying ./src/lib/* to $ICINGA2_SCRIPT_DIR/lib/" 
     cp ./src/lib/* "$ICINGA2_SCRIPT_DIR/lib/" 
-    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/lib/*"
+    chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/lib" -R
 }
 
 install_all_requirements() {
@@ -98,7 +98,7 @@ deploy_config() {
     if [[ ! -f "$ICINGA2_SCRIPT_DIR/config/$file_name" ]]; then 
         echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/$file_name" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"
-        chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/config/*"
+        chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/config" -R
     else
         echo "  config $file_name exists in $ICINGA2_SCRIPT_DIR/config/" 
     fi

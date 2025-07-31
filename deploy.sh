@@ -94,6 +94,7 @@ install_pushover_requirements() {
 deploy_config() {
     file=$1
     file_name=$(basename "$file")
+    mkdir -p "$ICINGA2_SCRIPT_DIR/config/"
     if [[ ! -f "$ICINGA2_SCRIPT_DIR/config/$file_name" ]]; then 
         echo "  copying $file to $ICINGA2_SCRIPT_DIR/config/$file_name" 
         cp "$file" "$ICINGA2_SCRIPT_DIR/config/"

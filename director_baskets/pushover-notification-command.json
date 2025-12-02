@@ -86,6 +86,11 @@
                     "description": "Pushover user",
                     "value": "$pushover_notification_pushover_user$",
                     "order": "25"
+                },
+                "--pushover-sound": {
+                    "description": "Pushover sound",
+                    "value": "$pushover_notification_pushover_sound$",
+                    "order": "25"
                 }
             },
             "command": "/etc/icinga2/scripts/pushover-notification.py",
@@ -142,6 +147,11 @@
                 },
                 {
                     "datafield_id": 1189,
+                    "is_required": "n",
+                    "var_filter": null
+                },
+                {
+                    "datafield_id": 1190,
                     "is_required": "n",
                     "var_filter": null
                 }
@@ -321,6 +331,17 @@
         "1189": {
             "varname": "pushover_notification_pushover_user",
             "caption": "pushover_notification_pushover_user",
+            "description": null,
+            "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
+            "format": null,
+            "settings": {
+                "visibility": "visible"
+            },
+            "category": null
+        },
+        "1190": {
+            "varname": "pushover_notification_pushover_sound",
+            "caption": "pushover_notification_pushover_sound",
             "description": null,
             "datatype": "Icinga\\Module\\Director\\DataType\\DataTypeString",
             "format": null,

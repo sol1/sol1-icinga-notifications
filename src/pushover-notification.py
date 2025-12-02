@@ -38,6 +38,7 @@ class Settings(SettingsParser):
 
     pushover_token: str = ''
     pushover_user: str = ''
+    pushover_sound: str = ''
 
     print_config: bool = False
 
@@ -56,7 +57,7 @@ class Settings(SettingsParser):
             sys.exit()
 
 
-def send_notification(token, user, message):
+def send_notification(token, user, message, sound = ''):
     url = "https://api.pushover.net/1/messages.json"
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
@@ -66,8 +67,11 @@ def send_notification(token, user, message):
         "user": user,
         "message": message,
     }
+    # Add sound if specified
+    if sound:
+        payload["sound"] = sound
 
-    logger.debug(f"Sending to {user} message: {message}")
+    logger.debug(f"Sending to {user} message: [{message}] with sound: {sound}")
     response = requests.post(url, data=payload, headers=headers)
 
     if response.status_code != 200:
@@ -119,7 +123,7 @@ if __name__ == "__main__":
 
     try:
         # Send the notification
-        send_notification(config.pushover_token, config.pushover_user, message)
+        send_notification(config.pushover_token, config.pushover_user, message, config.pushover_sound)
 
     except Exception as e:
         logger.error(f"Pushover send error: {e}")

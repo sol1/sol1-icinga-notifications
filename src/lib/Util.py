@@ -28,14 +28,24 @@ def initLogger(log_disable_file = False, log_level = "INFO", log_file = "/var/lo
     if log_disable_file:
         return True
     log_file, writable = _safe_log_file(log_file)
-    logger.add(log_file,
-               colorize=True,
-               format=format,
-               level=log_level,
-               rotation=rotate,
-               retention=retention,
-               compression="gz"
-               )
+    try:
+        logger.add(log_file,
+                colorize=True,
+                format=format,
+                level=log_level,
+                rotation=rotate,
+                retention=retention,
+                compression="gz"
+                )
+    except Exception as e:
+        import sys
+        logger.add(sys.stdout,
+                colorize=True,
+                format=format,
+                level=log_level,
+                )
+        writable = False
+        logger.error(f"Failed to initialize log file ({log_file}), error: {e}")
     return writable
 
 def initRequestsCache(cache_file, expire_after = 30):

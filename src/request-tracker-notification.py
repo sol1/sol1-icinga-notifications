@@ -320,10 +320,8 @@ rt = RequestTracker()
 icinga = Icinga(base_url=config.icinga.url, username=config.icinga.username, password=config.icinga.password)
 
 # Init logging
-if config.debug:
-    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-request-tracker.log")
-else:
-    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-request-tracker.log")
+log_level = 'DEBUG' if config.debug else 'INFO'
+log_writeable = initLogger(log_level=log_level, log_file="/var/log/icinga2/notification-request-tracker.log")
 
 if config.print_config:
     logger.debug(json.dumps(dataclasses.asdict(config), indent=2))

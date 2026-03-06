@@ -1,4 +1,23 @@
 
+# This is a swiss cheese function for the log file to ensure notifications don't fail due to log file permission issues. 
+def _safe_log_file(log_file):
+    import os
+    log_dir = os.path.dirname(log_file)
+    # Check if the file exists and is writable, or if the directory is writable for a new file
+    if os.path.exists(log_file):
+        writable = os.access(log_file, os.W_OK)
+    else:
+        if not log_dir:
+            log_dir = '.'
+        writable = os.access(log_dir, os.W_OK)
+    # If not writeable add the user id to the log file name to attempt to create a unique log file for the user
+    if not writable:
+        uid = os.getuid() if hasattr(os, 'getuid') else os.getlogin()
+        base, ext = os.path.splitext(log_file)
+        log_file = f"{base}-{uid}{ext}"
+    return (log_file, writable)
+
+
 def initLogger(log_disable_file = False, log_level = "INFO", log_file = "/var/log/icinga2/notification_script.log", rotate = '1 day', retention = '2 days'):
     from loguru import logger
     format = "<blue>{time:YYYY-MM-DD HH:mm:ss.SSS}</blue> <yellow>({process.id})</yellow> <level>{level}</level>: {message}"
@@ -6,15 +25,18 @@ def initLogger(log_disable_file = False, log_level = "INFO", log_file = "/var/lo
         format = "<blue>{time:YYYY-MM-DD HH:mm:ss.SSS}</blue> <yellow>({process.id})</yellow> <cyan>{function}</cyan>:<cyan>{line}</cyan> <level>{level}</level>: {message}"
     else:
         logger.remove()
-    if not log_disable_file:
-        logger.add(log_file,
-                   colorize=True,
-                   format=format,
-                   level=log_level,
-                   rotation=rotate,
-                   retention=retention,
-                   compression="gz"
-                   )
+    if log_disable_file:
+        return True
+    log_file, writable = _safe_log_file(log_file)
+    logger.add(log_file,
+               colorize=True,
+               format=format,
+               level=log_level,
+               rotation=rotate,
+               retention=retention,
+               compression="gz"
+               )
+    return writable
 
 def initRequestsCache(cache_file, expire_after = 30):
     """_summary_

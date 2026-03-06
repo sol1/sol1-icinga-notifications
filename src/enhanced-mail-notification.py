@@ -420,10 +420,8 @@ config.netbox = SettingsNetbox(_config_dict=config._config_dict)
 config.grafana = SettingsGrafana(_config_dict=config._config_dict, image_width=config.table_width)
 
 # Init logging
-if config.debug:
-    initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-enhanced-email.log")
-else:
-    initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-enhanced-email.log")
+log_level = 'DEBUG' if config.debug else 'INFO'
+log_writeable = initLogger(log_level=log_level, log_file="/var/log/icinga2/notification-enhanced-email.log")
 
 logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 logger.debug(config._args)

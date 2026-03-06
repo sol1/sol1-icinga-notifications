@@ -89,10 +89,8 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Init logging
-    if config.debug:
-        initLogger(log_level='DEBUG', log_file="/var/log/icinga2/notification-pushover.log")
-    else:
-        initLogger(log_level='INFO', log_file="/var/log/icinga2/notification-pushover.log")
+    log_level = 'DEBUG' if config.debug else 'INFO'
+    log_writeable = initLogger(log_level=log_level, log_file="/var/log/icinga2/notification-pushover.log")
 
     logger.debug(json.dumps(dataclasses.asdict(config), indent=2))
 
@@ -118,6 +116,8 @@ if __name__ == "__main__":
             Additional Info: {config.host_output}
             Comment: [{config.notification_author}] {config.notification_comment}
             ''')
+        if not log_writeable:
+            message += "\nInfo: Notification log file not writable, please fix."
     except Exception as e:
         logger.error(f"Message creation error: {e}")
 

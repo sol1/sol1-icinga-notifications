@@ -77,17 +77,19 @@ class Slack:
 
     @staticmethod
     def colors(icinga_state, notification_type):
+        # Icons are emoji characters rather than Slack shortcodes, so that they
+        # render in any Slack-compatible receiver (Zulip, for example) too.
         icinga_state = str(icinga_state).upper()
         if str(notification_type).upper() in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
             return ("#7F7F7F", "")
         elif icinga_state == "CRITICAL" or icinga_state == "DOWN":
-            return ("#FF5566", ":red_circle: ")
+            return ("#FF5566", "\N{LARGE RED CIRCLE} ")
         elif icinga_state == "WARNING":
-            return ("#FFAA44", ":large_yellow_circle: ")
+            return ("#FFAA44", "\N{LARGE YELLOW CIRCLE} ")
         elif icinga_state == "OK" or icinga_state == "UP":
-            return ("#44BB77", ":large_green_circle: ")
+            return ("#44BB77", "\N{LARGE GREEN CIRCLE} ")
         elif icinga_state == "UNKNOWN":
-            return ("#800080")
+            return ("#800080", "\N{LARGE PURPLE CIRCLE} ")
         else:
             return ("", "")
 

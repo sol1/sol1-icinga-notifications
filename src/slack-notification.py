@@ -91,6 +91,11 @@ class Slack:
         else:
             return ("", "")
 
+    @staticmethod
+    def escape(text):
+        # Slack's three control characters in message text.
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
     @classmethod
     def payload(cls):
         state = config.host_state
@@ -114,6 +119,18 @@ class Slack:
         if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:
             update_string = f"transitioned from {state_last} to {state}"
 
+        # Acknowledgements, downtimes and custom notifications carry who sent
+        # them and why; show that above the check output, in the same
+        # "Comment: [author] comment" form as the mail and pushover scripts.
+        # Both are free text from Icinga Web, so escape them as Slack requires
+        # (otherwise "<!channel>" would ping the channel) and cap the comment
+        # like the output.
+        text = f"```{output[:config.slack_max_message_length]}```"
+        if config.notification_author or config.notification_comment:
+            author = cls.escape(config.notification_author)
+            comment = cls.escape(config.notification_comment[:config.slack_max_message_length])
+            text = f"Comment: [{author}] {comment}\n{text}"
+
         payload = {
             "channel": config.slack_channel,
             "username": config.slack_botname,
@@ -121,7 +138,7 @@ class Slack:
                 {
                     "fallback": f"{config.notification_type} - {state}: {name}",
                     "color": color,
-                    "text": f"```{output[:config.slack_max_message_length]}```",
+                    "text": text,
                     "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
                 }
             ]

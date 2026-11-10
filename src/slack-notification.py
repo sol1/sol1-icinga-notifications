@@ -123,13 +123,19 @@ class Slack:
         # them and why; show that above the check output, in the same
         # "Comment: [author] comment" form as the mail and pushover scripts.
         # Both are free text from Icinga Web, so escape them as Slack requires
-        # (otherwise "<!channel>" would ping the channel) and cap the comment
-        # like the output.
-        text = f"```{output[:config.slack_max_message_length]}```"
-        if config.notification_author or config.notification_comment:
+        # (otherwise "<!channel>" would ping the channel).
+        #
+        # The comment and the output share slack_max_message_length: if both
+        # fit, neither is cut; if one is short, the other gets the rest; if
+        # both are long, each gets half. They are cut before escaping, so an
+        # escape is never split.
+        limit = config.slack_max_message_length
+        comment = config.notification_comment[:max(limit - len(output), limit // 2)]
+        output = output[:limit - len(comment)]
+        text = f"```{output}```"
+        if config.notification_author or comment:
             author = cls.escape(config.notification_author)
-            comment = cls.escape(config.notification_comment[:config.slack_max_message_length])
-            text = f"Comment: [{author}] {comment}\n{text}"
+            text = f"Comment: [{author}] {cls.escape(comment)}\n{text}"
 
         payload = {
             "channel": config.slack_channel,

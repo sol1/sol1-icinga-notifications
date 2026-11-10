@@ -87,7 +87,7 @@ class Slack:
         elif icinga_state == "OK" or icinga_state == "UP":
             return ("#44BB77", ":large_green_circle: ")
         elif icinga_state == "UNKNOWN":
-            return ("#800080")
+            return ("#800080", "")
         else:
             return ("", "")
 

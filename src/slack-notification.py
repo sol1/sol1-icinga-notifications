@@ -16,9 +16,9 @@ from loguru import logger
 
 @dataclasses.dataclass
 class Settings(SettingsParser):
-    _exclude_all: list = dataclasses.field(default_factory=lambda: ['config_file'])
+    _exclude_all: list = dataclasses.field(default_factory=lambda: ['slack'])
 
-    # config_file: str = 'config/slack-notification.json'
+    config_file: str = 'config/slack-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
@@ -74,6 +74,9 @@ class Slack:
         self.headers = {
             'Content-Type': 'application/json'
         }
+
+        if self.config.slack:
+            self.__parse()
 
     @staticmethod
     def colors(icinga_state, notification_type):
@@ -152,7 +155,8 @@ class Slack:
         response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload())
         if response.status_code not in [200, 201, 300, 301]:
             logger.error(
-                f"Post to slack url {config.slack_webhook_url} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+                f"Post to slack channel {config.slack_channel} via {config.slack_botname} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+            logger.debug(f"Slack url {config.slack_webhook_url}")
         else:
             logger.success(f"Successfully posted to Slack")
 

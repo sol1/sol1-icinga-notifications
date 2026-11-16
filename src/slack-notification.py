@@ -16,7 +16,7 @@ from loguru import logger
 
 @dataclasses.dataclass
 class Settings(SettingsParser):
-    _exclude_all: list = dataclasses.field(default_factory=lambda: ['slack'])
+    _exclude_all: list = dataclasses.field(default_factory=lambda: [])
 
     config_file: str = ''   #'config/slack-notification.json'
     debug: bool = False
@@ -80,9 +80,6 @@ class Slack:
         self.headers = {
             'Content-Type': 'application/json'
         }
-
-        if self.config.slack:
-            self.__parse()
 
     @staticmethod
     def colors(icinga_state, notification_type):

@@ -58,6 +58,11 @@ class Settings(SettingsParser):
             self._args = self._init_args('Icinga2 plugin to send slack notifications')
             self.loadArgs(self._args)
 
+            # These set in the config file will override the args
+            self._include_from_file = ['debug', 'disable_log_file']
+
+            self.loadConfigJsonFile()
+
             # Sensible defaults after loading everything
             if self.host_address == '':
                 self.host_address = self.host_displayname

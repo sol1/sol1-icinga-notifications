@@ -41,6 +41,7 @@ class Settings(SettingsParser):
     slack_webhook_url: str = ''
     slack_botname: str = 'icinga2'
     slack_max_message_length: int = 1000
+    slack_timeout: int = 30
     icingaweb2_url: str = ''
 
     slack_layout_footer: bool = False
@@ -149,10 +150,11 @@ class Slack:
         return payload
 
     def post(self):
-        response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload())
+        response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload(), timeout=config.slack_timeout)
         if response.status_code not in [200, 201, 300, 301]:
             logger.error(
                 f"Post to slack url {config.slack_webhook_url} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+            sys.exit(1)
         else:
             logger.success(f"Successfully posted to Slack")
 

@@ -2,6 +2,7 @@
 
 import dataclasses
 import json
+import os
 import requests
 import sys
 import traceback
@@ -61,7 +62,14 @@ class Settings(SettingsParser):
             # These set in the config file will override the args
             self._include_from_file = ['debug', 'disable_log_file']
 
-            self.loadConfigJsonFile()
+            # The config file is optional. A relative path is resolved from
+            # this script's directory, since Icinga runs notification commands
+            # from its own working directory, not the script's.
+            if self.config_file and not os.path.isabs(self.config_file):
+                self.config_file = os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)), self.config_file)
+            if self.config_file and os.path.exists(self.config_file):
+                self.loadConfigJsonFile()
 
             # Sensible defaults after loading everything
             if self.host_address == '':
@@ -80,9 +88,6 @@ class Slack:
         self.headers = {
             'Content-Type': 'application/json'
         }
-
-        if self.config.slack:
-            self.__parse()
 
     @staticmethod
     def colors(icinga_state, notification_type):

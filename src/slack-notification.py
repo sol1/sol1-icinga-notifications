@@ -18,7 +18,7 @@ from loguru import logger
 class Settings(SettingsParser):
     _exclude_all: list = dataclasses.field(default_factory=lambda: ['slack'])
 
-    config_file: str = 'config/slack-notification.json'
+    config_file: str = ''   #'config/slack-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
@@ -60,8 +60,8 @@ class Settings(SettingsParser):
 
             # These set in the config file will override the args
             self._include_from_file = ['debug', 'disable_log_file']
-
-            self.loadConfigJsonFile()
+            if self.config_file:
+                self.loadConfigJsonFile()
 
             # Sensible defaults after loading everything
             if self.host_address == '':

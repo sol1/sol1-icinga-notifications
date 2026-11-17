@@ -16,9 +16,9 @@ from loguru import logger
 
 @dataclasses.dataclass
 class Settings(SettingsParser):
-    _exclude_all: list = dataclasses.field(default_factory=lambda: ['config_file'])
+    _exclude_all: list = dataclasses.field(default_factory=lambda: [])
 
-    # config_file: str = 'config/slack-notification.json'
+    config_file: str = ''   #'config/slack-notification.json'
     debug: bool = False
     disable_log_file: bool = False
 
@@ -41,6 +41,7 @@ class Settings(SettingsParser):
     slack_webhook_url: str = ''
     slack_botname: str = 'icinga2'
     slack_max_message_length: int = 1000
+    slack_timeout: int = 30
     icingaweb2_url: str = ''
 
     slack_layout_footer: bool = False
@@ -56,6 +57,11 @@ class Settings(SettingsParser):
             self.loadEnvironmentVars()
             self._args = self._init_args('Icinga2 plugin to send slack notifications')
             self.loadArgs(self._args)
+
+            # These set in the config file will override the args
+            self._include_from_file = ['debug', 'disable_log_file']
+            if self.config_file:
+                self.loadConfigJsonFile()
 
             # Sensible defaults after loading everything
             if self.host_address == '':
@@ -77,19 +83,26 @@ class Slack:
 
     @staticmethod
     def colors(icinga_state, notification_type):
+        # Icons are emoji characters rather than Slack shortcodes, so that they
+        # render in any Slack-compatible receiver (Zulip, for example) too.
         icinga_state = str(icinga_state).upper()
         if str(notification_type).upper() in ["ACKNOWLEDGEMENT", "DOWNTIMESTART", "DOWNTIMEEND"]:
             return ("#7F7F7F", "")
         elif icinga_state == "CRITICAL" or icinga_state == "DOWN":
-            return ("#FF5566", ":red_circle: ")
+            return ("#FF5566", "\N{LARGE RED CIRCLE} ")
         elif icinga_state == "WARNING":
-            return ("#FFAA44", ":large_yellow_circle: ")
+            return ("#FFAA44", "\N{LARGE YELLOW CIRCLE} ")
         elif icinga_state == "OK" or icinga_state == "UP":
-            return ("#44BB77", ":large_green_circle: ")
+            return ("#44BB77", "\N{LARGE GREEN CIRCLE} ")
         elif icinga_state == "UNKNOWN":
-            return ("#800080", "")
+            return ("#800080", "\N{LARGE PURPLE CIRCLE} ")
         else:
             return ("", "")
+
+    @staticmethod
+    def escape(text):
+        # Slack's three control characters in message text.
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     @classmethod
     def payload(cls):
@@ -114,6 +127,24 @@ class Slack:
         if (config.service_state == '' and config.host_state != config.host_state_last) or config.service_state != config.service_state_last:
             update_string = f"transitioned from {state_last} to {state}"
 
+        # Acknowledgements, downtimes and custom notifications carry who sent
+        # them and why; show that above the check output, in the same
+        # "Comment: [author] comment" form as the mail and pushover scripts.
+        # Both are free text from Icinga Web, so escape them as Slack requires
+        # (otherwise "<!channel>" would ping the channel).
+        #
+        # The comment and the output share slack_max_message_length: if both
+        # fit, neither is cut; if one is short, the other gets the rest; if
+        # both are long, each gets half. They are cut before escaping, so an
+        # escape is never split.
+        limit = config.slack_max_message_length
+        comment = config.notification_comment[:max(limit - len(output), limit // 2)]
+        output = output[:limit - len(comment)]
+        text = f"```{output}```"
+        if config.notification_author or comment:
+            author = cls.escape(config.notification_author)
+            text = f"Comment: [{author}] {cls.escape(comment)}\n{text}"
+
         payload = {
             "channel": config.slack_channel,
             "username": config.slack_botname,
@@ -121,7 +152,7 @@ class Slack:
                 {
                     "fallback": f"{config.notification_type} - {state}: {name}",
                     "color": color,
-                    "text": f"```{output[:config.slack_max_message_length]}```",
+                    "text": text,
                     "title": f"{icon}{config.notification_type}: {check_type} <{link}|{name}> {update_string}",
                 }
             ]
@@ -149,10 +180,12 @@ class Slack:
         return payload
 
     def post(self):
-        response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload())
+        response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload(), timeout=config.slack_timeout)
         if response.status_code not in [200, 201, 300, 301]:
             logger.error(
-                f"Post to slack url {config.slack_webhook_url} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+                f"Post to slack channel {config.slack_channel} via {config.slack_botname} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+            logger.debug(f"Slack url {config.slack_webhook_url}")
+            sys.exit(1)
         else:
             logger.success(f"Successfully posted to Slack")
 

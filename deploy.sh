@@ -127,6 +127,7 @@ deploy_request_tracker() {
 }
 
 deploy_slack() {
+    deploy_config ./src/config/slack-notification.json
     cp ./src/slack-notification.py "$ICINGA2_SCRIPT_DIR" 
     chown $ICINGA2_USER:$ICINGA2_USER "$ICINGA2_SCRIPT_DIR/slack-notification.py"
     chmod +x "$ICINGA2_SCRIPT_DIR/slack-notification.py"

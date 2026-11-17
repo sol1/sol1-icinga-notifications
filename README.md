@@ -11,6 +11,7 @@ These notification scripts have been created to work with Icinga configuration o
 
 This repository contains the notification scripts, shared libraries, dependant python libaries, an installation script, config examples for Icinga2 and Icingaweb2 Director import baskets.
 
+Note: It is recommened that sensitive information be placed in config files. Debug mode may output this sensitive information, it is intended that clean up is performed post debug. 
 
 ## Installation
 `deploy.sh` can be used to install the scripts from this repository. 
@@ -73,7 +74,7 @@ The configuration of connection settings to Request Tracker and Icinga can be fo
 For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
 
 ### Slack
-There is no configuration files by default with slack notifications, the script will still look for configuration in `config/slack-notification.json` though.
+Once installed you will find the Slack Notifications configuration in the `config/slack-notification.json` directory.
 
 For configuration of the Notification command in Icinga itself refer to the `./icinga_conf/` examples or import the director baskets `./director_baskets/` available in this repository. 
 

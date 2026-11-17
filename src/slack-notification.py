@@ -183,11 +183,11 @@ class Slack:
         response = requests.post(url=config.slack_webhook_url, headers=self.headers, json=self.payload(), timeout=config.slack_timeout)
         if response.status_code not in [200, 201, 300, 301]:
             logger.error(
-                f"Post to slack channel {config.slack_channel} via {config.slack_botname} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
+                f"Post {config.host_name}{f':{config.service_name}' if config.service_state else ''} is {config.service_state if config.service_state else config.host_state} to Slack channel {config.slack_channel} via {config.slack_botname} failed.\n Response code: {response.status_code}\n Response text: \n{response.text}")
             logger.debug(f"Slack url {config.slack_webhook_url}")
             sys.exit(1)
         else:
-            logger.success(f"Successfully posted to Slack")
+            logger.success(f"Successfully posted {config.host_name}{f':{config.service_name}' if config.service_state else ''} is {config.service_state if config.service_state else config.host_state} to Slack {config.slack_channel}")
 
 
 if __name__ == "__main__":
